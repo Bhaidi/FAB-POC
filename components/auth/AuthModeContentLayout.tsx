@@ -1,0 +1,129 @@
+"use client";
+
+import { Box, Text, VStack } from "@chakra-ui/react";
+import {
+  authColors,
+  authColumnTypography,
+  authHeroTypography,
+  authLayout,
+  authLoginFormVertical,
+  authSpacing,
+} from "@/components/auth/authTokens";
+
+export type AuthModeContentLayoutProps = {
+  eyebrow: string;
+  title: React.ReactNode;
+  secondary?: string;
+  tertiary?: string;
+  /** Form, steps, or other primary block */
+  core: React.ReactNode;
+  /** Main action (e.g. Login) */
+  primaryCta?: React.ReactNode;
+  /** Links or auxiliary actions below the primary CTA */
+  secondaryActions?: React.ReactNode;
+  /** Login right column — fixed px vertical rhythm per spec */
+  verticalProfile?: "default" | "loginForm";
+};
+
+/**
+ * Shared instructional column hierarchy for Login (right) and Register (left):
+ * eyebrow → H1 → secondary → optional tertiary → core → primary CTA → secondary actions.
+ */
+export function AuthModeContentLayout({
+  eyebrow,
+  title,
+  secondary,
+  tertiary,
+  core,
+  primaryCta,
+  secondaryActions,
+  verticalProfile = "default",
+}: AuthModeContentLayoutProps) {
+  const hasIntroSupporting = Boolean(secondary || tertiary);
+  const isLoginForm = verticalProfile === "loginForm";
+
+  const corePt = isLoginForm
+    ? authLoginFormVertical.titleToFirstInput
+    : hasIntroSupporting
+      ? authSpacing.rightColumnBeforeControls
+      : authSpacing.rightColumnIntroStack;
+
+  const introStackSpacing = isLoginForm
+    ? authLoginFormVertical.eyebrowToTitle
+    : authSpacing.rightColumnIntroStack;
+
+  const coreToCtaPt = isLoginForm ? authLoginFormVertical.lastInputToCta : authSpacing.modeCoreToPrimaryCta;
+
+  const ctaToSecondaryPt = isLoginForm
+    ? authLoginFormVertical.ctaToHelperLinks
+    : authSpacing.modePrimaryToSecondaryActions;
+
+  return (
+    <VStack
+      align="stretch"
+      spacing={0}
+      w="full"
+      maxW={{ base: "100%", lg: authLayout.rightColumnMaxW }}
+      pb={isLoginForm ? authLoginFormVertical.helpersBottomBreath : undefined}
+    >
+      <VStack
+        align={{ base: "center", lg: "flex-start" }}
+        spacing={introStackSpacing}
+        w="full"
+        textAlign={{ base: "center", lg: "left" }}
+      >
+        <Text
+          fontFamily="var(--font-graphik)"
+          {...authHeroTypography.overline}
+          color={authColors.text.muted}
+        >
+          {eyebrow}
+        </Text>
+        <Text
+          as="h1"
+          fontFamily="var(--font-graphik)"
+          {...authColumnTypography.title}
+          color={authColors.text.primary}
+        >
+          {title}
+        </Text>
+        {secondary ? (
+          <Text
+            fontFamily="var(--font-graphik)"
+            {...authColumnTypography.supporting}
+            color={authColors.text.tertiary}
+            maxW="100%"
+          >
+            {secondary}
+          </Text>
+        ) : null}
+        {tertiary ? (
+          <Text
+            fontFamily="var(--font-graphik)"
+            {...authColumnTypography.supporting}
+            color={authColors.text.muted}
+            maxW="100%"
+          >
+            {tertiary}
+          </Text>
+        ) : null}
+      </VStack>
+
+      <Box w="full" pt={corePt}>
+        {core}
+      </Box>
+
+      {primaryCta ? (
+        <Box w="full" pt={coreToCtaPt}>
+          {primaryCta}
+        </Box>
+      ) : null}
+
+      {secondaryActions ? (
+        <Box w="full" pt={ctaToSecondaryPt}>
+          {secondaryActions}
+        </Box>
+      ) : null}
+    </VStack>
+  );
+}

@@ -1,0 +1,113 @@
+{
+  "defaultMarket": "UAE",
+  "markets": [
+    {
+      "code": "UAE",
+      "name": "United Arab Emirates",
+      "type": "country",
+      "visibility": "visible",
+      "operationalStatus": "active",
+      "onboardingStatus": "completed",
+      "accessible": true,
+      "selectable": true,
+      "availableServices": 8,
+      "pendingActions": 4
+    },
+    {
+      "code": "UK",
+      "name": "United Kingdom",
+      "type": "country",
+      "visibility": "visible",
+      "operationalStatus": "active",
+      "onboardingStatus": "completed",
+      "accessible": true,
+      "selectable": true,
+      "availableServices": 6,
+      "pendingActions": 3
+    },
+    {
+      "code": "SG",
+      "name": "Singapore",
+      "type": "country",
+      "visibility": "visible",
+      "operationalStatus": "active",
+      "onboardingStatus": "completed",
+      "accessible": true,
+      "selectable": true,
+      "availableServices": 5,
+      "pendingActions": 2
+    },
+    {
+      "code": "HK",
+      "name": "Hong Kong",
+      "type": "country",
+      "visibility": "visible",
+      "operationalStatus": "active",
+      "onboardingStatus": "completed",
+      "accessible": true,
+      "selectable": true,
+      "availableServices": 5,
+      "pendingActions": 2
+    },
+    {
+      "code": "FR",
+      "name": "France",
+      "type": "country",
+      "visibility": "visible",
+      "operationalStatus": "inactive",
+      "onboardingStatus": "in_progress",
+      "accessible": true,
+      "selectable": false,
+      "availableServices": 0,
+      "pendingActions": 0
+    },
+    {
+      "code": "US",
+      "name": "United States",
+      "type": "country",
+      "visibility": "visible",
+      "operationalStatus": "inactive",
+      "onboardingStatus": "not_started",
+      "accessible": true,
+      "selectable": false,
+      "availableServices": 0,
+      "pendingActions": 0
+    },
+    {
+      "code": "CN",
+      "name": "China",
+      "type": "country",
+      "visibility": "visible",
+      "operationalStatus": "restricted",
+      "onboardingStatus": "not_applicable",
+      "accessible": true,
+      "selectable": false,
+      "availableServices": 0,
+      "pendingActions": 0
+    },
+    {
+      "code": "KW",
+      "name": "Kuwait",
+      "type": "country",
+      "visibility": "visible",
+      "operationalStatus": "inactive",
+      "onboardingStatus": "not_started",
+      "accessible": true,
+      "selectable": false,
+      "availableServices": 0,
+      "pendingActions": 0
+    },
+    {
+      "code": "KSA",
+      "name": "Saudi Arabia",
+      "type": "country",
+      "visibility": "visible",
+      "operationalStatus": "inactive",
+      "onboardingStatus": "in_progress",
+      "accessible": true,
+      "selectable": false,
+      "availableServices": 0,
+      "pendingActions": 0
+    }
+  ]
+}

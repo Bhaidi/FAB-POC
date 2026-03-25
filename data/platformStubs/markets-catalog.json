@@ -1,0 +1,11 @@
+[
+  { "code": "UAE", "name": "United Arab Emirates", "type": "COUNTRY", "status": "operational" },
+  { "code": "US", "name": "United States", "type": "COUNTRY", "status": "operational" },
+  { "code": "UK", "name": "United Kingdom", "type": "COUNTRY", "status": "operational" },
+  { "code": "SG", "name": "Singapore", "type": "COUNTRY", "status": "operational" },
+  { "code": "FR", "name": "France", "type": "COUNTRY", "status": "degraded" },
+  { "code": "CN", "name": "China", "type": "COUNTRY", "status": "degraded" },
+  { "code": "HK", "name": "Hong Kong", "type": "REGION", "status": "operational" },
+  { "code": "KW", "name": "Kuwait", "type": "COUNTRY", "status": "attention" },
+  { "code": "KSA", "name": "Saudi Arabia", "type": "COUNTRY", "status": "operational" }
+]

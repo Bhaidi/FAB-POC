@@ -1,0 +1,13 @@
+{
+  "userId": "usr-check-01",
+  "userName": "Elena Vasquez",
+  "userRole": "CHECKER",
+  "roleTitle": "Regional Payments Approver",
+  "organizationId": "org-9003",
+  "organizationName": "Horizon Payments Cooperative Ltd",
+  "organizationType": "corporate",
+  "isGlobalClient": true,
+  "homeMarket": "UAE",
+  "defaultMarket": "UAE",
+  "accessibleMarkets": ["UAE", "UK", "SG"]
+}

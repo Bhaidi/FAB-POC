@@ -1,0 +1,13 @@
+{
+  "userId": "usr-max-01",
+  "userName": "Jordan Maxwell",
+  "userRole": "ADMIN",
+  "roleTitle": "Group Chief Operating Officer",
+  "organizationId": "org-9001",
+  "organizationName": "Apex Continental Holdings Ltd",
+  "organizationType": "corporate",
+  "isGlobalClient": true,
+  "homeMarket": "UAE",
+  "defaultMarket": "UAE",
+  "accessibleMarkets": ["UAE", "UK", "SG", "HK", "FR"]
+}

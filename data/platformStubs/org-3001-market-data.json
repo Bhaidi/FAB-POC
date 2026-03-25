@@ -1,0 +1,547 @@
+{
+  "UAE": {
+    "summary": {
+      "marketCode": "UAE",
+      "marketName": "United Arab Emirates",
+      "connectedAccounts": 184,
+      "availableServices": 8,
+      "pendingActions": 4,
+      "lastActivityAt": "2025-03-22T08:55:00.000Z",
+      "enabledModules": [
+        "payments",
+        "trade",
+        "liquidity",
+        "cards",
+        "reporting",
+        "wps",
+        "escrow"
+      ]
+    },
+    "services": [
+      {
+        "id": "svc-ceh-uae-wps",
+        "status": "active",
+        "category": "Payments",
+        "updatedAt": "2025-03-21T07:30:00.000Z",
+        "presentation": {
+          "l1": "WPS & Salary Files",
+          "l2": "MOHRE-compliant salary uploads with exception handling and SIF validation."
+        }
+      },
+      {
+        "id": "svc-ceh-uae-pay",
+        "status": "active",
+        "category": "Payments",
+        "updatedAt": "2025-03-20T14:00:00.000Z",
+        "presentation": {
+          "l1": "Domestic AED & Instant Transfers",
+          "l2": "IPS and ACH rails with maker-checker and beneficiary screening."
+        }
+      },
+      {
+        "id": "svc-ceh-uae-trade",
+        "status": "active",
+        "category": "Trade",
+        "updatedAt": "2025-03-19T09:20:00.000Z",
+        "presentation": {
+          "l1": "Trade & Working Capital",
+          "l2": "LCs, bank guarantees, and invoice discounting for ADNOC-linked contractors."
+        }
+      },
+      {
+        "id": "svc-ceh-uae-pool",
+        "status": "active",
+        "category": "Liquidity",
+        "updatedAt": "2025-03-18T11:45:00.000Z",
+        "presentation": {
+          "l1": "AED Notional Pooling",
+          "l2": "Sweep from operating companies into group header with interest allocation."
+        }
+      },
+      {
+        "id": "svc-ceh-uae-fx",
+        "status": "active",
+        "category": "Treasury",
+        "updatedAt": "2025-03-17T15:10:00.000Z",
+        "presentation": {
+          "l1": "Regional FX Desk",
+          "l2": "Spot, forwards, and NDFs for AED, USD, EUR payables and receivables."
+        }
+      },
+      {
+        "id": "svc-ceh-uae-cards",
+        "status": "active",
+        "category": "Cards",
+        "updatedAt": "2025-03-16T08:50:00.000Z",
+        "presentation": {
+          "l1": "Corporate Cards — UAE",
+          "l2": "VAT-ready statements and e-dirham top-ups for government services."
+        }
+      },
+      {
+        "id": "svc-ceh-uae-escrow",
+        "status": "active",
+        "category": "Escrow",
+        "updatedAt": "2025-03-15T12:30:00.000Z",
+        "presentation": {
+          "l1": "Construction Escrow",
+          "l2": "Milestone releases aligned with Dubai Municipality permits."
+        }
+      },
+      {
+        "id": "svc-ceh-uae-report",
+        "status": "active",
+        "category": "Reporting",
+        "updatedAt": "2025-03-14T10:00:00.000Z",
+        "presentation": {
+          "l1": "Regulatory & MIS Feeds",
+          "l2": "CBUAE reporting extracts and custom board packs."
+        }
+      }
+    ],
+    "activities": [
+      {
+        "id": "act-ceh-uae-1",
+        "title": "AED 42M vendor batch approved",
+        "description": "Dual-approved batch for EPC contractors — references CEH-UAE-MAR-09.",
+        "occurredAt": "2025-03-22T08:55:00.000Z",
+        "actor": "Aisha Rahman",
+        "severity": "info"
+      },
+      {
+        "id": "act-ceh-uae-2",
+        "title": "LC amendment — Fujairah storage expansion",
+        "description": "Tenor extended 45 days; beneficiary accepted amendment online.",
+        "occurredAt": "2025-03-21T14:22:00.000Z",
+        "actor": "Trade Operations",
+        "severity": "info"
+      },
+      {
+        "id": "act-ceh-uae-3",
+        "title": "WPS file processed — 3,180 employees",
+        "description": "March cycle salary file cleared with two beneficiary holds resolved.",
+        "occurredAt": "2025-03-20T06:10:00.000Z",
+        "actor": "Payroll Ops",
+        "severity": "low"
+      },
+      {
+        "id": "act-ceh-uae-4",
+        "title": "Escrow release — Phase 2 civil works",
+        "description": "Consultant sign-off received; AED 9.2M released to main contractor.",
+        "occurredAt": "2025-03-19T11:40:00.000Z",
+        "actor": "Project Control",
+        "severity": "info"
+      }
+    ]
+  },
+  "UK": {
+    "summary": {
+      "marketCode": "UK",
+      "marketName": "United Kingdom",
+      "connectedAccounts": 96,
+      "availableServices": 6,
+      "pendingActions": 3,
+      "lastActivityAt": "2025-03-21T17:10:00.000Z",
+      "enabledModules": [
+        "payments",
+        "trade",
+        "liquidity",
+        "reporting",
+        "fx"
+      ]
+    },
+    "services": [
+      {
+        "id": "svc-ceh-uk-pay",
+        "status": "active",
+        "category": "Payments",
+        "updatedAt": "2025-03-21T09:00:00.000Z",
+        "presentation": {
+          "l1": "CHAPS, FPS & SEPA",
+          "l2": "High-value CHAPS, same-day FPS, and SEPA Credit for European suppliers."
+        }
+      },
+      {
+        "id": "svc-ceh-uk-pool",
+        "status": "active",
+        "category": "Liquidity",
+        "updatedAt": "2025-03-20T10:15:00.000Z",
+        "presentation": {
+          "l1": "Sterling Concentration",
+          "l2": "Physical sweeping from UK trading subs into London header."
+        }
+      },
+      {
+        "id": "svc-ceh-uk-trade",
+        "status": "active",
+        "category": "Trade",
+        "updatedAt": "2025-03-19T13:40:00.000Z",
+        "presentation": {
+          "l1": "Receivables Finance — UK Retail",
+          "l2": "Invoice discounting against major supermarket receivables."
+        }
+      },
+      {
+        "id": "svc-ceh-uk-fx",
+        "status": "active",
+        "category": "Treasury",
+        "updatedAt": "2025-03-18T08:25:00.000Z",
+        "presentation": {
+          "l1": "GBP/EUR/USD Hedging",
+          "l2": "Vanilla forwards and options for North Sea logistics exposure."
+        }
+      },
+      {
+        "id": "svc-ceh-uk-report",
+        "status": "active",
+        "category": "Reporting",
+        "updatedAt": "2025-03-17T14:50:00.000Z",
+        "presentation": {
+          "l1": "HMRC & Statutory Reporting",
+          "l2": "MT940 feeds and VAT-ready payment extracts."
+        }
+      },
+      {
+        "id": "svc-ceh-uk-cash",
+        "status": "available",
+        "category": "Liquidity",
+        "updatedAt": "2025-03-01T12:00:00.000Z",
+        "presentation": {
+          "l1": "Virtual Accounts (Request)",
+          "l2": "Programme for UK distributor collections with automated reconciliation."
+        }
+      }
+    ],
+    "activities": [
+      {
+        "id": "act-ceh-uk-1",
+        "title": "GBP 6.8M CHAPS to grid operator",
+        "description": "Approved dual-sign CHAPS for renewable offtake settlement.",
+        "occurredAt": "2025-03-21T17:10:00.000Z",
+        "actor": "London Treasury",
+        "severity": "info"
+      },
+      {
+        "id": "act-ceh-uk-2",
+        "title": "SEPA batch — continental suppliers",
+        "description": "EUR 2.1M SEPA Credit batch released after FX cover confirmed.",
+        "occurredAt": "2025-03-20T15:30:00.000Z",
+        "actor": "Payments Team",
+        "severity": "info"
+      },
+      {
+        "id": "act-ceh-uk-3",
+        "title": "Receivables line utilisation review",
+        "description": "Quarterly review signed off; headroom increased 8%.",
+        "occurredAt": "2025-03-19T09:45:00.000Z",
+        "actor": "Relationship Manager",
+        "severity": "low"
+      },
+      {
+        "id": "act-ceh-uk-4",
+        "title": "Sterling pool interest allocation",
+        "description": "March pool interest posted to participating entities.",
+        "occurredAt": "2025-03-18T07:00:00.000Z",
+        "actor": "Cash Ops",
+        "severity": "info"
+      }
+    ]
+  },
+  "SG": {
+    "summary": {
+      "marketCode": "SG",
+      "marketName": "Singapore",
+      "connectedAccounts": 54,
+      "availableServices": 5,
+      "pendingActions": 2,
+      "lastActivityAt": "2025-03-22T07:20:00.000Z",
+      "enabledModules": [
+        "payments",
+        "trade",
+        "liquidity",
+        "reporting",
+        "fx"
+      ]
+    },
+    "services": [
+      {
+        "id": "svc-ceh-sg-pay",
+        "status": "active",
+        "category": "Payments",
+        "updatedAt": "2025-03-21T11:00:00.000Z",
+        "presentation": {
+          "l1": "MEPS & FAST Payments",
+          "l2": "SGD high-value and instant payments with gpi visibility for USD legs."
+        }
+      },
+      {
+        "id": "svc-ceh-sg-trade",
+        "status": "active",
+        "category": "Trade",
+        "updatedAt": "2025-03-20T08:40:00.000Z",
+        "presentation": {
+          "l1": "Commodity Trade Finance",
+          "l2": "Structured inventory finance for Asia-Pacific trading desk."
+        }
+      },
+      {
+        "id": "svc-ceh-sg-pool",
+        "status": "active",
+        "category": "Liquidity",
+        "updatedAt": "2025-03-19T16:20:00.000Z",
+        "presentation": {
+          "l1": "USD Asia Header",
+          "l2": "Concentration of USD receipts from shipping and bunkering entities."
+        }
+      },
+      {
+        "id": "svc-ceh-sg-fx",
+        "status": "active",
+        "category": "Treasury",
+        "updatedAt": "2025-03-18T12:10:00.000Z",
+        "presentation": {
+          "l1": "Asian FX & NDFs",
+          "l2": "CNH, SGD, and IDR hedging for regional procurement."
+        }
+      },
+      {
+        "id": "svc-ceh-sg-report",
+        "status": "active",
+        "category": "Reporting",
+        "updatedAt": "2025-03-17T09:30:00.000Z",
+        "presentation": {
+          "l1": "MAS Reporting Pack",
+          "l2": "Automated liquidity and large exposure reporting templates."
+        }
+      }
+    ],
+    "activities": [
+      {
+        "id": "act-ceh-sg-1",
+        "title": "USD 9.1M bunkering settlement",
+        "description": "MEPS plus SWIFT cover for Singapore anchorage suppliers.",
+        "occurredAt": "2025-03-22T07:20:00.000Z",
+        "actor": "Singapore Treasury",
+        "severity": "info"
+      },
+      {
+        "id": "act-ceh-sg-2",
+        "title": "Commodity inventory revaluation",
+        "description": "Collateral mark-to-market refreshed — no margin call.",
+        "occurredAt": "2025-03-21T13:00:00.000Z",
+        "actor": "Trade Risk",
+        "severity": "low"
+      },
+      {
+        "id": "act-ceh-sg-3",
+        "title": "New beneficiary screening cleared",
+        "description": "Vietnam logistics partner onboarded for recurring USD payments.",
+        "occurredAt": "2025-03-20T10:50:00.000Z",
+        "actor": "Compliance",
+        "severity": "info"
+      },
+      {
+        "id": "act-ceh-sg-4",
+        "title": "Pool sweep to London header",
+        "description": "End-of-day USD sweep executed per liquidity policy.",
+        "occurredAt": "2025-03-19T18:05:00.000Z",
+        "actor": "Cash Ops",
+        "severity": "info"
+      }
+    ]
+  },
+  "HK": {
+    "summary": {
+      "marketCode": "HK",
+      "marketName": "Hong Kong",
+      "connectedAccounts": 41,
+      "availableServices": 5,
+      "pendingActions": 2,
+      "lastActivityAt": "2025-03-21T22:15:00.000Z",
+      "enabledModules": [
+        "payments",
+        "trade",
+        "reporting",
+        "fx"
+      ]
+    },
+    "services": [
+      {
+        "id": "svc-ceh-hk-pay",
+        "status": "active",
+        "category": "Payments",
+        "updatedAt": "2025-03-21T14:30:00.000Z",
+        "presentation": {
+          "l1": "RTGS & FPS",
+          "l2": "HKD and CNH payments with cross-border RMB settlement options."
+        }
+      },
+      {
+        "id": "svc-ceh-hk-trade",
+        "status": "active",
+        "category": "Trade",
+        "updatedAt": "2025-03-20T09:15:00.000Z",
+        "presentation": {
+          "l1": "Documentary Credits — Greater Bay",
+          "l2": "LCs supporting mainland component sourcing and re-export."
+        }
+      },
+      {
+        "id": "svc-ceh-hk-fx",
+        "status": "active",
+        "category": "Treasury",
+        "updatedAt": "2025-03-19T11:00:00.000Z",
+        "presentation": {
+          "l1": "CNH & HKD Hedging",
+          "l2": "NDFs and forwards for procurement from PRD manufacturers."
+        }
+      },
+      {
+        "id": "svc-ceh-hk-report",
+        "status": "active",
+        "category": "Reporting",
+        "updatedAt": "2025-03-18T16:45:00.000Z",
+        "presentation": {
+          "l1": "HKMA Large Exposure Files",
+          "l2": "Scheduled extracts for regulatory returns."
+        }
+      },
+      {
+        "id": "svc-ceh-hk-cash",
+        "status": "available",
+        "category": "Liquidity",
+        "updatedAt": "2025-02-15T10:00:00.000Z",
+        "presentation": {
+          "l1": "Virtual Account Programme (Request)",
+          "l2": "Collections structure for distributor network in South China."
+        }
+      }
+    ],
+    "activities": [
+      {
+        "id": "act-ceh-hk-1",
+        "title": "CNH 48M supplier payment released",
+        "description": "Dual-approved RTGS to Shenzhen equipment vendor.",
+        "occurredAt": "2025-03-21T22:15:00.000Z",
+        "actor": "HK Treasury",
+        "severity": "info"
+      },
+      {
+        "id": "act-ceh-hk-2",
+        "title": "LC shipment documents presented",
+        "description": "Shipping documents under LC HK-7781 under examination.",
+        "occurredAt": "2025-03-20T17:40:00.000Z",
+        "actor": "Trade Operations",
+        "severity": "low"
+      },
+      {
+        "id": "act-ceh-hk-3",
+        "title": "FX option expiry — CNH/USD",
+        "description": "In-the-money option exercised; hedge rolled to June.",
+        "occurredAt": "2025-03-19T14:20:00.000Z",
+        "actor": "Derivatives Desk",
+        "severity": "info"
+      },
+      {
+        "id": "act-ceh-hk-4",
+        "title": "Beneficiary name change verified",
+        "description": "Mainland subsidiary legal name change reflected in payment rails.",
+        "occurredAt": "2025-03-18T09:10:00.000Z",
+        "actor": "KYC Team",
+        "severity": "info"
+      }
+    ]
+  },
+  "FR": {
+    "summary": {
+      "marketCode": "FR",
+      "marketName": "France",
+      "connectedAccounts": 38,
+      "availableServices": 4,
+      "pendingActions": 3,
+      "lastActivityAt": "2025-03-20T19:30:00.000Z",
+      "enabledModules": [
+        "payments",
+        "trade",
+        "reporting",
+        "fx"
+      ]
+    },
+    "services": [
+      {
+        "id": "svc-ceh-fr-pay",
+        "status": "active",
+        "category": "Payments",
+        "updatedAt": "2025-03-21T08:00:00.000Z",
+        "presentation": {
+          "l1": "SEPA Instant & SCT",
+          "l2": "EUR payments to continental suppliers with instant where available."
+        }
+      },
+      {
+        "id": "svc-ceh-fr-trade",
+        "status": "active",
+        "category": "Trade",
+        "updatedAt": "2025-03-20T12:30:00.000Z",
+        "presentation": {
+          "l1": "Documentary Collections — EU",
+          "l2": "D/P and D/A for lubricants and specialty chemicals exports."
+        }
+      },
+      {
+        "id": "svc-ceh-fr-fx",
+        "status": "active",
+        "category": "Treasury",
+        "updatedAt": "2025-03-19T15:00:00.000Z",
+        "presentation": {
+          "l1": "EUR/USD Hedging",
+          "l2": "Micro-hedging for refinery maintenance capex in euros."
+        }
+      },
+      {
+        "id": "svc-ceh-fr-report",
+        "status": "active",
+        "category": "Reporting",
+        "updatedAt": "2025-03-18T10:20:00.000Z",
+        "presentation": {
+          "l1": "French GAAP Extracts",
+          "l2": "Payment and balance feeds for local statutory close."
+        }
+      }
+    ],
+    "activities": [
+      {
+        "id": "act-ceh-fr-1",
+        "title": "EUR 3.2M maintenance payment",
+        "description": "SEPA batch to Rotterdam maintenance joint venture.",
+        "occurredAt": "2025-03-20T19:30:00.000Z",
+        "actor": "Paris Treasury",
+        "severity": "info"
+      },
+      {
+        "id": "act-ceh-fr-2",
+        "title": "Collection documents discrepant",
+        "description": "Weight certificate mismatch — trade team liaising with carrier.",
+        "occurredAt": "2025-03-19T11:55:00.000Z",
+        "actor": "Trade Operations",
+        "severity": "medium"
+      },
+      {
+        "id": "act-ceh-fr-3",
+        "title": "VAT reporting file generated",
+        "description": "March preliminary VAT payment file exported to ERP.",
+        "occurredAt": "2025-03-18T08:00:00.000Z",
+        "actor": "Finance Shared Services",
+        "severity": "low"
+      },
+      {
+        "id": "act-ceh-fr-4",
+        "title": "Beneficiary screening refresh",
+        "description": "Annual rescreen completed for top 40 EUR counterparties.",
+        "occurredAt": "2025-03-17T16:40:00.000Z",
+        "actor": "Compliance",
+        "severity": "info"
+      }
+    ]
+  }
+}

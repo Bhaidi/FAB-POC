@@ -1,0 +1,13 @@
+{
+  "userId": "usr-min-01",
+  "userName": "Sam Rivera",
+  "userRole": "MAKER",
+  "roleTitle": "Treasury Analyst",
+  "organizationId": "org-9002",
+  "organizationName": "Rivera Trading FZ-LLC",
+  "organizationType": "corporate",
+  "isGlobalClient": false,
+  "homeMarket": "UAE",
+  "defaultMarket": "UAE",
+  "accessibleMarkets": ["UAE"]
+}

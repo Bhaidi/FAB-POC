@@ -1,0 +1,351 @@
+/* Graphik only — next/font sets --font-graphik on <html> (app/layout.tsx). */
+/* !important: Chakra’s CSS reset sets html to system-ui and code/kbd to SF Mono; we always use Graphik. */
+html {
+  font-family: var(--font-graphik) !important;
+  font-synthesis: none;
+}
+
+body {
+  font-family: var(--font-graphik) !important;
+  font-synthesis: none;
+}
+
+/* Chakra preflight — force Graphik on semantic monospace tags */
+:where(pre, code, kbd, samp) {
+  font-family: var(--font-graphik) !important;
+}
+
+/* Portals (toast, modal, menu) attach to document.body — same stack */
+.chakra-portal,
+.chakra-portal-zIndex,
+[id^="chakra-toast-manager"] {
+  font-family: var(--font-graphik) !important;
+}
+
+button,
+input,
+textarea,
+select,
+optgroup {
+  font: inherit;
+}
+
+/* Login / Register segmented control — stacking + focus (chrome lives in authSegmentedControlTheme.ts) */
+.auth-segmented-control {
+  isolation: isolate;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.segmented-toggle-btn:focus-visible,
+.auth-segmented-control__segment:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+  border-radius: 9999px;
+}
+
+/* Auth — fixed backdrop must never fall short of the painted viewport (mobile toolbars / iOS). */
+.auth-exact-bg-root {
+  position: fixed;
+  inset: 0;
+  /* Above body / page bg; auth UI (main) stacks higher */
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: 100lvh;
+  min-height: -webkit-fill-available;
+  width: 100%;
+}
+
+/* Auth app shell — match backdrop min-height so flex layout never exposes a gutter band */
+.auth-stage-root {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: 100lvh;
+  min-height: -webkit-fill-available;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  overscroll-behavior: none;
+  background: transparent;
+}
+
+/*
+ * Photo layer: modest inset bleed for cover — NOT huge vmax boxes.
+ */
+.auth-exact-bg-image-layer {
+  position: absolute;
+  inset: -10%;
+  z-index: 0;
+  transform-origin: center center;
+  background-image: url(/assets/fab-login-bg.png);
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  backface-visibility: hidden;
+  /* Slightly lift clarity through glass / dark UI */
+  filter: brightness(1.06) contrast(1.04) saturate(1.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-otp-border-sweep-wrap,
+  .auth-otp-border-sweep,
+  .fab-ghost-card-sheen::after,
+  .fab-ghost-fx-sheen::after,
+  .fab-ghost-market-pill::after,
+  .fab-sidebar-boot-soft {
+    animation: none !important;
+    opacity: 0.5 !important;
+    transform: none !important;
+  }
+}
+
+/* Approve Sign-In — OTP card: perimeter sweep tuned to fab-login-bg (slate + moonlight) */
+@keyframes auth-otp-border-sweep {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes auth-otp-sweep-breathe {
+  0%,
+  100% {
+    opacity: 0.68;
+  }
+  50% {
+    opacity: 0.94;
+  }
+}
+
+.auth-otp-border-sweep-wrap {
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: 50%;
+  width: 240%;
+  height: 240%;
+  margin-left: -120%;
+  margin-top: -120%;
+  pointer-events: none;
+  transform-origin: 50% 50%;
+  animation: auth-otp-sweep-breathe 5.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  will-change: opacity;
+}
+
+.auth-otp-border-sweep {
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 50%;
+  /* Narrower beam — night-sky slate + soft window-light (matches login photo) */
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 118deg,
+    rgba(22, 38, 78, 0.14) 142deg,
+    rgba(118, 138, 178, 0.34) 168deg,
+    rgba(236, 238, 248, 0.74) 180deg,
+    rgba(118, 138, 178, 0.34) 192deg,
+    rgba(22, 38, 78, 0.14) 218deg,
+    transparent 242deg,
+    transparent 360deg
+  );
+  animation: auth-otp-border-sweep 8.5s linear infinite;
+  will-change: transform;
+}
+
+/* Dashboard — ghost UI (real chrome; data appears faint until ready) */
+@keyframes fab-ghost-card-sweep {
+  0% {
+    transform: translateX(-42%);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(158%);
+    opacity: 0;
+  }
+}
+
+.fab-ghost-card-sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 25;
+}
+
+.fab-ghost-card-sheen::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 52%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.012) 36%,
+    rgba(255, 255, 255, 0.055) 50%,
+    rgba(0, 72, 180, 0.04) 64%,
+    transparent 100%
+  );
+  animation: fab-ghost-card-sweep 5s ease-in-out infinite;
+  opacity: 0.85;
+}
+
+@keyframes fab-ghost-fx-sheen {
+  0% {
+    transform: translateX(-30%);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(130%);
+    opacity: 0;
+  }
+}
+
+.fab-ghost-fx-sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.fab-ghost-fx-sheen::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 45%;
+  background: linear-gradient(
+    95deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.02) 42%,
+    rgba(255, 255, 255, 0.06) 50%,
+    transparent 58%,
+    transparent 100%
+  );
+  animation: fab-ghost-fx-sheen 5.2s ease-in-out infinite;
+  animation-delay: 0.4s;
+  opacity: 0.75;
+}
+
+.fab-ghost-market-pill {
+  position: relative;
+  overflow: hidden;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.fab-ghost-market-pill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    95deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 45%,
+    transparent 90%
+  );
+  animation: fab-ghost-fx-sheen 4.5s ease-in-out infinite;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+@keyframes fab-sidebar-boot-soft {
+  from {
+    opacity: 0.9;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fab-sidebar-boot-soft {
+  animation: fab-sidebar-boot-soft 0.28s ease-out 1 forwards;
+}
+
+/* Financial Overview widget — restrained motion (respect reduced-motion below) */
+@keyframes fin-overview-amount-breathe {
+  0%,
+  100% {
+    opacity: 0.06;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.12;
+    transform: scale(1.02);
+  }
+}
+
+.fin-overview-amount-breathe {
+  animation: fin-overview-amount-breathe 5.2s ease-in-out infinite;
+  will-change: opacity;
+}
+
+@keyframes fin-overview-currency-shimmer {
+  0%,
+  82% {
+    transform: translateX(-45%);
+    opacity: 0;
+  }
+  86% {
+    opacity: 0.05;
+  }
+  93% {
+    transform: translateX(145%);
+    opacity: 0.04;
+  }
+  100% {
+    transform: translateX(145%);
+    opacity: 0;
+  }
+}
+
+.fin-overview-currency-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  top: -2px;
+  bottom: -2px;
+  width: 42%;
+  left: -15%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.04) 48%,
+    rgba(200, 210, 255, 0.07) 50%,
+    rgba(255, 255, 255, 0.035) 52%,
+    transparent 100%
+  );
+  pointer-events: none;
+  animation: fin-overview-currency-shimmer 9.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fin-overview-amount-breathe,
+  .fin-overview-currency-shimmer::after {
+    animation: none !important;
+    opacity: 0.08 !important;
+    transform: none !important;
+  }
+}
