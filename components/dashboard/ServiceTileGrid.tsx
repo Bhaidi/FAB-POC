@@ -1,11 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
-import { Box, SimpleGrid } from "@chakra-ui/react";
+import { Box, SimpleGrid, useColorMode } from "@chakra-ui/react";
 import { DASHBOARD_SERVICE_HOVER_IMAGES } from "@/data/dashboardCardHoverImages";
 import type { DashboardServiceTile } from "@/data/dashboardMock";
-import { dashGradients, dashLayout } from "@/components/dashboard/dashboardTokens";
+import { dashLayout, figmaHomeServiceCard } from "@/components/dashboard/dashboardTokens";
 import { ServiceTile } from "@/components/dashboard/ServiceTile";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 
 export type ServiceTileGridProps = {
   tiles: DashboardServiceTile[];
@@ -15,6 +16,8 @@ export type ServiceTileGridProps = {
  * Responsive grid inside a Popular APIs–style gradient band.
  */
 export function ServiceTileGrid({ tiles }: ServiceTileGridProps) {
+  const { colorMode } = useColorMode();
+  const { dashGradients } = useFabTokens();
   const sortedTiles = useMemo(
     () => [...tiles].sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: "base" })),
     [tiles]
@@ -36,7 +39,11 @@ export function ServiceTileGrid({ tiles }: ServiceTileGridProps) {
       }}
     >
       <Box maxW={dashLayout.contentMaxW} mx="auto" w="full">
-        <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} spacing={{ base: 4, md: 5 }} w="full">
+        <SimpleGrid
+          columns={{ base: 1, sm: 2, lg: 4 }}
+          spacing={colorMode === "dark" ? figmaHomeServiceCard.gridGap : { base: 4, md: 5 }}
+          w="full"
+        >
           {sortedTiles.map((t, index) => (
             <ServiceTile
               key={t.id}

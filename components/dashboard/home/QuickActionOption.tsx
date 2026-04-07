@@ -27,14 +27,14 @@ export function QuickActionOption({
       p={3}
       borderRadius="12px"
       borderWidth="1px"
-      borderColor={selected ? "rgba(0, 98, 255, 0.45)" : "rgba(255,255,255,0.08)"}
-      bg={selected ? "rgba(0, 98, 255, 0.12)" : "rgba(255,255,255,0.03)"}
+      borderColor={selected ? "rgba(0, 98, 255, 0.45)" : "rgba(1, 5, 145, 0.08)"}
+      bg={selected ? "rgba(0, 98, 255, 0.1)" : "rgba(242, 242, 243, 0.9)"}
       boxShadow={selected ? "0 0 0 1px rgba(0,98,255,0.2)" : "none"}
       cursor="pointer"
       transition="background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease"
       _hover={{
-        borderColor: selected ? "rgba(0, 98, 255, 0.55)" : "rgba(255,255,255,0.14)",
-        bg: selected ? "rgba(0, 98, 255, 0.16)" : "rgba(255,255,255,0.05)",
+        borderColor: selected ? "rgba(0, 98, 255, 0.55)" : "rgba(1, 5, 145, 0.12)",
+        bg: selected ? "rgba(0, 98, 255, 0.14)" : "#FFFFFF",
       }}
     >
       <Flex
@@ -44,14 +44,14 @@ export function QuickActionOption({
         mt={0.5}
         borderRadius="6px"
         borderWidth="2px"
-        borderColor={selected ? "rgba(96, 165, 250, 0.95)" : "rgba(255,255,255,0.28)"}
-        bg={selected ? "rgba(96, 165, 250, 0.25)" : "transparent"}
+        borderColor={selected ? "rgba(0, 98, 255, 0.75)" : "rgba(1, 5, 145, 0.2)"}
+        bg={selected ? "rgba(0, 98, 255, 0.15)" : "transparent"}
         align="center"
         justify="center"
         transition="border-color 0.15s ease, background 0.15s ease"
       >
         {selected ? (
-          <Box as="span" w="8px" h="8px" borderRadius="2px" bg="rgba(191, 219, 254, 0.98)" />
+          <Box as="span" w="8px" h="8px" borderRadius="2px" bg="#010591" />
         ) : null}
       </Flex>
       <Box
@@ -59,11 +59,11 @@ export function QuickActionOption({
         w="34px"
         h="34px"
         borderRadius="9px"
-        bg="rgba(0, 98, 255, 0.18)"
+        bg="rgba(0, 98, 255, 0.12)"
         display="flex"
         alignItems="center"
         justifyContent="center"
-        color="#93c5fd"
+        color="#010591"
       >
         <Icon size={18} strokeWidth={2} aria-hidden />
       </Box>
@@ -73,7 +73,7 @@ export function QuickActionOption({
           fontSize="14px"
           fontWeight={600}
           letterSpacing="-0.02em"
-          color="rgba(255,255,255,0.92)"
+          color="#48525E"
           lineHeight={1.25}
         >
           {entry.label}
@@ -83,7 +83,7 @@ export function QuickActionOption({
           fontSize="12px"
           fontWeight={500}
           lineHeight={1.35}
-          color="rgba(255,255,255,0.48)"
+          color="rgba(72, 82, 94, 0.65)"
         >
           {entry.description}
         </Text>

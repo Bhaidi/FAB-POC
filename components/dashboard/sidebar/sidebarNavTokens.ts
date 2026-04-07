@@ -1,17 +1,17 @@
-/** Dark glass tooltips on the capability sidebar — always light text (avoids theme body color on custom `label` nodes). */
+/** Light canvas tooltips — high-contrast slate on white (avoids theme body color on custom `label` nodes). */
 export const SIDEBAR_NAV_TOOLTIP_PROPS = {
-  bg: "rgba(12, 16, 32, 0.97)",
-  color: "rgba(255, 255, 255, 0.96)",
+  bg: "rgba(255, 255, 255, 0.98)",
+  color: "#48525E",
   borderWidth: "1px",
-  borderColor: "rgba(255, 255, 255, 0.14)",
+  borderColor: "rgba(1, 5, 145, 0.1)",
   fontSize: "12px",
   lineHeight: 1.45,
   fontFamily: "var(--font-graphik)",
-  boxShadow: "0 10px 32px rgba(0, 0, 0, 0.5)",
+  boxShadow: "0 10px 32px rgba(1, 5, 145, 0.1)",
 };
 
-/** Use inside tooltip `label` when passing custom JSX so Chakra `Text` does not inherit global dark copy. */
-export const SIDEBAR_NAV_TOOLTIP_LABEL_COLOR = "rgba(255, 255, 255, 0.96)";
+/** Use inside tooltip `label` when passing custom JSX so Chakra `Text` inherits readable copy. */
+export const SIDEBAR_NAV_TOOLTIP_LABEL_COLOR = "#48525E";
 
 /** Shared expand-row metrics — L1 / L2 headers use the same hit target and chevron. */
 export const SIDEBAR_EXPAND_CHEVRON_SIZE = 18;

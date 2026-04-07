@@ -3,7 +3,8 @@
 import { Box, Flex, Heading, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import type { ExploreSolutionChip } from "@/data/dashboardMock";
-import { dashColors, dashEffects, dashRadius, dashShadow } from "@/components/dashboard/dashboardTokens";
+import { dashRadius } from "@/components/dashboard/dashboardTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 
 const MotionBox = motion(Box);
 
@@ -12,6 +13,7 @@ export type ExploreSolutionsRowProps = {
 };
 
 export function ExploreSolutionsRow({ chips }: ExploreSolutionsRowProps) {
+  const { dashColors, dashEffects, dashShadow } = useFabTokens();
   return (
     <Box w="full">
       <Heading

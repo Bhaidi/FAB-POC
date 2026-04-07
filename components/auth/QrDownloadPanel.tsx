@@ -4,7 +4,8 @@ import Image from "next/image";
 import { Box, Flex, Text, VStack } from "@chakra-ui/react";
 import { SiAppstore, SiGoogleplay } from "react-icons/si";
 import { AuthStoreBadge } from "@/components/auth/AuthStoreBadge";
-import { authColors, authColumnTypography, authRadius, authShadow } from "@/components/auth/authTokens";
+import { authRadius } from "@/components/auth/authTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 
 export type QrDownloadPanelProps = {
   variant?: "compact" | "onboarding";
@@ -24,6 +25,7 @@ export function QrDownloadPanel({
   title,
   description,
 }: QrDownloadPanelProps) {
+  const { authColors, authColumnTypography, authShadow } = useFabTokens();
   const onboarding = variant === "onboarding";
 
   const heading = onboarding ? (title ?? ONBOARDING_TITLE_DEFAULT) : "Need the mobile app?";

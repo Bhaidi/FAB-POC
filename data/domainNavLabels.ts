@@ -4,8 +4,8 @@
  */
 export const DOMAIN_NAV_LABELS: Record<string, string> = {
   "home-group": "Dashboard",
-  accounts: "Accounts",
-  "account-services": "Accounts",
+  accounts: "Account Services",
+  "account-services": "Account Services",
   payments: "Payments",
   liquidity: "Liquidity",
   "liquidity-management": "Liquidity",

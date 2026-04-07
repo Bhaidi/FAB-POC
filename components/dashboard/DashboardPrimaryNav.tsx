@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import {
   Box,
@@ -12,13 +13,19 @@ import {
   InputLeftElement,
   InputRightElement,
   Kbd,
+  useColorMode,
 } from "@chakra-ui/react";
+import Link from "next/link";
 import { Bell, LogOut, Search } from "lucide-react";
-import { dashColors, dashEffects, dashLayout, dashRadius, dashShadow } from "@/components/dashboard/dashboardTokens";
+import { dashLayout, dashRadius } from "@/components/dashboard/dashboardTokens";
 import { useDashboardGlobal } from "@/components/dashboard/DashboardGlobalContext";
 import { useDashboardSurfaceReady } from "@/components/dashboard/useDashboardSurfaceReady";
 import { GlobalContextControl } from "@/components/dashboard/GlobalContextControl";
+import { CommandCentreBackButton } from "@/components/dashboard/CommandCentreBackButton";
 import { UserProfileMenu } from "@/components/dashboard/UserProfileMenu";
+import { FabThemeToggle } from "@/components/theme/FabThemeToggle";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
+import { isAccountServicesPath } from "@/lib/accountServicesRoutes";
 
 export type DashboardPrimaryNavProps = {
   displayName: string;
@@ -28,43 +35,6 @@ export type DashboardPrimaryNavProps = {
   onSignOut: () => void;
 };
 
-const searchInputStyles = {
-  h: "40px",
-  pl: 10,
-  pr: { base: 4, md: "7.5rem" },
-  fontFamily: "var(--font-graphik)",
-  fontSize: "14px",
-  color: "white",
-  bg: "rgba(255, 255, 255, 0.07)",
-  border: "1px solid",
-  borderColor: "rgba(255, 255, 255, 0.12)",
-  borderRadius: "20px",
-  transition: "border-color 0.25s ease-in-out, background 0.25s ease-in-out, box-shadow 0.25s ease-in-out",
-  _placeholder: { color: "rgba(255, 255, 255, 0.38)" },
-  _hover: {
-    borderColor: "rgba(255, 255, 255, 0.18)",
-    bg: "rgba(255, 255, 255, 0.09)",
-  },
-  _focusVisible: {
-    borderColor: "rgba(0, 98, 255, 0.65)",
-    boxShadow: "0 0 0 1px rgba(0, 98, 255, 0.35), 0 0 20px rgba(0, 98, 255, 0.12)",
-    bg: "rgba(255, 255, 255, 0.1)",
-  },
-} as const;
-
-const iconBtnProps = {
-  variant: "ghost" as const,
-  size: "sm" as const,
-  borderRadius: "full",
-  color: "white",
-  w: "40px",
-  h: "40px",
-  minW: "40px",
-  transition: "background 0.22s ease-in-out, transform 0.22s ease-in-out",
-  _hover: { bg: "rgba(255, 255, 255, 0.12)", transform: "scale(1.04)" },
-  _active: { bg: "rgba(255, 255, 255, 0.16)" },
-};
-
 export function DashboardPrimaryNav({
   displayName,
   role,
@@ -72,6 +42,13 @@ export function DashboardPrimaryNav({
   userId,
   onSignOut,
 }: DashboardPrimaryNavProps) {
+  const pathname = usePathname() ?? "";
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === "dark";
+  const { dashColors, dashEffects, dashPrimaryNavChrome, dashShadow } = useFabTokens();
+  const searchInputStyles = dashPrimaryNavChrome.search;
+  const iconBtnProps = dashPrimaryNavChrome.iconButton;
+
   const { isGlobalClient, userContextLoading } = useDashboardGlobal();
   const surfaceReady = useDashboardSurfaceReady();
   const [query, setQuery] = useState("");
@@ -105,35 +82,57 @@ export function DashboardPrimaryNav({
   }, [query]);
 
   const brand = (
-    <Flex align="center" gap={{ base: 1, sm: 1.5 }} minW={0}>
-      <Box position="relative" h={{ base: "28px", md: "32px" }} w={{ base: "68px", md: "78px" }} flexShrink={0}>
-        <Image
-          src="/assets/fab-logo.svg"
-          alt="FAB"
-          fill
-          style={{ objectFit: "contain", objectPosition: "left center" }}
-          priority
-        />
-      </Box>
-      <Box
-        as="span"
-        display={{ base: "none", sm: "inline" }}
-        fontFamily="var(--font-graphik)"
-        fontSize={{ sm: "19px", md: "22px" }}
-        fontWeight={500}
-        letterSpacing="-0.04em"
-        lineHeight={1}
-        color="white"
-        whiteSpace="nowrap"
+    <Link
+      href="/dashboard"
+      prefetch={false}
+      aria-label="FAB Access — go to dashboard home"
+      style={{ textDecoration: "none", color: "inherit" }}
+    >
+      <Flex
+        align="center"
+        gap={{ base: 1, sm: 1.5 }}
+        minW={0}
+        cursor="pointer"
+        rounded="md"
+        transition="opacity 0.2s ease"
+        _hover={{ opacity: 0.92 }}
+        _focusVisible={{ outline: "2px solid", outlineColor: "rgba(0, 98, 255, 0.65)", outlineOffset: "2px" }}
       >
-        Access
-      </Box>
-    </Flex>
+        <Box
+          position="relative"
+          h={{ base: "42px", md: "52px" }}
+          w={{ base: "104px", md: "132px" }}
+          flexShrink={0}
+        >
+          <Image
+            src={isDark ? "/assets/fab-logo.svg" : "/images/fablogoblue.png"}
+            alt=""
+            fill
+            sizes="(max-width: 768px) 104px, 132px"
+            style={{ objectFit: "contain", objectPosition: "left center" }}
+            priority
+          />
+        </Box>
+        <Box
+          as="span"
+          display={{ base: "none", sm: "inline" }}
+          fontFamily="var(--font-graphik)"
+          fontSize={{ sm: "22px", md: "26px" }}
+          fontWeight={500}
+          letterSpacing="-0.04em"
+          lineHeight={1}
+          color={dashPrimaryNavChrome.brandWordmark}
+          whiteSpace="nowrap"
+        >
+          Access
+        </Box>
+      </Flex>
+    </Link>
   );
 
   const search = (
     <InputGroup maxW={{ base: "full", md: "420px" }} w={{ base: "full", md: "420px" }}>
-      <InputLeftElement h="40px" w="40px" pointerEvents="none" color="rgba(255,255,255,0.45)">
+      <InputLeftElement h="40px" w="40px" pointerEvents="none" color={dashPrimaryNavChrome.searchIcon}>
         <Search size={18} strokeWidth={2} aria-hidden />
       </InputLeftElement>
       <Input
@@ -162,11 +161,8 @@ export function DashboardPrimaryNav({
           px={2}
           py={1}
           borderRadius="md"
-          bg="rgba(0, 0, 0, 0.22)"
           borderWidth="1px"
-          borderColor="rgba(255, 255, 255, 0.14)"
-          color="rgba(255, 255, 255, 0.48)"
-          boxShadow="inset 0 1px 0 rgba(255,255,255,0.06)"
+          {...dashPrimaryNavChrome.kbd}
         >
           {searchKbdHint}
         </Kbd>
@@ -189,7 +185,7 @@ export function DashboardPrimaryNav({
             display={{ base: "none", md: "block" }}
             w="1px"
             h="28px"
-            bg="rgba(255,255,255,0.14)"
+            bg={dashPrimaryNavChrome.divider}
             flexShrink={0}
             alignSelf="center"
             ml={3}
@@ -212,13 +208,14 @@ export function DashboardPrimaryNav({
             display={{ base: "none", md: "block" }}
             w="1px"
             h="28px"
-            bg="rgba(255,255,255,0.14)"
+            bg={dashPrimaryNavChrome.divider}
             flexShrink={0}
             alignSelf="center"
             aria-hidden
           />
         </>
       ) : null}
+      <FabThemeToggle variant="nav" />
       <Box position="relative">
         <IconButton
           {...iconBtnProps}
@@ -240,7 +237,7 @@ export function DashboardPrimaryNav({
           borderRadius="full"
           bg="#DA291C"
           border="2px solid"
-          borderColor="rgba(12, 16, 28, 0.95)"
+          borderColor={dashPrimaryNavChrome.notifDotBorder}
           pointerEvents="none"
           aria-hidden
         />
@@ -296,7 +293,10 @@ export function DashboardPrimaryNav({
           rowGap={3}
           flexWrap={{ base: "wrap", md: "nowrap" }}
         >
-          <Box flexShrink={0}>{brand}</Box>
+          <Flex align="center" gap={{ base: 2, md: 3 }} flexShrink={0} minW={0} flexWrap="wrap">
+            {brand}
+            {isAccountServicesPath(pathname) ? <CommandCentreBackButton /> : null}
+          </Flex>
 
           <Box flex="1" minW={0} order={{ base: 2, md: 1 }} w={{ base: "100%", md: "auto" }}>
             <Flex justify={{ base: "stretch", md: "center" }} w="full">

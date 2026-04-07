@@ -4,7 +4,8 @@ import { Box, Flex, Text, VStack } from "@chakra-ui/react";
 import { AuthPrimaryCtaButton } from "@/components/auth/AuthPrimaryCtaButton";
 import { RegisterDetailSteps } from "@/components/auth/RegisterDetailSteps";
 import { AuthParallaxLayer } from "@/components/auth/AuthStageMotion";
-import { authColors, authHeroTypography, authLayout, authRegisterVertical } from "@/components/auth/authTokens";
+import { authLayout, authRegisterVertical } from "@/components/auth/authTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 
 export type RegisterModeViewProps = {
   onLoginNow: () => void;
@@ -17,6 +18,7 @@ const REGISTER_CONTENT_MAX_W = "min(1100px, 100%)";
  * Register — single centered task flow (no split hero); same min-height zone as login split layout.
  */
 export function RegisterModeView({ onLoginNow }: RegisterModeViewProps) {
+  const { authColors, authHeroTypography } = useFabTokens();
   return (
     <Box
       display="flex"

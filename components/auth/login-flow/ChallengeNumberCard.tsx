@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Box, Text } from "@chakra-ui/react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Box, Text, useColorMode } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { authChallengeCard, authColors, authRadius } from "@/components/auth/authTokens";
+import { authRadius } from "@/components/auth/authTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 
 const MotionBox = motion(Box);
 const MotionSpan = motion.span;
@@ -15,11 +16,6 @@ const CHALLENGE_GLOW =
   "0 0 22px rgba(255, 255, 255, 0.12), 0 0 48px rgba(32, 48, 92, 0.14), 0 0 72px rgba(32, 48, 92, 0.07)";
 const CHALLENGE_GLOW_PEAK =
   "0 0 26px rgba(245, 246, 252, 0.18), 0 0 58px rgba(42, 58, 102, 0.16), 0 0 88px rgba(42, 58, 102, 0.09)";
-
-const shadowLo = `${authChallengeCard.shadow}, ${authChallengeCard.insetHighlight}, 0 0 18px rgba(32, 52, 98, 0.09)`;
-const shadowShimmer = `${authChallengeCard.shadow}, ${authChallengeCard.insetHighlight}, 0 0 40px rgba(42, 60, 108, 0.2), 0 0 56px rgba(255, 255, 255, 0.07)`;
-const shadowSuccessHold = `${authChallengeCard.shadow}, ${authChallengeCard.insetHighlight}, 0 0 32px rgba(42, 60, 108, 0.16), 0 0 56px rgba(255, 255, 255, 0.08)`;
-const shadowSuccessGlowPulse = `${authChallengeCard.shadow}, ${authChallengeCard.insetHighlight}, 0 0 44px rgba(48, 68, 118, 0.2), 0 0 72px rgba(240, 242, 252, 0.12), inset 0 0 28px rgba(255, 255, 255, 0.05)`;
 
 const SHIMMER_DURATION_MS = 650;
 
@@ -58,6 +54,26 @@ export function ChallengeNumberCard({
   codeDisabled = false,
   ambientActive = false,
 }: ChallengeNumberCardProps) {
+  const { authChallengeCard, authColors } = useFabTokens();
+  const { colorMode } = useColorMode();
+  const successMarkStroke =
+    colorMode === "dark" ? "rgba(255,255,255,0.92)" : authColors.accent;
+  const successCheckStroke =
+    colorMode === "dark" ? "rgba(255,255,255,0.95)" : authColors.accent;
+
+  const { shadowLo, shadowShimmer, shadowSuccessHold, shadowSuccessGlowPulse } = useMemo(() => {
+    const lo = `${authChallengeCard.shadow}, ${authChallengeCard.insetHighlight}, 0 0 18px rgba(32, 52, 98, 0.09)`;
+    const shimmer = `${authChallengeCard.shadow}, ${authChallengeCard.insetHighlight}, 0 0 40px rgba(42, 60, 108, 0.2), 0 0 56px rgba(255, 255, 255, 0.07)`;
+    const successHold = `${authChallengeCard.shadow}, ${authChallengeCard.insetHighlight}, 0 0 32px rgba(42, 60, 108, 0.16), 0 0 56px rgba(255, 255, 255, 0.08)`;
+    const successGlowPulse = `${authChallengeCard.shadow}, ${authChallengeCard.insetHighlight}, 0 0 44px rgba(48, 68, 118, 0.2), 0 0 72px rgba(240, 242, 252, 0.12), inset 0 0 28px rgba(255, 255, 255, 0.05)`;
+    return {
+      shadowLo: lo,
+      shadowShimmer: shimmer,
+      shadowSuccessHold: successHold,
+      shadowSuccessGlowPulse: successGlowPulse,
+    };
+  }, [authChallengeCard]);
+
   const rm = reduceMotion === true;
   const cardPhase: VerifyCardPhase =
     cardPhaseProp ?? (successExit ? "successAnimating" : "challenge");
@@ -265,7 +281,7 @@ export function ChallengeNumberCard({
               cy={36}
               r={22}
               fill="none"
-              stroke="rgba(255,255,255,0.92)"
+              stroke={successMarkStroke}
               strokeWidth={2}
               strokeLinecap="round"
               initial={rm || cardPhase === "successStill" ? false : { pathLength: 0, opacity: 1 }}
@@ -282,7 +298,7 @@ export function ChallengeNumberCard({
             <MotionPath
               d="M22 38 L32 48 L52 26"
               fill="none"
-              stroke="rgba(255,255,255,0.95)"
+              stroke={successCheckStroke}
               strokeWidth={2.25}
               strokeLinecap="round"
               strokeLinejoin="round"

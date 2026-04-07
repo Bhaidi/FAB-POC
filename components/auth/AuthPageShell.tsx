@@ -7,6 +7,7 @@ import type { MasterSegmentedToggleProps } from "@/components/auth/MasterSegment
 import { MasterSegmentedToggle } from "@/components/auth/MasterSegmentedToggle";
 import { authSpacing } from "@/components/auth/authTokens";
 import { AuthParallaxLayer } from "@/components/auth/AuthStageMotion";
+import { FabThemeToggle } from "@/components/theme/FabThemeToggle";
 
 export type AuthPageShellProps = {
   activeMode: MasterSegmentedToggleProps["value"];
@@ -65,6 +66,10 @@ export function AuthPageShell({ activeMode, onModeChange, children }: AuthPageSh
             />
           </Box>
         </AuthParallaxLayer>
+      </Box>
+
+      <Box position="absolute" top="8px" right={0} zIndex={2} pr={{ base: 4, md: 12 }} pt={3}>
+        <FabThemeToggle variant="auth" />
       </Box>
 
       {showSegmentedToggle ? (

@@ -5,7 +5,8 @@ import { ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
 import type { CapabilityMenuItem } from "@/data/dashboardTypes";
 import { getDomainNavLabel } from "@/data/domainNavLabels";
-import { dashColors, dashRadius } from "@/components/dashboard/dashboardTokens";
+import { dashRadius } from "@/components/dashboard/dashboardTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 import { AccessTooltip } from "@/components/dashboard/sidebar/AccessTooltip";
 import { DomainNavIcon } from "@/components/dashboard/sidebar/sidebarDomainIcons";
 import { LockIndicator } from "@/components/dashboard/sidebar/LockIndicator";
@@ -34,6 +35,7 @@ export type SidebarSectionProps = {
   onToggleL2: (l2Id: string) => void;
   onNavigate: (item: CapabilityMenuItem) => void;
   activeNavId: string | null;
+  pathname?: string | null;
 };
 
 export function SidebarSection({
@@ -45,11 +47,13 @@ export function SidebarSection({
   onToggleL2,
   onNavigate,
   activeNavId,
+  pathname,
 }: SidebarSectionProps) {
+  const { dashColors } = useFabTokens();
   const locked = domain.access === "locked";
   const partial = domain.access === "partial";
   const children = domain.children ?? [];
-  const trailActive = domainContainsActiveItem(domain, activeNavId, menu);
+  const trailActive = domainContainsActiveItem(domain, activeNavId, menu, pathname);
   const navLabel = getDomainNavLabel(domain.id, domain.label);
   const iconTip = domain.subtitle ? `${navLabel} — ${domain.subtitle}` : navLabel;
 
@@ -66,7 +70,7 @@ export function SidebarSection({
           cursor="not-allowed"
           borderLeftWidth={SIDEBAR_L1_ACCENT_W}
           borderLeftColor="transparent"
-          bg="rgba(255,255,255,0.02)"
+          bg="rgba(1, 5, 145, 0.03)"
           tabIndex={0}
           _focusVisible={{ outline: "none", boxShadow: "0 0 0 2px rgba(0, 98, 255, 0.35)" }}
         >
@@ -90,7 +94,7 @@ export function SidebarSection({
                 alignItems="center"
                 justifyContent="center"
                 borderRadius="md"
-                color="rgba(255,255,255,0.35)"
+                color={dashColors.text.faint}
               >
                 <DomainNavIcon domainId={domain.id} size={22} />
               </Box>
@@ -108,7 +112,7 @@ export function SidebarSection({
                 {navLabel}
               </Text>
               {domain.subtitle ? (
-                <Text mt={1} fontFamily="var(--font-graphik)" fontSize="11px" lineHeight="1.35" color="rgba(255,255,255,0.38)" noOfLines={2}>
+                <Text mt={1} fontFamily="var(--font-graphik)" fontSize="11px" lineHeight="1.35" color={dashColors.text.muted} noOfLines={2}>
                   {domain.subtitle}
                 </Text>
               ) : null}
@@ -129,8 +133,8 @@ export function SidebarSection({
     borderRadius: "10px",
     borderLeftWidth: SIDEBAR_L1_ACCENT_W,
     borderLeftColor: trailActive ? dashColors.sidebarBeam : isOpen ? "rgba(0, 98, 255, 0.4)" : "transparent",
-    boxShadow: trailActive ? "0 0 32px rgba(0, 98, 255, 0.35), inset 0 0 0 1px rgba(255,255,255,0.06)" : isOpen ? dashColors.sidebarBeamSoft : "none",
-    bg: trailActive ? "rgba(0, 72, 255, 0.24)" : isOpen ? "rgba(0, 72, 255, 0.1)" : "transparent",
+    boxShadow: trailActive ? "0 0 20px rgba(0, 98, 255, 0.12), inset 0 0 0 1px rgba(1, 5, 145, 0.06)" : isOpen ? dashColors.sidebarBeamSoft : "none",
+    bg: trailActive ? "rgba(0, 98, 255, 0.12)" : isOpen ? "rgba(0, 98, 255, 0.06)" : "transparent",
     transition: "background 0.25s ease-in-out, border-color 0.25s ease-in-out, box-shadow 0.25s ease-in-out",
   };
 
@@ -142,14 +146,16 @@ export function SidebarSection({
         fontWeight={700}
         letterSpacing="0.12em"
         textTransform="uppercase"
-        color={trailActive ? dashColors.text.primary : partial ? "rgba(255,255,255,0.82)" : dashColors.text.secondary}
+        color={
+          trailActive ? dashColors.text.primary : partial ? dashColors.text.tertiary : dashColors.text.secondary
+        }
         noOfLines={2}
         transition="color 0.2s ease-in-out, font-weight 0.15s ease-in-out"
       >
         {navLabel}
       </Text>
       {domain.subtitle ? (
-        <Text mt={1} fontFamily="var(--font-graphik)" fontSize="11px" lineHeight="1.4" color="rgba(255,255,255,0.42)" noOfLines={2}>
+        <Text mt={1} fontFamily="var(--font-graphik)" fontSize="11px" lineHeight="1.4" color={dashColors.text.muted} noOfLines={2}>
           {domain.subtitle}
         </Text>
       ) : null}
@@ -166,7 +172,12 @@ export function SidebarSection({
       aria-hidden
       pointerEvents="none"
     >
-      <Box color="rgba(255,255,255,0.55)" lineHeight={0} transition={SIDEBAR_CHEVRON_TRANSITION} transform={isOpen ? "rotate(180deg)" : "rotate(0deg)"}>
+      <Box
+        color={dashColors.text.muted}
+        lineHeight={0}
+        transition={SIDEBAR_CHEVRON_TRANSITION}
+        transform={isOpen ? "rotate(180deg)" : "rotate(0deg)"}
+      >
         <ChevronDown size={SIDEBAR_EXPAND_CHEVRON_SIZE} strokeWidth={2} aria-hidden />
       </Box>
     </Flex>
@@ -195,10 +206,12 @@ export function SidebarSection({
         alignItems="center"
         justifyContent="center"
         borderRadius="md"
-        color={trailActive ? "#fff" : partial ? "rgba(255,255,255,0.88)" : "rgba(255,255,255,0.72)"}
+        color={
+          trailActive ? dashColors.text.primary : partial ? dashColors.text.tertiary : dashColors.text.secondary
+        }
         filter={
           trailActive
-            ? "drop-shadow(0 0 10px rgba(0, 140, 255, 0.9)) drop-shadow(0 0 4px rgba(120, 190, 255, 0.55))"
+            ? "drop-shadow(0 0 6px rgba(0, 98, 255, 0.25)) drop-shadow(0 0 2px rgba(120, 190, 255, 0.2))"
             : undefined
         }
         transition={{ type: "tween", duration: 0.22, ease: [0.42, 0, 0.58, 1] }}
@@ -224,8 +237,8 @@ export function SidebarSection({
       aria-expanded={isOpen}
       aria-label={isOpen ? `Collapse ${navLabel}` : `Expand ${navLabel}`}
       _hover={{
-        bg: "rgba(255,255,255,0.05)",
-        boxShadow: "0 0 28px rgba(0, 98, 255, 0.14), inset 0 0 0 1px rgba(255,255,255,0.05)",
+        bg: "rgba(1, 5, 145, 0.04)",
+        boxShadow: "0 0 20px rgba(0, 98, 255, 0.08), inset 0 0 0 1px rgba(1, 5, 145, 0.05)",
       }}
       _focusVisible={{ outline: "none", boxShadow: "0 0 0 2px rgba(0, 98, 255, 0.45)" }}
     >
@@ -242,7 +255,7 @@ export function SidebarSection({
   const headerRow = partial ? <AccessTooltip access="partial">{expandRow}</AccessTooltip> : expandRow;
 
   return (
-    <Box w="full" pb={2} mb={3} borderBottomWidth="1px" borderColor="rgba(255,255,255,0.05)">
+    <Box w="full" pb={2} mb={3} borderBottomWidth="1px" borderColor="rgba(1, 5, 145, 0.06)">
       {headerRow}
       <Collapse in={isOpen} animateOpacity unmountOnExit transition={sidebarCollapseTransition}>
         <Box pt={4} display="flex" flexDirection="column" gap={3} {...SIDEBAR_L2_STACK_INSET}>

@@ -1,13 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Graphik only — next/font sets --font-graphik on <html> (app/layout.tsx). */
 /* !important: Chakra’s CSS reset sets html to system-ui and code/kbd to SF Mono; we always use Graphik. */
 html {
   font-family: var(--font-graphik) !important;
   font-synthesis: none;
+  /* Figma / DS body tokens — alias to Graphik + fixed scale (avoids unset vars changing metrics) */
+  --font-family-body: var(--font-graphik);
+  --fontsize-body-md: 16px;
+  --line-height-body-md: 24px;
+  --text-white: #ffffff;
+  --neutral-300: #9b9c9f;
+  /* DS secondary — rail labels, eyebrow caps */
+  --secondary-400: #408aff;
+  --neutral-white: #ffffff;
 }
 
 body {
   font-family: var(--font-graphik) !important;
   font-synthesis: none;
+}
+
+/* Light shell base — matches design system surface ramp (overscroll / portals). */
+html[data-fab-theme="light"] body {
+  background-color: #f5f7fb;
 }
 
 /* Chakra preflight — force Graphik on semantic monospace tags */
@@ -30,17 +48,20 @@ optgroup {
   font: inherit;
 }
 
-/* Login / Register segmented control — stacking + focus (chrome lives in authSegmentedControlTheme.ts) */
+/* Segmented control (login / register / portfolio module) — stacking + focus; chrome from useFabTokens */
 .auth-segmented-control {
+  box-sizing: border-box;
   isolation: isolate;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .segmented-toggle-btn:focus-visible,
 .auth-segmented-control__segment:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 0 2px rgba(0, 98, 255, 0.35);
   border-radius: 9999px;
 }
 
@@ -76,17 +97,22 @@ optgroup {
 /*
  * Photo layer: modest inset bleed for cover — NOT huge vmax boxes.
  */
+/* Default: light (matches Chakra `initialColorMode`). Dark override via `data-fab-theme` (FabTokensProvider). */
 .auth-exact-bg-image-layer {
   position: absolute;
   inset: -10%;
   z-index: 0;
   transform-origin: center center;
-  background-image: url(/assets/fab-login-bg.png);
+  background-image: url(/images/lightbackground.jpg);
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
   backface-visibility: hidden;
-  /* Slightly lift clarity through glass / dark UI */
+  filter: brightness(1.02) contrast(1.02) saturate(1.02);
+}
+
+[data-fab-theme="dark"] .auth-exact-bg-image-layer {
+  background-image: url(/assets/fab-login-bg.png);
   filter: brightness(1.06) contrast(1.04) saturate(1.06);
 }
 
@@ -103,7 +129,11 @@ optgroup {
   }
 }
 
-/* Approve Sign-In — OTP card: perimeter sweep tuned to fab-login-bg (slate + moonlight) */
+/*
+ * Approve Sign-In — OTP card perimeter sweep.
+ * Stops are keyed to fab-login-bg (auth-exact-bg-image-layer): deep slate + cool moonlight.
+ * No `transparent` — inactive arc matches the visible backdrop so the ring reads seamless.
+ */
 @keyframes auth-otp-border-sweep {
   to {
     transform: rotate(360deg);
@@ -113,10 +143,10 @@ optgroup {
 @keyframes auth-otp-sweep-breathe {
   0%,
   100% {
-    opacity: 0.68;
+    opacity: 0.52;
   }
   50% {
-    opacity: 0.94;
+    opacity: 0.72;
   }
 }
 
@@ -139,21 +169,40 @@ optgroup {
   width: 100%;
   height: 100%;
   transform-origin: 50% 50%;
-  /* Narrower beam — night-sky slate + soft window-light (matches login photo) */
+  /* Light photo backdrop */
   background: conic-gradient(
     from 0deg,
-    transparent 0deg,
-    transparent 118deg,
-    rgba(22, 38, 78, 0.14) 142deg,
-    rgba(118, 138, 178, 0.34) 168deg,
-    rgba(236, 238, 248, 0.74) 180deg,
-    rgba(118, 138, 178, 0.34) 192deg,
-    rgba(22, 38, 78, 0.14) 218deg,
-    transparent 242deg,
-    transparent 360deg
+    rgba(242, 242, 243, 0.94) 0deg,
+    rgba(242, 242, 243, 0.94) 118deg,
+    rgba(220, 228, 245, 0.88) 138deg,
+    rgba(180, 200, 240, 0.5) 162deg,
+    rgba(120, 160, 230, 0.38) 178deg,
+    rgba(100, 150, 255, 0.34) 180deg,
+    rgba(120, 160, 230, 0.38) 182deg,
+    rgba(180, 200, 240, 0.5) 198deg,
+    rgba(220, 228, 245, 0.88) 222deg,
+    rgba(242, 242, 243, 0.94) 242deg,
+    rgba(242, 242, 243, 0.94) 360deg
   );
   animation: auth-otp-border-sweep 8.5s linear infinite;
   will-change: transform;
+}
+
+[data-fab-theme="dark"] .auth-otp-border-sweep {
+  background: conic-gradient(
+    from 0deg,
+    rgba(10, 18, 36, 0.94) 0deg,
+    rgba(10, 18, 36, 0.94) 118deg,
+    rgba(18, 28, 52, 0.88) 138deg,
+    rgba(42, 58, 92, 0.55) 162deg,
+    rgba(96, 118, 158, 0.42) 178deg,
+    rgba(120, 142, 182, 0.38) 180deg,
+    rgba(96, 118, 158, 0.42) 182deg,
+    rgba(42, 58, 92, 0.55) 198deg,
+    rgba(18, 28, 52, 0.88) 222deg,
+    rgba(10, 18, 36, 0.94) 242deg,
+    rgba(10, 18, 36, 0.94) 360deg
+  );
 }
 
 /* Dashboard — ghost UI (real chrome; data appears faint until ready) */
@@ -252,6 +301,11 @@ optgroup {
   position: relative;
   overflow: hidden;
   border-radius: 9999px;
+  border: 1px solid rgba(1, 5, 145, 0.08);
+  background: rgba(1, 5, 145, 0.04);
+}
+
+[data-fab-theme="dark"] .fab-ghost-market-pill {
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.04);
 }

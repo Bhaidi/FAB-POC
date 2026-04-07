@@ -10,19 +10,24 @@ export type MasterSegmentedToggleProps = {
   isDisabled?: boolean;
 };
 
+const LOGIN_REGISTER_OPTIONS = [
+  { value: "login" as const, label: "Login" },
+  { value: "register" as const, label: "Register" },
+] as const;
+
 /**
- * Page-level Login / Register switch — visuals live in `authSegmentedControlTheme.ts` only.
+ * Page-level Login / Register switch — same segmented control + theme pipeline as account services.
  */
 export function MasterSegmentedToggle({ value, onChange, isDisabled }: MasterSegmentedToggleProps) {
   return (
     <AuthSegmentedControl
-      options={[
-        { value: "login", label: "Login" },
-        { value: "register", label: "Register" },
-      ]}
+      options={LOGIN_REGISTER_OPTIONS}
       value={value}
       onChange={onChange}
       isDisabled={isDisabled}
+      surface="standard"
+      layout="auth"
+      ariaLabel="Sign in or register"
     />
   );
 }

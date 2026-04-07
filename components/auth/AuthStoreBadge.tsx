@@ -3,7 +3,8 @@
 import NextLink from "next/link";
 import { Box, Icon, Text, VStack } from "@chakra-ui/react";
 import type { IconType } from "react-icons";
-import { authColors, authRadius } from "@/components/auth/authTokens";
+import { authRadius } from "@/components/auth/authTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 
 export type AuthStoreBadgeProps = {
   href: string;
@@ -27,6 +28,7 @@ export function AuthStoreBadge({
   size = "sm",
   visualWeight = "default",
 }: AuthStoreBadgeProps) {
+  const { authColors } = useFabTokens();
   const md = size === "md";
   const minimal = visualWeight === "minimal";
   return (

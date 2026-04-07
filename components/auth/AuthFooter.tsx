@@ -2,7 +2,8 @@
 
 import NextLink from "next/link";
 import { Box, Flex, Text } from "@chakra-ui/react";
-import { authColors, authMotion } from "@/components/auth/authTokens";
+import { authMotion } from "@/components/auth/authTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 
 const LEGAL_LINKS = [
   { label: "Terms & Conditions", href: "#terms" },
@@ -15,6 +16,7 @@ const LEGAL_LINKS = [
  * Legal links row — fixed auth bottom stack.
  */
 export function AuthFooter() {
+  const { authColors } = useFabTokens();
   return (
     <Box
       as="nav"

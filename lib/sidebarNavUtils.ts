@@ -64,8 +64,15 @@ export function findFirstNavigableLeaf(item: CapabilityMenuItem): CapabilityMenu
 export function domainContainsActiveItem(
   domain: CapabilityMenuItem,
   activeNavId: string | null,
-  menu: CapabilityMenuItem[]
+  menu: CapabilityMenuItem[],
+  pathname?: string | null
 ): boolean {
+  if (
+    pathname?.startsWith("/account-services") &&
+    (domain.id === "accounts" || domain.id === "account-services")
+  ) {
+    return true;
+  }
   if (!activeNavId) return false;
   const branch = findActiveBranchIds(menu, activeNavId);
   return branch.l1 === domain.id;

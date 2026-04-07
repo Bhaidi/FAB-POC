@@ -7,7 +7,6 @@ export { AuthSegmentedControl } from "./AuthSegmentedControl";
 export { AuthSplitLayout } from "./AuthSplitLayout";
 export { AuthStoreBadge } from "./AuthStoreBadge";
 export * from "./authTokens";
-export { authSegmentedControlTheme } from "./authSegmentedControlTheme";
 export { LoginModeView } from "./LoginModeView";
 export { MasterSegmentedToggle } from "./MasterSegmentedToggle";
 export { RegisterDetailSteps } from "./RegisterDetailSteps";

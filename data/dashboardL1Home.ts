@@ -9,7 +9,11 @@ export type DashboardL1HomeTile = {
 };
 
 export const DASHBOARD_L1_HOME_TILES: readonly DashboardL1HomeTile[] = [
-  { id: "accounts", title: "Accounts", description: "Operational accounts, balances, and statements" },
+  {
+    id: "accounts",
+    title: "Account Services",
+    description: "Operational accounts, balances, statements, and servicing",
+  },
   { id: "payments", title: "Payments", description: "Domestic and international payment flows" },
   { id: "liquidity", title: "Liquidity", description: "Cash visibility and working capital" },
   { id: "trade-finance", title: "Trade Finance", description: "Documentary trade and bank guarantees" },

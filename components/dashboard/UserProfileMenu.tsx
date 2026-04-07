@@ -11,9 +11,13 @@ import {
   MenuItem,
   MenuList,
   Text,
+  useColorMode,
 } from "@chakra-ui/react";
-import { HiArrowRightOnRectangle, HiChevronDown } from "react-icons/hi2";
-import { dashColors, dashRadius } from "@/components/dashboard/dashboardTokens";
+import Link from "next/link";
+import { HiArrowRightOnRectangle, HiChevronDown, HiHome } from "react-icons/hi2";
+import { dashRadius } from "@/components/dashboard/dashboardTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
+import { authColorsLight } from "@/lib/fabTheme/authPalettes";
 
 export type UserProfileMenuProps = {
   displayName: string;
@@ -40,6 +44,10 @@ export function UserProfileMenu({
   onSignOut,
   avatarOnly = false,
 }: UserProfileMenuProps) {
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === "dark";
+  const { dashColors } = useFabTokens();
+  const menuInk = authColorsLight.text;
   return (
     <Menu placement="bottom-end" strategy="fixed">
       <MenuButton
@@ -49,21 +57,29 @@ export function UserProfileMenu({
         py={avatarOnly ? 0 : 1.5}
         px={avatarOnly ? 0 : 2}
         borderRadius={avatarOnly ? "full" : dashRadius.surface}
-        _hover={{ bg: avatarOnly ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.06)" }}
-        _active={{ bg: "rgba(255,255,255,0.08)" }}
+        _hover={{
+          bg: avatarOnly
+            ? isDark
+              ? "rgba(255,255,255,0.1)"
+              : "rgba(1,5,145,0.06)"
+            : "rgba(1,5,145,0.05)",
+        }}
+        _active={{
+          bg: avatarOnly ? (isDark ? "rgba(255,255,255,0.14)" : "rgba(1,5,145,0.08)") : "rgba(1,5,145,0.08)",
+        }}
       >
         <Flex align="center" gap={2}>
           <Avatar
             size={avatarOnly ? "md" : "sm"}
             name={displayName}
             getInitials={() => initials(displayName)}
-            bg="#000245"
+            bg="#010591"
             color="white"
             fontFamily="var(--font-graphik)"
             fontWeight={600}
             fontSize="sm"
             border="2px solid"
-            borderColor="rgba(255,255,255,0.14)"
+            borderColor="rgba(1, 5, 145, 0.15)"
           />
           {!avatarOnly ? (
             <>
@@ -83,42 +99,55 @@ export function UserProfileMenu({
                   {role}
                 </Text>
               </Box>
-              <HiChevronDown size={16} color="rgba(255,255,255,0.5)" />
+              <HiChevronDown size={16} color="rgba(72, 82, 94, 0.55)" />
             </>
           ) : null}
         </Flex>
       </MenuButton>
       <MenuList
         minW="240px"
-        bg="rgba(12, 16, 32, 0.96)"
-        borderColor="rgba(255,255,255,0.12)"
+        bg="rgba(255, 255, 255, 0.98)"
+        borderColor="rgba(1, 5, 145, 0.1)"
         backdropFilter="blur(12px)"
         py={2}
         zIndex={200}
       >
         <Box px={3} pb={2}>
-          <Text fontFamily="var(--font-graphik)" fontSize="xs" color={dashColors.text.muted}>
+          <Text fontFamily="var(--font-graphik)" fontSize="xs" color={menuInk.muted}>
             Corporate ID
           </Text>
-          <Text fontFamily="var(--font-graphik)" fontSize="sm" color={dashColors.text.primary} fontWeight={500}>
+          <Text fontFamily="var(--font-graphik)" fontSize="sm" color={menuInk.primary} fontWeight={500}>
             {corporateId}
           </Text>
-          <Text fontFamily="var(--font-graphik)" fontSize="xs" color={dashColors.text.muted} mt={2}>
+          <Text fontFamily="var(--font-graphik)" fontSize="xs" color={menuInk.muted} mt={2}>
             User ID
           </Text>
-          <Text fontFamily="var(--font-graphik)" fontSize="sm" color={dashColors.text.primary} fontWeight={500}>
+          <Text fontFamily="var(--font-graphik)" fontSize="sm" color={menuInk.primary} fontWeight={500}>
             {userId}
           </Text>
         </Box>
-        <MenuDivider borderColor="rgba(255,255,255,0.08)" />
+        <MenuDivider borderColor="rgba(1, 5, 145, 0.08)" />
+        <MenuItem
+          as={Link}
+          href="/dashboard"
+          prefetch={false}
+          icon={<HiHome size={18} />}
+          fontFamily="var(--font-graphik)"
+          color={menuInk.primary}
+          bg="transparent"
+          _hover={{ bg: "rgba(1, 5, 145, 0.05)" }}
+          _focus={{ bg: "rgba(1, 5, 145, 0.05)" }}
+        >
+          Home
+        </MenuItem>
         {!avatarOnly ? (
           <MenuItem
             icon={<HiArrowRightOnRectangle size={18} />}
             fontFamily="var(--font-graphik)"
-            color={dashColors.text.primary}
+            color={menuInk.primary}
             bg="transparent"
-            _hover={{ bg: "rgba(255,255,255,0.08)" }}
-            _focus={{ bg: "rgba(255,255,255,0.08)" }}
+            _hover={{ bg: "rgba(1, 5, 145, 0.05)" }}
+            _focus={{ bg: "rgba(1, 5, 145, 0.05)" }}
             onClick={onSignOut}
           >
             Sign out

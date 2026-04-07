@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Box, Text } from "@chakra-ui/react";
 import { DashboardShell } from "@/components/dashboard";
+import { DashboardEntryBridge } from "@/components/dashboard/DashboardEntryBridge";
 import { SimpleDashboardHome } from "@/components/dashboard/SimpleDashboardHome";
 import { DASHBOARD_MOCK_USER } from "@/data/dashboardMock";
 import { clearStubAuthSession, readStubAuthSession, type StubAuthSession } from "@/lib/authStubSession";
@@ -15,6 +16,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const s = readStubAuthSession();
     if (!s) {
+      setSession(null);
       router.replace("/login");
       return;
     }
@@ -26,12 +28,16 @@ export default function DashboardPage() {
     router.push("/login");
   };
 
-  if (session === null) {
-    return null;
+  if (session === undefined) {
+    return <DashboardEntryBridge />;
   }
 
-  const corporateId = session?.corporateId ?? "—";
-  const userId = session?.userId ?? "—";
+  if (session === null) {
+    return <DashboardEntryBridge />;
+  }
+
+  const corporateId = session.corporateId;
+  const userId = session.userId;
 
   return (
     <DashboardShell

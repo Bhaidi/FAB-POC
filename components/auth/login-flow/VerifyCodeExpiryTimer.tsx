@@ -2,7 +2,7 @@
 
 import { Text } from "@chakra-ui/react";
 import { motion, useReducedMotion } from "framer-motion";
-import { authColors } from "@/components/auth/authTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 
 const EASE_OUT = [0.33, 1, 0.68, 1] as const;
 
@@ -21,6 +21,7 @@ export type VerifyCodeExpiryTimerProps = {
 export function VerifyCodeExpiryTimer({ mmSs, expired, urgent }: VerifyCodeExpiryTimerProps) {
   const reduceMotion = useReducedMotion();
   const rm = reduceMotion === true;
+  const { authColors } = useFabTokens();
 
   const color = expired
     ? authColors.text.muted

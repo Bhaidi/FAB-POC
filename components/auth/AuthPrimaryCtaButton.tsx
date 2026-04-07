@@ -1,9 +1,10 @@
 "use client";
 
-import { Button, Icon, Spinner } from "@chakra-ui/react";
+import { Button, Icon, Spinner, useColorMode } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { HiChevronRight } from "react-icons/hi";
-import { authColors, authRadius, authShadow } from "@/components/auth/authTokens";
+import { ArrowRight } from "lucide-react";
+import { authRadius } from "@/components/auth/authTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 
 const MotionButton = motion(Button);
 
@@ -40,6 +41,9 @@ export function AuthPrimaryCtaButton({
   visualTone = "default",
   align = "start",
 }: AuthPrimaryCtaButtonProps) {
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === "dark";
+  const { authColors, authShadow } = useFabTokens();
   const busy = Boolean(isLoading);
   const disabled = Boolean(isDisabled || busy);
   const successTone = visualTone === "success";
@@ -51,39 +55,67 @@ export function AuthPrimaryCtaButton({
       boxSize="18px"
       thickness="2px"
       speed="0.7s"
-      color={authColors.accent}
-      emptyColor="rgba(0, 98, 255, 0.14)"
+      color={isDark && !successTone ? "white" : authColors.accent}
+      emptyColor={isDark && !successTone ? "rgba(255, 255, 255, 0.22)" : "rgba(0, 98, 255, 0.14)"}
     />
   );
+
+  const darkDefault = !successTone && isDark;
+  /**
+   * FAB DS 558:17087 — flat only: 434×46, padding 24px (horizontal; vertical centering in 46px),
+   * gap 12px, radius 24px, #0062FF. No shadow, blur, or extra border.
+   */
+  const ctaBg = darkDefault ? "#0062FF" : "white";
+  const ctaColor = darkDefault ? "#FFFFFF" : "#000245";
+  const ctaBorder = darkDefault ? "none" : "1px solid";
+  const ctaBorderColor = darkDefault ? undefined : "rgba(255,255,255,0.14)";
+  const ctaRadius = darkDefault ? "24px" : authRadius.pill;
+  const ctaHeight =
+    stableMetrics && darkDefault
+      ? { base: "46px", md: "46px" }
+      : stableMetrics
+        ? { base: "48px", md: "52px" }
+        : undefined;
+  const ctaPy = stableMetrics && darkDefault ? 0 : stableMetrics ? 0 : { base: 3, md: 4 };
+  const ctaPx = darkDefault ? 6 : 7;
+  const ctaFontWeight = darkDefault ? 400 : 500;
+  const ctaLineHeight = darkDefault ? "24px" : "1.35";
+  const ctaWidth = darkDefault && stableMetrics ? { base: "full", lg: "434px" } : { base: "full", lg: "auto" };
+  const ctaMinW = stableMetrics
+    ? darkDefault
+      ? undefined
+      : { base: "100%", lg: "232px" }
+    : undefined;
+  const ctaBoxShadow = successTone ? SUCCESS_CTA_SHADOW : darkDefault ? "none" : authShadow.primaryCta;
 
   return (
     <MotionButton
       type={type}
       alignSelf={alignSelf}
-      w={{ base: "full", lg: "auto" }}
+      w={ctaWidth}
       display="flex"
       alignItems="center"
       justifyContent="center"
       gap={0}
-      minW={stableMetrics ? { base: "100%", lg: "232px" } : undefined}
-      bg="white"
-      color="#000245"
+      minW={ctaMinW}
+      bg={ctaBg}
+      color={ctaColor}
       fontFamily="var(--font-graphik)"
-      fontWeight={500}
+      fontWeight={ctaFontWeight}
       fontSize={{ base: "15px", md: "16px" }}
-      lineHeight="1.35"
-      py={stableMetrics ? 0 : { base: 3, md: 4 }}
-      px={7}
-      h={stableMetrics ? { base: "48px", md: "52px" } : "auto"}
+      lineHeight={ctaLineHeight}
+      py={ctaPy}
+      px={ctaPx}
+      h={ctaHeight ?? "auto"}
       whiteSpace="nowrap"
       textAlign="center"
-      borderRadius={authRadius.pill}
-      border="1px solid"
-      borderColor="rgba(255,255,255,0.14)"
+      borderRadius={ctaRadius}
+      border={ctaBorder}
+      borderColor={ctaBorderColor}
       leftIcon={busy ? thinSpinner : undefined}
-      rightIcon={busy ? undefined : <Icon as={HiChevronRight} boxSize={5} />}
+      rightIcon={busy ? undefined : <Icon as={ArrowRight} boxSize={6} strokeWidth={2} aria-hidden />}
       iconSpacing={3}
-      boxShadow={successTone ? SUCCESS_CTA_SHADOW : authShadow.primaryCta}
+      boxShadow={ctaBoxShadow}
       isDisabled={disabled}
       opacity={busy ? 0.9 : 1}
       whileHover={
@@ -94,28 +126,46 @@ export function AuthPrimaryCtaButton({
                 y: -2,
                 boxShadow: "0 10px 32px rgba(255, 255, 255, 0.16), 0 0 24px rgba(255, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.14)",
               }
-            : {
-                scale: 1.02,
-                boxShadow: "0 12px 32px rgba(255, 255, 255, 0.18)",
-              }
+            : darkDefault
+              ? undefined
+              : {
+                  scale: 1.02,
+                  boxShadow: "0 12px 32px rgba(255, 255, 255, 0.18)",
+                }
       }
-      whileTap={disabled ? undefined : successTone ? { scale: 0.99 } : { scale: 0.98 }}
+      whileTap={
+        disabled ? undefined : successTone ? { scale: 0.99 } : darkDefault ? undefined : { scale: 0.98 }
+      }
       transition={
         successTone
           ? { type: "tween", duration: 0.22, ease: [0.42, 0, 0.58, 1] }
           : { type: "spring", stiffness: 420, damping: 28 }
       }
-      _hover={{ bg: disabled ? undefined : "white" }}
+      _hover={{
+        bg: disabled ? undefined : darkDefault ? "#0058E6" : "white",
+      }}
       _disabled={
         busy
           ? {
               opacity: 0.9,
               cursor: "not-allowed",
-              boxShadow: successTone ? SUCCESS_CTA_SHADOW : authShadow.primaryCta,
+              boxShadow: successTone ? SUCCESS_CTA_SHADOW : darkDefault ? "none" : authShadow.primaryCta,
             }
-          : { opacity: 0.72, cursor: "not-allowed", boxShadow: successTone ? SUCCESS_CTA_SHADOW : "none" }
+          : {
+              opacity: 0.72,
+              cursor: "not-allowed",
+              boxShadow: successTone ? SUCCESS_CTA_SHADOW : darkDefault ? "none" : "none",
+            }
       }
       sx={{
+        ...(darkDefault
+          ? {
+              boxSizing: "border-box",
+              backdropFilter: "none",
+              WebkitBackdropFilter: "none",
+              filter: "none",
+            }
+          : {}),
         ...(successTone && !busy
           ? {
               position: "relative",

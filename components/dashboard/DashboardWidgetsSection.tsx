@@ -1,10 +1,12 @@
 "use client";
 
-import { Box, Flex, Grid, GridItem, IconButton, SimpleGrid, Text } from "@chakra-ui/react";
+import { Box, Flex, Grid, GridItem, IconButton, SimpleGrid, Text, useColorMode } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { RefreshCw } from "lucide-react";
 import { DashboardWidgetCard } from "@/components/dashboard/widgets/DashboardWidgetCard";
-import { dashColors, dashRadius } from "@/components/dashboard/dashboardTokens";
+import { dashRadius } from "@/components/dashboard/dashboardTokens";
+import { figmaHomeServiceCard } from "@/components/dashboard/dashboardTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 import type { DashboardWidgetsResponse } from "@/types/platformDashboard";
 
 const ease = [0.33, 1, 0.68, 1] as const;
@@ -39,7 +41,11 @@ export function DashboardWidgetsSection({
   refreshKey,
   variant = "default",
 }: DashboardWidgetsSectionProps) {
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === "dark";
+  const { dashColors } = useFabTokens();
   const launchPad = variant === "launchpad";
+  const widgetPlaceholderRadius = isDark ? figmaHomeServiceCard.radius : dashRadius.panel;
   const showGhost = !surfaceReady || (loading && !data);
   const widgets = data?.widgets ?? [];
 
@@ -164,7 +170,7 @@ export function DashboardWidgetsSection({
                     <Box
                       h="full"
                       minH="80px"
-                      borderRadius={dashRadius.panel}
+                      borderRadius={widgetPlaceholderRadius}
                       border="1px solid rgba(255,255,255,0.06)"
                       bg="rgba(255,255,255,0.03)"
                       className="fab-ghost-card-sheen"
@@ -185,7 +191,7 @@ export function DashboardWidgetsSection({
                   <Box
                     key={`ph-${i}`}
                     h="168px"
-                    borderRadius={dashRadius.panel}
+                    borderRadius={widgetPlaceholderRadius}
                     border="1px solid rgba(255,255,255,0.06)"
                     bg="rgba(255,255,255,0.03)"
                     className="fab-ghost-card-sheen"

@@ -1,75 +1,177 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
-import { Box } from "@chakra-ui/react";
-import { animate, motion, useMotionValue, useReducedMotion } from "framer-motion";
-import { authSegmentedControlTheme } from "@/components/auth/authSegmentedControlTheme";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+} from "react";
+import { Box, useColorMode } from "@chakra-ui/react";
+import { animate, motion, useMotionValue, useReducedMotion, type MotionStyle } from "framer-motion";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 
 export type AuthSegmentedOption<T extends string = string> = {
   value: T;
   label: string;
 };
 
+type OptionsTuple<T extends string> = readonly [AuthSegmentedOption<T>, AuthSegmentedOption<T>, ...AuthSegmentedOption<T>[]];
+
+export type AuthSegmentedControlSurface = "standard" | "canvas";
+
+export type AuthSegmentedControlLayout = "auth" | "toolbar";
+
 export type AuthSegmentedControlProps<T extends string = string> = {
-  options: [AuthSegmentedOption<T>, AuthSegmentedOption<T>];
+  options: OptionsTuple<T>;
   value: T;
   onChange: (value: T) => void;
   isDisabled?: boolean;
+  /** Login/register chrome vs subtler in-page capsule (account services). */
+  surface?: AuthSegmentedControlSurface;
+  /** Centered compact (auth) or full-width toolbar (portfolio module). */
+  layout?: AuthSegmentedControlLayout;
+  /** `role="tablist"` label */
+  ariaLabel?: string;
 };
 
-const PAD = 4;
-const GAP = 4;
-/** Inner track row — thumb + labels share this height for alignment */
-const INNER_H = 46;
-const TRACK_OUTER_H = INNER_H + 2 * PAD;
+/** Light: compact glass pill. */
+const PAD_LIGHT = 4;
+const GAP_LIGHT = 4;
+const INNER_H_LIGHT = 48;
 
+/** Dark DS `558:17091` outer track: 406×64, padding 6px, flex gap 12px → 52px inner height */
+const PAD_DARK = 6;
+const GAP_DARK = 12;
+const TRACK_OUTER_W_DARK = 406;
+const TRACK_OUTER_H_DARK = 64;
+const INNER_H_DARK = TRACK_OUTER_H_DARK - 2 * PAD_DARK;
+
+/** Pill snap — soft, iOS-weighted motion */
 const SNAP_SPRING = {
   type: "spring" as const,
-  stiffness: 380,
-  damping: 34,
-  mass: 0.85,
+  stiffness: 300,
+  damping: 32,
+  mass: 0.88,
 };
 
 const THUMB_POP_SPRING = {
   type: "spring" as const,
-  stiffness: 520,
-  damping: 32,
-  mass: 0.85,
+  stiffness: 420,
+  damping: 26,
+  mass: 0.82,
 };
 
-const DRAG_ELASTIC = 0.1;
-
-const {
-  track: trackChrome,
-  trackSheen,
-  thumb: thumbChrome,
-  thumbDragging: thumbDragChrome,
-  label: labelChrome,
-} = authSegmentedControlTheme;
-
-const labelVariants = {
-  active: { color: labelChrome.active },
-  inactive: { color: labelChrome.inactive },
-  inactiveHover: { color: labelChrome.inactiveHover },
-} as const;
+/** Low elastic = less rubber-band fighting programmatic snap after release */
+const DRAG_ELASTIC = 0.04;
 
 /**
- * Login / Register — iOS-like segmented control: draggable glass thumb, two discrete states.
- * Thumb is split: outer layer owns `x` + drag; inner layer owns scale/lift so post-drag alignment stays stable.
+ * Dark segment labels — same box model for selected vs inactive (only color + weight differ).
+ * Use flex (not `-webkit-box`) so metrics match Figma/body text; Graphik only (see `app/layout.tsx`).
+ */
+const AUTH_SEG_LABEL_DARK_BASE: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "100%",
+  minWidth: 0,
+  boxSizing: "border-box",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  fontFamily: "var(--font-graphik)",
+  fontSize: "16px",
+  fontStyle: "normal",
+  lineHeight: "24px",
+  letterSpacing: "0",
+  textAlign: "center",
+  WebkitFontSmoothing: "antialiased",
+  MozOsxFontSmoothing: "grayscale",
+  userSelect: "none",
+  pointerEvents: "none",
+  transformOrigin: "center center",
+};
+
+const AUTH_SEG_LABEL_DARK_SELECTED: CSSProperties = {
+  ...AUTH_SEG_LABEL_DARK_BASE,
+  color: "var(--text-white, #ffffff)",
+  fontWeight: 500,
+};
+
+const AUTH_SEG_LABEL_DARK_INACTIVE: CSSProperties = {
+  ...AUTH_SEG_LABEL_DARK_BASE,
+  color: "var(--neutral-300, #9b9c9f)",
+  fontWeight: 400,
+};
+
+/**
+ * Login / Register (2-up) or multi-segment toolbar — same glass thumb + drag model everywhere.
+ * Chrome comes from `useFabTokens()` so light/dark matches globally.
  */
 export function AuthSegmentedControl<T extends string>({
   options,
   value,
   onChange,
   isDisabled = false,
+  surface = "standard",
+  layout = "auth",
+  ariaLabel = "Sign in or register",
 }: AuthSegmentedControlProps<T>) {
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === "dark";
+  const tokens = useFabTokens();
+  const seg =
+    surface === "canvas" ? tokens.authSegmentedControlCanvas : tokens.authSegmentedControlTheme;
+
+  const pad = isDark ? PAD_DARK : PAD_LIGHT;
+  const gap = isDark ? GAP_DARK : GAP_LIGHT;
+  const innerH = isDark ? INNER_H_DARK : INNER_H_LIGHT;
+  const trackOuterH = isDark ? TRACK_OUTER_H_DARK : INNER_H_LIGHT + 2 * PAD_LIGHT;
+
+  const {
+    track: trackChrome,
+    trackSheen,
+    trackRimGradient,
+    trackFloorGradient,
+    trackInnerWellShadow,
+    thumbAura,
+    thumb: thumbChrome,
+    thumbDragging: thumbDragChrome,
+    thumbDraggingAura,
+    label: labelChrome,
+  } = seg;
+
+  const labelVariants = useMemo(
+    () =>
+      isDark
+        ? ({
+            /** Dark: typography from `style` (DS md-medium / md-regular); variants only motion */
+            active: { opacity: 1, scale: 1 },
+            inactive: { opacity: 1, scale: 1 },
+            inactiveHover: { opacity: 1, scale: 1 },
+          } as const)
+        : ({
+            active: { color: labelChrome.active, fontWeight: 650, opacity: 1, scale: 1 },
+            inactive: { color: labelChrome.inactive, fontWeight: 600, opacity: 0.88, scale: 1 },
+            inactiveHover: { color: labelChrome.inactiveHover, fontWeight: 600, opacity: 1, scale: 1.02 },
+          } as const),
+    [isDark, labelChrome],
+  );
+
   const reduceMotion = useReducedMotion();
   const containerRef = useRef<HTMLDivElement>(null);
-  const prevMaxXRef = useRef(0);
-  const [metrics, setMetrics] = useState({ thumbW: 0, maxX: 0 });
+  const [metrics, setMetrics] = useState({ thumbW: 0, maxX: 0, step: 0 });
   const [isDragging, setIsDragging] = useState(false);
+  const N = options.length;
 
-  const activeIndex = value === options[0].value ? 0 : 1;
+  const activeIndex = useMemo(() => {
+    const i = options.findIndex((o) => o.value === value);
+    return i < 0 ? 0 : i;
+  }, [options, value]);
+
   const pillX = useMotionValue(0);
 
   const springSnap = useMemo(
@@ -77,265 +179,342 @@ export function AuthSegmentedControl<T extends string>({
       reduceMotion
         ? { type: "tween" as const, duration: 0.15, ease: [0.33, 1, 0.68, 1] as const }
         : SNAP_SPRING,
-    [reduceMotion]
+    [reduceMotion],
   );
 
-  const labelTransition = reduceMotion
-    ? { type: "tween" as const, duration: 0.12, ease: [0.33, 1, 0.68, 1] as const }
-    : { ...SNAP_SPRING, color: { type: "tween" as const, duration: 0.22, ease: [0.33, 1, 0.68, 1] } };
+  /** Dark: typography is static inline styles — do not tween color/fontWeight (avoids mismatch vs DS). */
+  const labelTransition = useMemo(() => {
+    if (reduceMotion) {
+      return { type: "tween" as const, duration: 0.12, ease: [0.33, 1, 0.68, 1] as const };
+    }
+    if (isDark) {
+      return {
+        scale: { type: "spring" as const, stiffness: 520, damping: 36, mass: 0.65 },
+        opacity: { type: "tween" as const, duration: 0.22, ease: [0.25, 0.1, 0.25, 1] as const },
+      };
+    }
+    return {
+      scale: { type: "spring" as const, stiffness: 520, damping: 36, mass: 0.65 },
+      opacity: { type: "tween" as const, duration: 0.22, ease: [0.25, 0.1, 0.25, 1] as const },
+      color: { type: "tween" as const, duration: 0.3, ease: [0.25, 0.1, 0.25, 1] as const },
+      fontWeight: { type: "tween" as const, duration: 0.2, ease: [0.25, 0.1, 0.25, 1] as const },
+    };
+  }, [isDark, reduceMotion]);
+
+  const measure = useCallback(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const inner = el.clientWidth - 2 * pad;
+    if (inner <= (N - 1) * gap) {
+      setMetrics({ thumbW: 0, maxX: 0, step: 0 });
+      return;
+    }
+    const thumbW = (inner - (N - 1) * gap) / N;
+    const maxX = (N - 1) * (thumbW + gap);
+    const step = maxX > 0 ? maxX / (N - 1) : 0;
+    setMetrics({ thumbW, maxX, step });
+  }, [N, gap, pad]);
+
+  useLayoutEffect(() => {
+    measure();
+  }, [measure]);
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-
-    const measure = () => {
-      const inner = el.clientWidth - 2 * PAD;
-      if (inner <= GAP) {
-        setMetrics({ thumbW: 0, maxX: 0 });
-        return;
-      }
-      const thumbW = (inner - GAP) / 2;
-      const maxX = thumbW + GAP;
-      setMetrics({ thumbW, maxX });
-    };
-
-    measure();
-    const ro = new ResizeObserver(measure);
+    const ro = new ResizeObserver(() => measure());
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
+  }, [measure]);
 
+  /** Single source of truth for thumb X when `value` / layout metrics change (clicks, keyboard, parent). */
   useEffect(() => {
-    if (!metrics.maxX) return;
-    const target = activeIndex === 0 ? 0 : metrics.maxX;
-    if (prevMaxXRef.current === 0) {
-      pillX.set(target);
-    } else if (prevMaxXRef.current !== metrics.maxX) {
-      pillX.stop();
-      animate(pillX, target, springSnap);
-    }
-    prevMaxXRef.current = metrics.maxX;
-  }, [metrics.maxX, activeIndex, pillX, springSnap]);
+    if (!metrics.step) return;
+    const target = activeIndex * metrics.step;
+    pillX.stop();
+    animate(pillX, target, springSnap);
+  }, [activeIndex, metrics.maxX, metrics.step, pillX, springSnap]);
 
   const selectSegment = useCallback(
     (ix: number) => {
       if (isDisabled) return;
-      onChange(options[ix].value);
-      if (!metrics.maxX) return;
-      pillX.stop();
-      const target = ix === 0 ? 0 : metrics.maxX;
-      animate(pillX, target, springSnap);
+      const next = options[ix]?.value;
+      if (next === undefined) return;
+      onChange(next);
     },
-    [isDisabled, metrics.maxX, onChange, options, pillX, springSnap]
+    [isDisabled, onChange, options],
   );
 
   const onDragEnd = useCallback(() => {
     setIsDragging(false);
-    if (isDisabled) return;
-    if (!metrics.maxX) return;
-    const cx = pillX.get();
-    const next = cx < metrics.maxX / 2 ? 0 : 1;
-    const target = next === 0 ? 0 : metrics.maxX;
+    if (isDisabled || !metrics.step) return;
+    const step = metrics.step;
+    const raw = Math.round(pillX.get() / step);
+    const next = Math.max(0, Math.min(N - 1, raw));
+    const opt = options[next];
+    if (!opt) return;
+    const target = next * step;
+    if (opt.value !== value) {
+      // Let the `activeIndex` effect run one animation from release position → target (avoids double animate + jank).
+      onChange(opt.value);
+      return;
+    }
     pillX.stop();
     animate(pillX, target, springSnap);
-    onChange(options[next].value);
-  }, [isDisabled, metrics.maxX, onChange, options, pillX, springSnap]);
+  }, [isDisabled, metrics.step, N, onChange, options, pillX, springSnap, value]);
 
-  const thumbWpx = metrics.thumbW > 0 ? `${metrics.thumbW}px` : "calc(50% - 2px)";
+  const dragEnabled = metrics.maxX > 0 && reduceMotion !== true && !isDisabled;
+
+  const innerGapsPx = (N - 1) * gap;
+  const thumbWpx =
+    metrics.thumbW > 0 ? `${metrics.thumbW}px` : `calc((100% - ${innerGapsPx}px) / ${N})`;
+
+  const segmentLeft = useCallback(
+    (ix: number) =>
+      metrics.thumbW > 0
+        ? `${ix * (metrics.thumbW + gap)}px`
+        : ix === 0
+          ? "0"
+          : `calc(${ix} * (((100% - ${innerGapsPx}px) / ${N}) + ${gap}px))`,
+    [N, gap, innerGapsPx, metrics.thumbW],
+  );
+
+  const thumbRadiusPx = isDark ? 74 : 9999;
+  /** DS outer `border-radius: 100px`; inner well = 100 − pad (no track border in DS) */
+  const trackOuterRadiusPx = isDark ? 100 : 9999;
+  const trackInnerWellRadius = isDark ? 100 - pad : 9999;
 
   const thumbVisual = isDragging ? { ...thumbChrome, ...thumbDragChrome } : thumbChrome;
+  const thumbLift =
+    isDark || reduceMotion ? { scale: 1, y: 0 } : isDragging ? { scale: 1.04, y: -1.5 } : { scale: 1, y: 0 };
 
-  const thumbLift = reduceMotion ? { scale: 1, y: 0 } : isDragging ? { scale: 1.09, y: -2 } : { scale: 1, y: 0 };
+  const innerWellShadow = trackInnerWellShadow ?? "none";
+
+  const sheenBlendMode = surface === "canvas" && colorMode === "dark" ? ("normal" as const) : ("soft-light" as const);
+
+  const auraShadow = isDragging ? thumbDraggingAura ?? thumbAura : thumbAura;
+
+  const outerStyle =
+    layout === "auth"
+      ? isDark
+        ? {
+            display: "flex" as const,
+            flexDirection: "column" as const,
+            justifyContent: "center" as const,
+            alignItems: "flex-start" as const,
+            gap: 12,
+            width: TRACK_OUTER_W_DARK,
+            maxWidth: "100%" as const,
+            minWidth: 0,
+          }
+        : {
+            width: "min(100% - 2rem, 320px)" as const,
+            minWidth: "min(300px, calc(100vw - 2rem))" as const,
+            maxWidth: 320,
+          }
+      : {
+          width: "100%" as const,
+          minWidth: 300,
+          maxWidth: 560,
+        };
+
+  const trackSurfaceStyle: MotionStyle = {
+    position: "relative",
+    ...outerStyle,
+    height: trackOuterH,
+    minHeight: trackOuterH,
+    maxHeight: layout === "auth" && isDark ? TRACK_OUTER_H_DARK : undefined,
+    marginLeft: layout === "auth" ? "auto" : undefined,
+    marginRight: layout === "auth" ? "auto" : undefined,
+    padding: layout === "auth" && isDark ? `${PAD_DARK}px` : pad,
+    borderRadius: trackOuterRadiusPx === 9999 ? 9999 : trackOuterRadiusPx,
+    transform: "translateZ(0)",
+    isolation: "isolate",
+    opacity: isDisabled ? 0.52 : 1,
+    pointerEvents: isDisabled ? "none" : "auto",
+    ...trackChrome,
+  };
 
   return (
     <motion.div
       ref={containerRef}
       className="auth-segmented-control"
-      style={{
-        position: "relative",
-        width: "min(100% - 2rem, 320px)",
-        minWidth: "min(300px, calc(100vw - 2rem))",
-        maxWidth: 320,
-        height: TRACK_OUTER_H,
-        minHeight: TRACK_OUTER_H,
-        marginLeft: "auto",
-        marginRight: "auto",
-        padding: PAD,
-        borderRadius: 9999,
-        transform: "translateZ(0)",
-        opacity: isDisabled ? 0.52 : 1,
-        pointerEvents: isDisabled ? "none" : "auto",
-        ...trackChrome,
-      }}
+      style={trackSurfaceStyle}
       initial={false}
-      whileTap={reduceMotion || isDisabled ? undefined : { scale: 0.998 }}
-      transition={reduceMotion ? { duration: 0.15 } : SNAP_SPRING}
+      whileTap={isDisabled || dragEnabled || isDark ? undefined : { scale: 0.992 }}
+      transition={reduceMotion ? { duration: 0.18, ease: [0.25, 0.1, 0.25, 1] } : SNAP_SPRING}
       data-auth-segmented-disabled={isDisabled ? "" : undefined}
     >
-      <Box
-        position="absolute"
-        inset={0}
-        borderRadius="inherit"
-        pointerEvents="none"
-        zIndex={1}
-        bg={trackSheen}
-        style={{ mixBlendMode: "soft-light" }}
-        aria-hidden
-      />
+      {trackSheen ? (
+        <Box
+          position="absolute"
+          inset={0}
+          borderRadius="inherit"
+          pointerEvents="none"
+          zIndex={1}
+          bg={trackSheen}
+          style={{ mixBlendMode: sheenBlendMode }}
+          aria-hidden
+        />
+      ) : null}
 
-      <Box
-        position="absolute"
-        inset={`${PAD}px`}
-        borderRadius={9999}
-        pointerEvents="none"
-        zIndex={1}
-        boxShadow="inset 0 1px 10px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.05)"
-        aria-hidden
-      />
+      {trackRimGradient ? (
+        <Box
+          position="absolute"
+          inset={0}
+          borderRadius="inherit"
+          pointerEvents="none"
+          zIndex={1}
+          bg={trackRimGradient}
+          aria-hidden
+        />
+      ) : null}
+
+      {trackFloorGradient ? (
+        <Box
+          position="absolute"
+          inset={0}
+          borderRadius="inherit"
+          pointerEvents="none"
+          zIndex={1}
+          bg={trackFloorGradient}
+          aria-hidden
+        />
+      ) : null}
+
+      {innerWellShadow !== "none" ? (
+        <Box
+          position="absolute"
+          inset={`${pad}px`}
+          borderRadius={trackInnerWellRadius === 9999 ? 9999 : trackInnerWellRadius}
+          pointerEvents="none"
+          zIndex={1}
+          boxShadow={innerWellShadow}
+          aria-hidden
+        />
+      ) : null}
 
       <Box
         role="tablist"
-        aria-label="Sign in or register"
+        aria-label={ariaLabel}
         aria-orientation="horizontal"
         position="absolute"
-        left={`${PAD}px`}
-        top={`${PAD}px`}
-        right={`${PAD}px`}
-        h={`${INNER_H}px`}
+        left={`${pad}px`}
+        top={`${pad}px`}
+        right={`${pad}px`}
+        h={`${innerH}px`}
         zIndex={3}
         pointerEvents="none"
       >
-        <Box
-          as="button"
-          type="button"
-          role="tab"
-          aria-selected={activeIndex === 0}
-          disabled={isDisabled}
-          position="absolute"
-          left={0}
-          top={0}
-          bottom={0}
-          w={thumbWpx}
-          minW={0}
-          zIndex={activeIndex === 0 ? 3 : 5}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          lineHeight={1}
-          border="none"
-          bg="transparent"
-          cursor={isDisabled ? "not-allowed" : "pointer"}
-          outline="none"
-          px={4}
-          pointerEvents={isDisabled ? "none" : "auto"}
-          className="auth-segmented-control__segment"
-          onClick={() => selectSegment(0)}
-          onKeyDown={(e: KeyboardEvent<HTMLButtonElement>) => {
-            if (e.key === "ArrowRight") {
-              e.preventDefault();
-              selectSegment(1);
-            }
-          }}
-        >
-          <motion.span
-            className="auth-segmented-control__label"
-            variants={labelVariants}
-            initial={false}
-            animate={activeIndex === 0 ? "active" : "inactive"}
-            whileHover={activeIndex === 0 ? undefined : "inactiveHover"}
-            transition={labelTransition}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontFamily: "var(--font-graphik)",
-              fontSize: "clamp(14px, 2.5vw, 15px)",
-              lineHeight: 1,
-              fontWeight: 600,
-              letterSpacing: "-0.02em",
+        {options.map((opt, ix) => (
+          <Box
+            key={opt.value}
+            as="button"
+            type="button"
+            role="tab"
+            aria-selected={activeIndex === ix}
+            disabled={isDisabled}
+            position="absolute"
+            left={segmentLeft(ix)}
+            top={0}
+            bottom={0}
+            w={thumbWpx}
+            minW={0}
+            zIndex={activeIndex === ix ? 3 : 5}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            border="none"
+            bg="transparent"
+            cursor={isDisabled ? "not-allowed" : "pointer"}
+            outline="none"
+            px={layout === "toolbar" ? (isDark ? 4 : 1) : 4}
+            pointerEvents={isDisabled ? "none" : "auto"}
+            className="auth-segmented-control__segment"
+            sx={{
               userSelect: "none",
-              pointerEvents: "none",
+              WebkitUserSelect: "none",
+              WebkitTapHighlightColor: "transparent",
+              ...(!isDark
+                ? {
+                    transition: "transform 0.22s cubic-bezier(0.34, 1.4, 0.64, 1)",
+                    _hover:
+                      isDisabled || activeIndex === ix
+                        ? undefined
+                        : { transform: "scale(1.02)", transformOrigin: "center center" },
+                    _active:
+                      isDisabled || activeIndex === ix
+                        ? undefined
+                        : { transform: "scale(0.97)", transitionDuration: "0.12s" },
+                  }
+                : {}),
+            }}
+            onClick={() => selectSegment(ix)}
+            onKeyDown={(e: KeyboardEvent<HTMLButtonElement>) => {
+              if (e.key === "ArrowRight") {
+                e.preventDefault();
+                selectSegment(Math.min(N - 1, ix + 1));
+              }
+              if (e.key === "ArrowLeft") {
+                e.preventDefault();
+                selectSegment(Math.max(0, ix - 1));
+              }
             }}
           >
-            {options[0].label}
-          </motion.span>
-        </Box>
-
-        <Box
-          as="button"
-          type="button"
-          role="tab"
-          aria-selected={activeIndex === 1}
-          disabled={isDisabled}
-          position="absolute"
-          top={0}
-          bottom={0}
-          w={thumbWpx}
-          minW={0}
-          left={metrics.thumbW > 0 ? `${metrics.thumbW + GAP}px` : "calc(50% + 2px)"}
-          zIndex={activeIndex === 1 ? 3 : 5}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          lineHeight={1}
-          border="none"
-          bg="transparent"
-          cursor={isDisabled ? "not-allowed" : "pointer"}
-          outline="none"
-          px={4}
-          pointerEvents={isDisabled ? "none" : "auto"}
-          className="auth-segmented-control__segment"
-          onClick={() => selectSegment(1)}
-          onKeyDown={(e: KeyboardEvent<HTMLButtonElement>) => {
-            if (e.key === "ArrowLeft") {
-              e.preventDefault();
-              selectSegment(0);
-            }
-          }}
-        >
-          <motion.span
-            className="auth-segmented-control__label"
-            variants={labelVariants}
-            initial={false}
-            animate={activeIndex === 1 ? "active" : "inactive"}
-            whileHover={activeIndex === 1 ? undefined : "inactiveHover"}
-            transition={labelTransition}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontFamily: "var(--font-graphik)",
-              fontSize: "clamp(14px, 2.5vw, 15px)",
-              lineHeight: 1,
-              fontWeight: 600,
-              letterSpacing: "-0.02em",
-              userSelect: "none",
-              pointerEvents: "none",
-            }}
-          >
-            {options[1].label}
-          </motion.span>
-        </Box>
+            <motion.span
+              className="auth-segmented-control__label"
+              variants={labelVariants}
+              initial={false}
+              animate={activeIndex === ix ? "active" : "inactive"}
+              whileHover={activeIndex === ix ? undefined : "inactiveHover"}
+              transition={labelTransition}
+              style={
+                isDark
+                  ? activeIndex === ix
+                    ? AUTH_SEG_LABEL_DARK_SELECTED
+                    : AUTH_SEG_LABEL_DARK_INACTIVE
+                  : {
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      maxWidth: "100%",
+                      overflow: layout === "toolbar" ? "hidden" : "visible",
+                      textOverflow: layout === "toolbar" ? "ellipsis" : undefined,
+                      whiteSpace: "nowrap",
+                      fontFamily: "var(--font-graphik)",
+                      fontSize: "clamp(14px, 2.5vw, 15px)",
+                      lineHeight: 1.35,
+                      letterSpacing: "-0.02em",
+                      userSelect: "none",
+                      pointerEvents: "none",
+                      transformOrigin: "center center",
+                    }
+              }
+            >
+              {opt.label}
+            </motion.span>
+          </Box>
+        ))}
       </Box>
 
-      {/* Outer: drag + `x` only — keeps layout box aligned with labels after drag */}
       <motion.div
         aria-hidden
-        drag={metrics.maxX > 0 && !reduceMotion && !isDisabled ? "x" : false}
+        drag={dragEnabled ? "x" : false}
         dragConstraints={{ left: 0, right: metrics.maxX }}
         dragElastic={DRAG_ELASTIC}
         dragMomentum={false}
-        dragTransition={{ bounceStiffness: 500, bounceDamping: 35 }}
+        dragTransition={{ bounceStiffness: 420, bounceDamping: 38 }}
         style={{
           x: pillX,
           position: "absolute",
-          left: PAD,
-          top: PAD,
+          left: pad,
+          top: pad,
           width: thumbWpx,
-          height: INNER_H,
+          height: innerH,
           zIndex: isDragging ? 6 : 4,
           willChange: "transform",
           touchAction: "none",
+          WebkitTapHighlightColor: "transparent",
           cursor:
             isDisabled ? "not-allowed" : metrics.maxX > 0 ? (isDragging ? "grabbing" : "grab") : "default",
           pointerEvents: isDisabled ? "none" : "auto",
@@ -347,16 +526,30 @@ export function AuthSegmentedControl<T extends string>({
         onDragEnd={onDragEnd}
         initial={false}
       >
-        {/* Inner: glass + magnify — scale/y never compose with drag translateX on the same node */}
+        {auraShadow ? (
+          <Box
+            position="absolute"
+            inset="-3px"
+            borderRadius={`${thumbRadiusPx}px`}
+            pointerEvents="none"
+            zIndex={0}
+            opacity={isDragging ? 1 : 0.72}
+            transition="opacity 0.28s ease"
+            aria-hidden
+            sx={{ boxShadow: auraShadow }}
+          />
+        ) : null}
         <motion.div
           className="auth-segmented-control__thumb"
           initial={false}
           animate={thumbLift}
-          transition={reduceMotion ? { duration: 0.15 } : THUMB_POP_SPRING}
+          transition={reduceMotion ? { duration: 0.18, ease: [0.25, 0.1, 0.25, 1] } : THUMB_POP_SPRING}
           style={{
-            position: "absolute",
-            inset: 0,
-            borderRadius: 9999,
+            position: "relative",
+            zIndex: 1,
+            width: "100%",
+            height: "100%",
+            borderRadius: thumbRadiusPx,
             boxSizing: "border-box",
             transformOrigin: "center center",
             pointerEvents: "none",

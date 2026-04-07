@@ -25,7 +25,7 @@ export function DashboardMarketContentTransition({ children }: { children: React
   const segment = marketCode ?? AUTH_MARKET_TRANSITION_PENDING_KEY;
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
+    <AnimatePresence mode="wait" initial>
       <motion.div
         key={segment}
         custom={segment}

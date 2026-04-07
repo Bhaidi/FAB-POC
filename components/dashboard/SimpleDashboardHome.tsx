@@ -2,7 +2,8 @@
 
 import { useMemo, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { Box, Flex, Grid, GridItem, Heading, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, Flex, Grid, GridItem, Heading, Text, useColorMode, useDisclosure } from "@chakra-ui/react";
+import { motion, useReducedMotion } from "framer-motion";
 import { FinancialOverviewWidget } from "@/components/dashboard/home/FinancialOverviewWidget";
 import { QuickActionsCustomizerModal } from "@/components/dashboard/home/QuickActionsCustomizerModal";
 import { QuickActionsWidget } from "@/components/dashboard/home/QuickActionsWidget";
@@ -14,11 +15,21 @@ import { useQuickActionsPreference } from "@/hooks/useQuickActionsPreference";
 import { useDashboardWidgets } from "@/hooks/useDashboardWidgets";
 import { getEligibleQuickActionCatalog } from "@/data/quickActionsCatalog";
 import { buildEligibleQuickActionItems } from "@/lib/dashboardQuickActionsBuild";
-import { dashColors, dashLayout, dashSpace } from "@/components/dashboard/dashboardTokens";
+import {
+  dashLayout,
+  dashSpace,
+  figmaHomeLayoutDark,
+  figmaHomeServiceCard,
+} from "@/components/dashboard/dashboardTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 import { DASHBOARD_L1_HOME_TILES } from "@/data/dashboardL1Home";
 import { DASHBOARD_SERVICE_HOVER_IMAGES } from "@/data/dashboardCardHoverImages";
 import type { PlatformHealth } from "@/data/dashboardStubApi";
 import { firstNavigableL3Href } from "@/lib/mergeServiceTaxonomy";
+import { dashSurfaceRevealTransition } from "@/lib/motion/dashboardSurface";
+import { ACCOUNT_SERVICES_BASE_PATH } from "@/lib/accountServicesRoutes";
+
+const MotionFlex = motion(Flex);
 
 function hoverImageForServiceId(id: string): string {
   let h = 0;
@@ -27,6 +38,9 @@ function hoverImageForServiceId(id: string): string {
 }
 
 function buildCardHref(pathname: string, l1Code: string, leafHref: string | null): string {
+  if (l1Code === "accounts") {
+    return ACCOUNT_SERVICES_BASE_PATH;
+  }
   const q = new URLSearchParams();
   q.set("domain", l1Code);
   if (leafHref) {
@@ -56,6 +70,9 @@ const HOME_LG_COLUMN_GAP_PX = 40;
 /** Inset from gutter so tiles and widgets sit farther from the vertical rule. */
 const HOME_LG_RAIL_INSET_PX = 20;
 
+/** Main column / right-rail split at `lg` — vertical rule sits in the gutter between. */
+const HOME_LG_TEMPLATE_COLUMNS = "minmax(0, 70fr) minmax(0, 30fr)" as const;
+
 function bankHomeMicroHint(index: number): string {
   return index % 2 === 0 ? "Last activity: 2 hrs ago" : "3 pending items";
 }
@@ -67,9 +84,10 @@ export type SimpleDashboardHomeProps = {
 };
 
 /**
- * Home share — ~77% / ~23% launchpad + widgets on lg; fixed-height tiles; top-aligned rail. Stacked on small viewports.
+ * Home share — 70% / 30% launchpad + widgets on lg; fixed-height tiles; top-aligned rail. Stacked on small viewports.
  */
 export function SimpleDashboardHome({ footer, welcomeName = "Daniel Okonkwo" }: SimpleDashboardHomeProps) {
+  const { dashColors } = useFabTokens();
   const pathname = usePathname() || "/dashboard";
   const { merge } = useDashboardTaxonomy();
   const { organizationId, marketCode, userContext } = useDashboardGlobal();
@@ -77,6 +95,11 @@ export function SimpleDashboardHome({ footer, welcomeName = "Daniel Okonkwo" }: 
   const persona = userContext?.userRole ?? "MAKER";
   const surfaceReady = useDashboardSurfaceReady();
   const ghost = !surfaceReady;
+  const reduceMotion = useReducedMotion();
+  const surfaceRevealTransition = useMemo(() => dashSurfaceRevealTransition(reduceMotion), [reduceMotion]);
+  const { colorMode } = useColorMode();
+  const homeRailStackGap = colorMode === "dark" ? { base: "16px", lg: "40px" } : { base: "16px", lg: "12px" };
+  const launchpadGridGap = colorMode === "dark" ? figmaHomeServiceCard.gridGap : undefined;
 
   const items = useMemo(() => {
     const tiles =
@@ -141,42 +164,57 @@ export function SimpleDashboardHome({ footer, welcomeName = "Daniel Okonkwo" }: 
               base: 0,
               sm: dashSpace.sm,
               md: dashSpace.md,
-              lg: "16px 40px",
+              lg:
+                colorMode === "dark"
+                  ? `16px ${figmaHomeLayoutDark.contentPaddingXLg}`
+                  : "16px 40px",
             }}
             flex="1"
             display="flex"
             flexDirection="column"
             minH={0}
           >
-            <Box as="header" flexShrink={0} mb={{ base: "32px", md: "38px", lg: "40px" }}>
-              <Heading
-                as="h1"
-                color="#FFF"
-                textAlign="left"
-                fontFamily="var(--font-graphik)"
-                fontSize={{ base: "28px", md: "34px" }}
-                fontStyle="normal"
-                fontWeight={400}
-                lineHeight="1.1"
-                letterSpacing="-0.5px"
-                mb="10px"
+            <Box
+              as="header"
+              flexShrink={0}
+              mb={colorMode === "dark" ? figmaHomeLayoutDark.headerMarginBottom : { base: "32px", md: "38px", lg: "40px" }}
+            >
+              <motion.div
+                initial={false}
+                animate={{
+                  opacity: surfaceReady ? 1 : 0.78,
+                  y: surfaceReady ? 0 : 5,
+                }}
+                transition={surfaceRevealTransition}
               >
-                Welcome back,{" "}
-                <Box as="span" fontWeight={500} letterSpacing="-0.02em">
-                  {welcomeLabel}
-                </Box>
-              </Heading>
-              <Text
-                fontFamily="var(--font-graphik)"
-                fontSize="15px"
-                lineHeight="1.35"
-                opacity={0.72}
-                color="#FFF"
-                textAlign="left"
-                mb={0}
-              >
-                Choose a service to launch.
-              </Text>
+                <Heading
+                  as="h1"
+                  color={dashColors.pageTitle}
+                  textAlign="left"
+                  fontFamily="var(--font-graphik)"
+                  fontSize={{ base: "28px", md: "34px" }}
+                  fontStyle="normal"
+                  fontWeight={400}
+                  lineHeight="1.1"
+                  letterSpacing="-0.5px"
+                  mb="10px"
+                >
+                  Welcome back,{" "}
+                  <Box as="span" fontWeight={500} letterSpacing="-0.02em">
+                    {welcomeLabel}
+                  </Box>
+                </Heading>
+                <Text
+                  fontFamily="var(--font-graphik)"
+                  fontSize="15px"
+                  lineHeight="1.35"
+                  color={dashColors.pageSubtitle}
+                  textAlign="left"
+                  mb={0}
+                >
+                  Choose a service to launch.
+                </Text>
+              </motion.div>
             </Box>
 
             <Flex
@@ -190,7 +228,7 @@ export function SimpleDashboardHome({ footer, welcomeName = "Daniel Okonkwo" }: 
               <Grid
                 w="full"
                 alignItems="stretch"
-                templateColumns={{ base: "minmax(0, 1fr)", lg: "minmax(0, 77fr) minmax(0, 23fr)" }}
+                templateColumns={{ base: "minmax(0, 1fr)", lg: HOME_LG_TEMPLATE_COLUMNS }}
                 gap={{ base: "16px", lg: `${HOME_LG_COLUMN_GAP_PX}px` }}
               >
                 <GridItem
@@ -210,41 +248,67 @@ export function SimpleDashboardHome({ footer, welcomeName = "Daniel Okonkwo" }: 
                     flexDirection="column"
                     w="full"
                   >
-                    <Grid
-                      flex={{ lg: 1 }}
-                      minH={0}
-                      h={{ base: "auto", lg: "100%" }}
-                      w="full"
-                      display="grid"
-                      templateColumns={{
-                        base: "repeat(2, minmax(0, 1fr))",
-                        md: "repeat(4, minmax(0, 1fr))",
-                        lg: "repeat(4, minmax(0, 1fr))",
+                    <motion.div
+                      initial={false}
+                      animate={{
+                        opacity: surfaceReady ? 1 : 0.74,
+                        y: surfaceReady ? 0 : 4,
                       }}
-                      columnGap={{ base: "14px", lg: "28px" }}
-                      rowGap={{ base: "18px", md: "28px", lg: "28px" }}
-                      alignContent={{ base: "start", lg: "space-between" }}
-                      justifyItems="stretch"
+                      transition={surfaceRevealTransition}
+                      style={{
+                        flex: 1,
+                        minHeight: 0,
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
                     >
-                      {items.map(({ tile, i, description, href }) => (
-                        <GridItem key={tile.id} minW={0} w="full">
-                          <PlatformCard
-                            platform={{ id: tile.id, title: tile.title, defaultNavId: tile.id }}
-                            index={i}
-                            isEnabled
-                            health={SERVICE_CARD_HEALTH}
-                            hoverImage={hoverImageForServiceId(tile.id)}
-                            href={href}
-                            description={description}
-                            ghost={ghost}
-                            moduleStyle="bankHome"
-                            bankHomeComfortable={bankHomeComfortable}
-                            uniformGridCell
-                            microHint={bankHomeComfortable ? bankHomeMicroHint(i) : undefined}
-                          />
-                        </GridItem>
-                      ))}
-                    </Grid>
+                      <Grid
+                        flex={{ lg: 1 }}
+                        minH={0}
+                        h={{ base: "auto", lg: "100%" }}
+                        w="full"
+                        display="grid"
+                        templateColumns={{
+                          base: "repeat(2, minmax(0, 1fr))",
+                          md:
+                            colorMode === "dark"
+                              ? `repeat(4, minmax(0, ${figmaHomeServiceCard.width}))`
+                              : "repeat(4, minmax(0, 1fr))",
+                          lg:
+                            colorMode === "dark"
+                              ? `repeat(4, minmax(0, ${figmaHomeServiceCard.width}))`
+                              : "repeat(4, minmax(0, 1fr))",
+                        }}
+                        gap={
+                          launchpadGridGap ?? {
+                            base: "14px",
+                            lg: "28px",
+                          }
+                        }
+                        alignContent="start"
+                        justifyItems={colorMode === "dark" ? "center" : "stretch"}
+                      >
+                        {items.map(({ tile, i, description, href }) => (
+                          <GridItem key={tile.id} minW={0} w="full">
+                            <PlatformCard
+                              platform={{ id: tile.id, title: tile.title, defaultNavId: tile.id }}
+                              index={i}
+                              isEnabled
+                              health={SERVICE_CARD_HEALTH}
+                              hoverImage={hoverImageForServiceId(tile.id)}
+                              href={href}
+                              description={description}
+                              ghost={ghost}
+                              moduleStyle="bankHome"
+                              bankHomeComfortable={bankHomeComfortable}
+                              uniformGridCell
+                              microHint={bankHomeComfortable ? bankHomeMicroHint(i) : undefined}
+                            />
+                          </GridItem>
+                        ))}
+                      </Grid>
+                    </motion.div>
                   </Box>
                 </GridItem>
 
@@ -270,16 +334,27 @@ export function SimpleDashboardHome({ footer, welcomeName = "Daniel Okonkwo" }: 
                     bg={dashColors.homeRailDivider}
                     pointerEvents="none"
                   />
-                  <Flex
+                  <MotionFlex
                     direction="column"
                     flex={{ base: "none", lg: "1" }}
                     w="full"
                     minH={0}
                     h={{ lg: "100%" }}
-                    gap={{ base: "16px", lg: "12px" }}
+                    gap={homeRailStackGap}
+                    initial={false}
+                    animate={{
+                      opacity: surfaceReady ? 1 : 0.72,
+                      y: surfaceReady ? 0 : 6,
+                    }}
+                    transition={surfaceRevealTransition}
                   >
                     <Box flex={{ base: "none", lg: "1" }} minH={0} display="flex" flexDirection="column" w="full">
-                      <FinancialOverviewWidget accountsHref={accountsHref} homeRail fillCell />
+                      <FinancialOverviewWidget
+                        accountsHref={accountsHref}
+                        homeRail
+                        fillCell
+                        deferRichMotion={ghost}
+                      />
                     </Box>
                     <Box flexShrink={0} w="full">
                       <QuickActionsWidget
@@ -290,7 +365,7 @@ export function SimpleDashboardHome({ footer, welcomeName = "Daniel Okonkwo" }: 
                         }
                       />
                     </Box>
-                  </Flex>
+                  </MotionFlex>
                 </GridItem>
               </Grid>
             </Flex>

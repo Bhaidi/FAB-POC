@@ -3,6 +3,7 @@
 import { Box, Heading, Text, VStack } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { useDashboardGlobal } from "@/components/dashboard/DashboardGlobalContext";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 
 const MotionHeading = motion(Heading);
 const MotionText = motion(Text);
@@ -20,6 +21,7 @@ export type WelcomeHeaderProps = {
  * Subtitle is a single live line (no AnimatePresence swap flash).
  */
 export function WelcomeHeader({ variant = "default" }: WelcomeHeaderProps) {
+  const { dashColors } = useFabTokens();
   const { heroContextLine, userContextLoading, marketsLoading, marketDetailLoading } = useDashboardGlobal();
   const lp = variant === "launchpad" || variant === "wireframe";
   const wire = variant === "wireframe";
@@ -52,7 +54,7 @@ export function WelcomeHeader({ variant = "default" }: WelcomeHeaderProps) {
           }
           lineHeight={wire ? "52px" : lp ? 1.12 : "1.08"}
           letterSpacing="-0.02em"
-          color="#FFF"
+          color={dashColors.text.primary}
           textAlign="left"
           w="full"
           initial={false}
@@ -81,11 +83,11 @@ export function WelcomeHeader({ variant = "default" }: WelcomeHeaderProps) {
               filter: subIsLive ? "blur(0px)" : "blur(1.25px)",
               color: wire
                 ? subIsLive
-                  ? "rgba(255,255,255,0.55)"
-                  : "rgba(255,255,255,0.42)"
+                  ? dashColors.text.secondary
+                  : dashColors.text.muted
                 : subIsLive
-                  ? "rgba(255,255,255,0.36)"
-                  : "rgba(255,255,255,0.34)",
+                  ? dashColors.text.tertiary
+                  : dashColors.text.muted,
             }}
             transition={{ duration: 0.32, ease }}
           >

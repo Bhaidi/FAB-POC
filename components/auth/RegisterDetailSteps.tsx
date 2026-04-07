@@ -1,23 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import type { IconType } from "react-icons";
+import { Box, Flex, Text, useBreakpointValue } from "@chakra-ui/react";
+import { Bell, ClipboardCheck, Monitor, Smartphone, type LucideIcon } from "lucide-react";
 import {
-  HiDevicePhoneMobile,
-  HiBell,
-  HiClipboardDocumentCheck,
-  HiComputerDesktop,
-} from "react-icons/hi2";
-import { Box, Flex, Text } from "@chakra-ui/react";
-import {
-  authColors,
   authRadius,
   authRegisterStepDescription,
   authRegisterStepTitle,
   authRegisterVertical,
 } from "@/components/auth/authTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 
-type StepIcon = { kind: "icon"; stepIcon: IconType; title: string; description: string };
+type StepIcon = { kind: "icon"; stepIcon: LucideIcon; title: string; description: string };
 type StepQr = { kind: "qr"; title: string; description: string };
 type StepDef = StepIcon | StepQr;
 
@@ -29,25 +23,25 @@ const STEPS: StepDef[] = [
   },
   {
     kind: "icon",
-    stepIcon: HiDevicePhoneMobile,
+    stepIcon: Smartphone,
     title: "Download the App",
     description: "Install the FAB Corporate Banking mobile app.",
   },
   {
     kind: "icon",
-    stepIcon: HiBell,
+    stepIcon: Bell,
     title: "Enable Notifications",
     description: "Allow notifications for secure authentication.",
   },
   {
     kind: "icon",
-    stepIcon: HiClipboardDocumentCheck,
+    stepIcon: ClipboardCheck,
     title: "Create Your Credentials",
     description: "Set your Corporate ID and User ID in the app.",
   },
   {
     kind: "icon",
-    stepIcon: HiComputerDesktop,
+    stepIcon: Monitor,
     title: "Sign in on Desktop",
     description: "Return here and log in using your credentials.",
   },
@@ -65,6 +59,9 @@ const tileWh = {
 const COL_W = { base: "184px", sm: "196px", lg: "192px" };
 
 function StepVisual({ step }: { step: StepDef }) {
+  const { authColors } = useFabTokens();
+  const iconPx =
+    useBreakpointValue({ base: ICON_SIZE.base, sm: ICON_SIZE.sm, md: ICON_SIZE.md }) ?? ICON_SIZE.base;
   const shellProps = {
     flexShrink: 0,
     borderRadius: authRadius.surface,
@@ -96,14 +93,13 @@ function StepVisual({ step }: { step: StepDef }) {
   const StepIcon = step.stepIcon;
   return (
     <Box {...shellProps} {...tileWh}>
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        lineHeight={1}
-        fontSize={{ base: `${ICON_SIZE.base}px`, sm: `${ICON_SIZE.sm}px`, md: `${ICON_SIZE.md}px` }}
-      >
-        <StepIcon aria-hidden size="1em" color={authColors.text.primary} />
+      <Box display="flex" alignItems="center" justifyContent="center" lineHeight={1}>
+        <StepIcon
+          aria-hidden
+          size={iconPx}
+          strokeWidth={2}
+          color={authColors.text.primary}
+        />
       </Box>
     </Box>
   );
@@ -113,6 +109,7 @@ function StepVisual({ step }: { step: StepDef }) {
  * Five registration steps in a horizontal row (scroll on narrow viewports).
  */
 export function RegisterDetailSteps() {
+  const { authColors } = useFabTokens();
   return (
     <Box
       data-auth-allow-scroll-x

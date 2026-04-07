@@ -2,7 +2,8 @@
 
 import { Box, Flex, Text, Tooltip } from "@chakra-ui/react";
 import type { ReactNode } from "react";
-import { dashColors, dashRadius } from "@/components/dashboard/dashboardTokens";
+import { dashRadius } from "@/components/dashboard/dashboardTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 import { SIDEBAR_NAV_TOOLTIP_PROPS } from "@/components/dashboard/sidebar/sidebarNavTokens";
 
 export type SidebarNavItemProps = {
@@ -20,6 +21,7 @@ export function SidebarNavItem({
   collapsed = false,
   onClick,
 }: SidebarNavItemProps) {
+  const { dashColors } = useFabTokens();
   const row = (
     <Flex
       as="button"
@@ -39,9 +41,9 @@ export function SidebarNavItem({
       cursor="pointer"
       transition="background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease"
       _hover={{
-        bg: active ? dashColors.navActiveBg : "rgba(255,255,255,0.06)",
+        bg: active ? dashColors.navActiveBg : dashColors.navItemHoverBg,
         color: dashColors.text.primary,
-        borderColor: active ? dashColors.navActiveBorder : "rgba(255,255,255,0.08)",
+        borderColor: active ? dashColors.navActiveBorder : dashColors.navItemHoverBorder,
         transform: collapsed ? "none" : "translateX(2px)",
       }}
       onClick={onClick}

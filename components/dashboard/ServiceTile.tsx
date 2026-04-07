@@ -1,11 +1,17 @@
 "use client";
 
-import { useState, type KeyboardEvent, type MouseEvent } from "react";
-import { Box, Flex, Text, useBreakpointValue } from "@chakra-ui/react";
+import { useMemo, useState, type KeyboardEvent, type MouseEvent } from "react";
+import { Box, Flex, Text, useBreakpointValue, useColorMode } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { HiArrowRight, HiOutlineSquares2X2 } from "react-icons/hi2";
-import { dashboardCardCtaSlide, dashboardCardHover } from "@/lib/dashboardCardAnimations";
-import { dashRadius } from "@/components/dashboard/dashboardTokens";
+import {
+  dashboardCardCtaSlide,
+  makeDashboardCardHover,
+  makeDashboardGlassCardHover,
+} from "@/lib/dashboardCardAnimations";
+import { dashRadius, figmaHomeServiceCard } from "@/components/dashboard/dashboardTokens";
+import { dashboardDarkCardSurface } from "@/lib/dashboardDarkCardSurface";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 
 const MotionDiv = motion.div;
 const MotionBox = motion(Box);
@@ -32,6 +38,16 @@ export function ServiceTile({
   ctaLabel = "Launch",
   onClick,
 }: ServiceTileProps) {
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === "dark";
+  const { dashShadow } = useFabTokens();
+  const dashboardCardHover = useMemo(
+    () =>
+      isDark
+        ? makeDashboardGlassCardHover()
+        : makeDashboardCardHover(dashShadow.cardGlow, dashShadow.cardGlowHover),
+    [dashShadow.cardGlow, dashShadow.cardGlowHover, isDark],
+  );
   const [isHovered, setIsHovered] = useState(false);
   const isMobile = useBreakpointValue({ base: true, md: false });
 
@@ -47,25 +63,40 @@ export function ServiceTile({
     onClick?.();
   };
 
+  const tileBackdrop = isDark ? dashboardDarkCardSurface.backdrop : "blur(14px)";
+  const tileBg = isDark ? figmaHomeServiceCard.fill : "#FFF";
+  const tileRadius = isDark ? figmaHomeServiceCard.radius : dashRadius.panel;
+  const tileBorder = isDark
+    ? {
+        base: "none",
+        md: isHovered
+          ? `1px solid ${dashboardDarkCardSurface.borderHover}`
+          : `1px solid ${dashboardDarkCardSurface.border}`,
+      }
+    : {
+        base: "none",
+        md: isHovered ? `1px solid ${BORDER_HOVER}` : "1px solid rgba(1, 5, 145, 0.1)",
+      };
+
   return (
     <MotionBox
       role="button"
       tabIndex={0}
       textAlign="left"
       aria-label={`${title}. ${ctaLabel}.`}
-      backdropFilter="blur(14px)"
-      bg="#FFF"
-      border={{ base: "none", md: isHovered ? `1px solid ${BORDER_HOVER}` : "1px solid rgba(255,255,255,0.12)" }}
+      backdropFilter={tileBackdrop}
+      bg={tileBg}
+      border={tileBorder}
       display="flex"
       flexDirection="column"
       alignItems="flex-start"
       justifyContent="space-between"
       overflow="hidden"
       w="full"
-      p={{ base: 5, md: 6 }}
+      p={isDark ? { base: 5, md: 8 } : { base: 5, md: 6 }}
       gap={4}
       position="relative"
-      borderRadius={dashRadius.panel}
+      borderRadius={tileRadius}
       cursor="pointer"
       variants={dashboardCardHover}
       initial="rest"
@@ -81,7 +112,7 @@ export function ServiceTile({
           runAction();
         }
       }}
-      sx={{ WebkitBackdropFilter: "blur(14px)" }}
+      sx={{ WebkitBackdropFilter: tileBackdrop }}
     >
       <Flex
         direction="column"
@@ -105,7 +136,7 @@ export function ServiceTile({
               alignItems="center"
               justifyContent="center"
               mt="1px"
-              color={TITLE_COLOR}
+              color={isDark ? dashboardDarkCardSurface.title : TITLE_COLOR}
             >
               <HiOutlineSquares2X2 size={22} strokeWidth={1.5} aria-hidden />
             </Box>
@@ -113,8 +144,8 @@ export function ServiceTile({
               fontFamily="var(--font-graphik)"
               fontWeight={500}
               lineHeight="1.35"
-              color={TITLE_COLOR}
-              fontSize={{ base: "15px", md: "16px" }}
+              color={isDark ? dashboardDarkCardSurface.title : TITLE_COLOR}
+              fontSize={{ base: "15px", md: isDark ? "20px" : "16px" }}
               flex="1"
               noOfLines={2}
               minW={0}
@@ -127,12 +158,12 @@ export function ServiceTile({
           <Box w="full" overflow="hidden" flexShrink={0}>
             <Text
               fontFamily="var(--font-graphik)"
-              fontWeight={400}
+              fontWeight={isDark ? 300 : 400}
               lineHeight="1.4"
-              opacity={0.6}
-              fontSize={{ base: "13px", md: "14px" }}
+              opacity={isDark ? 1 : 0.6}
+              fontSize={{ base: "13px", md: isDark ? "12px" : "14px" }}
               w="full"
-              color={BODY_COLOR}
+              color={isDark ? dashboardDarkCardSurface.body : BODY_COLOR}
               overflow="hidden"
               textOverflow="ellipsis"
               display="-webkit-box"
@@ -164,13 +195,22 @@ export function ServiceTile({
           fontFamily="var(--font-graphik)"
           fontWeight={500}
           lineHeight="none"
-          color={BORDER_HOVER}
+          color={isDark ? "rgba(96, 170, 238, 0.95)" : BORDER_HOVER}
           fontSize="16px"
           letterSpacing="0.5px"
         >
           {ctaLabel}
         </Text>
-        <Box as="span" display="flex" alignItems="center" justifyContent="center" w="24px" h="24px" ml="4px" color={BORDER_HOVER}>
+        <Box
+          as="span"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          w="24px"
+          h="24px"
+          ml="4px"
+          color={isDark ? "rgba(96, 170, 238, 0.95)" : BORDER_HOVER}
+        >
           <HiArrowRight size={20} strokeWidth={2} aria-hidden />
         </Box>
       </Flex>
@@ -182,7 +222,7 @@ export function ServiceTile({
           display={{ base: "none", md: "block" }}
           zIndex={20}
           pointerEvents="none"
-          borderRadius={dashRadius.panel}
+          borderRadius={tileRadius}
           overflow="hidden"
         >
           <MotionDiv
@@ -205,9 +245,9 @@ export function ServiceTile({
         justifyContent="center"
         zIndex={30}
         pointerEvents="none"
-        borderRadius={dashRadius.panel}
+        borderRadius={tileRadius}
         px={3}
-        bg={hoverImage ? "transparent" : "rgba(0, 2, 69, 0.35)"}
+        bg={hoverImage ? "transparent" : isDark ? dashboardDarkCardSurface.hoverScrim : "rgba(0, 2, 69, 0.35)"}
       >
         <MotionBox
           variants={dashboardCardCtaSlide}

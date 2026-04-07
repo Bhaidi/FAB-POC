@@ -116,31 +116,31 @@ export function QuickActionsCustomizerModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered motionPreset="slideInBottom">
-      <ModalOverlay bg="rgba(0, 2, 12, 0.72)" backdropFilter="blur(8px)" />
+      <ModalOverlay bg="rgba(1, 5, 145, 0.25)" backdropFilter="blur(8px)" />
       <ModalContent
         mx={4}
         borderRadius="16px"
         borderWidth="1px"
-        borderColor="rgba(255,255,255,0.12)"
-        bg="rgba(10, 14, 32, 0.97)"
-        boxShadow="0 28px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06), inset 0 1px 0 rgba(255,255,255,0.1)"
+        borderColor="rgba(1, 5, 145, 0.1)"
+        bg="rgba(255, 255, 255, 0.98)"
+        boxShadow="0 28px 80px rgba(1, 5, 145, 0.12), 0 0 0 1px rgba(1, 5, 145, 0.05), inset 0 1px 0 rgba(255,255,255,0.95)"
       >
         <ModalHeader
           fontFamily="var(--font-graphik)"
           fontSize="lg"
           fontWeight={600}
           letterSpacing="-0.02em"
-          color="white"
+          color="#010591"
           pb={2}
         >
           Customize Quick Actions
         </ModalHeader>
-        <ModalCloseButton color="rgba(255,255,255,0.55)" _hover={{ color: "white", bg: "rgba(255,255,255,0.08)" }} />
+        <ModalCloseButton color="rgba(72, 82, 94, 0.55)" _hover={{ color: "#010591", bg: "rgba(1, 5, 145, 0.06)" }} />
         <ModalBody pb={2}>
           <Text
             fontFamily="var(--font-graphik)"
             fontSize="13px"
-            color="rgba(255,255,255,0.58)"
+            color="#48525E"
             mb={4}
             lineHeight={1.45}
           >
@@ -165,8 +165,8 @@ export function QuickActionsCustomizerModal({
             variant="ghost"
             size="sm"
             fontFamily="var(--font-graphik)"
-            color="rgba(255,255,255,0.55)"
-            _hover={{ color: "white", bg: "rgba(255,255,255,0.06)" }}
+            color="rgba(72, 82, 94, 0.65)"
+            _hover={{ color: "#010591", bg: "rgba(1, 5, 145, 0.05)" }}
             onClick={handleReset}
             isDisabled={working}
           >
@@ -176,8 +176,8 @@ export function QuickActionsCustomizerModal({
             variant="ghost"
             size="sm"
             fontFamily="var(--font-graphik)"
-            color="rgba(255,255,255,0.55)"
-            _hover={{ color: "white", bg: "rgba(255,255,255,0.06)" }}
+            color="rgba(72, 82, 94, 0.65)"
+            _hover={{ color: "#010591", bg: "rgba(1, 5, 145, 0.05)" }}
             onClick={onClose}
             isDisabled={working}
           >

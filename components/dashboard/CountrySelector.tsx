@@ -11,7 +11,8 @@ import {
 } from "@chakra-ui/react";
 import { HiChevronDown } from "react-icons/hi2";
 import { countries } from "@/data/countries";
-import { dashColors, dashRadius } from "@/components/dashboard/dashboardTokens";
+import { dashRadius } from "@/components/dashboard/dashboardTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 
 type CountrySelectorProps = {
   valueCode: string;
@@ -20,6 +21,7 @@ type CountrySelectorProps = {
 
 /** Compact dark-theme country control for the dashboard top bar. */
 export function CountrySelector({ valueCode, onChange }: CountrySelectorProps) {
+  const { dashColors } = useFabTokens();
   const selected = countries.find((c) => c.code === valueCode) ?? countries[0];
 
   return (

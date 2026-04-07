@@ -95,43 +95,10 @@ export const authLayout = {
   rightColumnMaxW: "480px",
 } as const;
 
-/** Large hero headlines — left column marketing / register onboarding lead. */
-export const authHeroTypography = {
-  overline: {
-    fontWeight: 500,
-    fontSize: "11px",
-    lineHeight: "1",
-    letterSpacing: "0.14em",
-    textTransform: "uppercase" as const,
-  },
-  headline: {
-    fontWeight: 300,
-    fontSize: { base: "40px", sm: "54px", md: "62px", lg: "76px" },
-    lineHeight: "1.14",
-    letterSpacing: "-0.03em",
-  },
-  subtitle: {
-    fontWeight: 400,
-    fontSize: { base: "15px", md: "16px" },
-    lineHeight: "1.65",
-  },
-} as const;
-
-/** Right-column titles & body — login form header + QR panel (same scale). */
-export const authColumnTypography = {
-  /** Panel / form section title (Login, Need the mobile app?, etc.) */
-  title: {
-    fontWeight: 400,
-    fontSize: { base: "26px", md: "32px" },
-    lineHeight: "1.12",
-    letterSpacing: "-0.03em",
-  },
-  supporting: {
-    fontWeight: 400,
-    fontSize: { base: "14px", md: "15px" },
-    lineHeight: "1.6",
-  },
-} as const;
+/**
+ * Colors / shadows that vary by light vs dark live in `useFabTokens()`
+ * (`authColors`, `authShadow`, `authChallengeCard`). Hero + column typography matches dark in both modes.
+ */
 
 /** Guided-flow label above steps (register) — matches eyebrow weight. */
 export const authStepsSectionLabel = {
@@ -157,45 +124,6 @@ export const authRegisterStepDescription = {
   fontWeight: 400,
   fontSize: { base: "12px", md: "13px" },
   lineHeight: "1.5",
-} as const;
-
-export const authShadow = {
-  focusRing: "0 0 0 2px rgba(0, 98, 255, 0.28), 0 0 20px rgba(0, 98, 255, 0.12)",
-  inputFocus: "0 0 0 2px rgba(0, 98, 255, 0.25)",
-  /** Light glass — QR inner frame */
-  qr: "0 2px 16px rgba(0, 0, 0, 0.2)",
-  /** Soft panel — download / info cards */
-  panel: "0 4px 28px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.06)",
-  panelHover: "0 8px 36px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08)",
-  primaryCta: "0 8px 28px rgba(0, 50, 140, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.12)",
-  primaryCtaHover: "0 12px 36px rgba(0, 70, 180, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.14)",
-} as const;
-
-export const authColors = {
-  text: {
-    primary: "rgba(255, 255, 255, 0.96)",
-    secondary: "rgba(255, 255, 255, 0.76)",
-    tertiary: "rgba(255, 255, 255, 0.58)",
-    muted: "rgba(255, 255, 255, 0.42)",
-    faint: "rgba(255, 255, 255, 0.32)",
-  },
-  border: {
-    subtle: "rgba(255, 255, 255, 0.09)",
-    default: "rgba(255, 255, 255, 0.12)",
-    strong: "rgba(255, 255, 255, 0.18)",
-  },
-  glass: {
-    tint: "rgba(12, 18, 38, 0.26)",
-    tintHover: "rgba(255, 255, 255, 0.075)",
-    input: "rgba(255, 255, 255, 0.085)",
-    inputHover: "rgba(255, 255, 255, 0.11)",
-    inputFocus: "rgba(255, 255, 255, 0.12)",
-  },
-  accent: "#0062FF",
-  accentSoft: "rgba(0, 98, 255, 0.88)",
-  /** Countdown & emphasis when time is running out */
-  warning: "rgba(255, 200, 140, 0.98)",
-  warningSoft: "rgba(255, 200, 140, 0.78)",
 } as const;
 
 /** Login success — push-verify approved (tight vertical rhythm). */
@@ -229,14 +157,6 @@ export const authVerifyScreenSpacing = {
   timerToInstruction: "12px",
   instructionToStatus: "16px",
   statusToActions: "16px",
-} as const;
-
-/** Challenge hero card — glass panel */
-export const authChallengeCard = {
-  bg: "rgba(255, 255, 255, 0.055)",
-  border: "rgba(255, 255, 255, 0.12)",
-  insetHighlight: "inset 0 1px 0 rgba(255, 255, 255, 0.09)",
-  shadow: "0 8px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08)",
 } as const;
 
 export const authMotion = {

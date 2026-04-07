@@ -12,6 +12,7 @@ import { DashboardTaxonomyProvider } from "@/components/dashboard/DashboardTaxon
 import { DashboardSidebar, SIDEBAR_LS_KEY } from "@/components/dashboard/DashboardSidebar";
 import { dashLayout } from "@/components/dashboard/dashboardTokens";
 import { useDashboardDocumentCanvas } from "@/components/dashboard/useDashboardDocumentCanvas";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 
 export type DashboardShellProps = {
   displayName: string;
@@ -20,6 +21,8 @@ export type DashboardShellProps = {
   userId: string;
   onSignOut: () => void;
   children: ReactNode;
+  /** Pass false for routes where content should sit directly on the gradient (no extra canvas overlay). */
+  ambientBackgroundOverlay?: boolean;
 };
 
 export function DashboardShell({
@@ -29,8 +32,10 @@ export function DashboardShell({
   userId,
   onSignOut,
   children,
+  ambientBackgroundOverlay = true,
 }: DashboardShellProps) {
   useDashboardDocumentCanvas();
+  const { dashColors } = useFabTokens();
 
   /** Default collapsed on load; localStorage `"0"` restores expanded if the user left it open. */
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
@@ -77,7 +82,7 @@ export function DashboardShell({
 
   return (
     <Box position="relative" minH="100dvh" w="100%" maxW="100vw" sx={{ overflowX: "clip" }}>
-      <DashboardBackground />
+      <DashboardBackground ambientOverlay={ambientBackgroundOverlay} />
       <Flex position="relative" zIndex={1} direction="column" align="stretch" minH="100dvh">
         <DashboardGlobalContextProvider>
           <DashboardTaxonomyProvider>
@@ -109,6 +114,12 @@ export function DashboardShell({
                     display="flex"
                     flexDirection="column"
                     minH={0}
+                    position="relative"
+                    sx={{
+                      ...(dashColors.mainWellInsetShadow && dashColors.mainWellInsetShadow !== "none"
+                        ? { boxShadow: dashColors.mainWellInsetShadow }
+                        : {}),
+                    }}
                   >
                     <DashboardMarketContentTransition>{children}</DashboardMarketContentTransition>
                   </Box>

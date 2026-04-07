@@ -8,11 +8,19 @@ import type { CapabilityMenuItem } from "@/data/dashboardTypes";
 import { useDashboardEntitlements } from "@/components/dashboard/DashboardEntitlementsContext";
 import { useDashboardGlobal } from "@/components/dashboard/DashboardGlobalContext";
 import { useDashboardTaxonomy } from "@/components/dashboard/DashboardTaxonomyContext";
-import { dashColors, dashEffects, dashLayout, dashShadow } from "@/components/dashboard/dashboardTokens";
+import { dashLayout } from "@/components/dashboard/dashboardTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 import { SidebarCollapsedRail } from "@/components/dashboard/sidebar/SidebarCollapsedRail";
 import { SidebarSection } from "@/components/dashboard/sidebar/SidebarSection";
 import { resolveSelectedL1Code } from "@/lib/taxonomyNavUtils";
 import { findActiveBranchIds } from "@/lib/sidebarNavUtils";
+import {
+  ACCOUNT_SERVICES_BASE_PATH,
+  expandedL2IdsForAccountDomain,
+  filterAccountServicesDomains,
+  findAccountServicesDomain,
+  isAccountServicesPath,
+} from "@/lib/accountServicesRoutes";
 
 export type SidebarContainerProps = {
   collapsed: boolean;
@@ -34,8 +42,10 @@ function SidebarNav({
   activeNavId,
   domainParam,
 }: SidebarNavProps) {
+  const { dashColors, dashEffects, dashShadow } = useFabTokens();
   const router = useRouter();
-  const pathname = usePathname();
+  const pathname = usePathname() || "";
+  const inAccountServices = isAccountServicesPath(pathname);
   const asideRef = useRef<HTMLElement | null>(null);
   const prevCollapsedRef = useRef(collapsed);
   const skipExpandResetRef = useRef(false);
@@ -69,6 +79,7 @@ function SidebarNav({
    */
   useEffect(() => {
     if (!taxonomyShellActive || !taxonomyMenuReady) return;
+    if (pathname.startsWith(ACCOUNT_SERVICES_BASE_PATH)) return;
     const tm = taxonomyMergeRef.current;
     if (!tm) return;
 
@@ -90,7 +101,7 @@ function SidebarNav({
     } else {
       setOpenL2Ids({});
     }
-  }, [taxonomyShellActive, taxonomyMenuReady, taxonomyTrailKey, marketCode, domainParam, activeNavId]);
+  }, [taxonomyShellActive, taxonomyMenuReady, taxonomyTrailKey, marketCode, domainParam, activeNavId, pathname]);
 
   useEffect(() => {
     if (collapsed) return;
@@ -116,12 +127,12 @@ function SidebarNav({
         skipExpandResetRef.current = false;
         return;
       }
-      if (!taxonomyShellActive || !taxonomyMerge) {
+      if ((!taxonomyShellActive || !taxonomyMerge) && !pathname.startsWith(ACCOUNT_SERVICES_BASE_PATH)) {
         setOpenL1Id(null);
         setOpenL2Ids({});
       }
     }
-  }, [collapsed, taxonomyShellActive, taxonomyMerge]);
+  }, [collapsed, taxonomyShellActive, taxonomyMerge, pathname]);
 
   /** Accordion L1: switching domain closes the previous tree; one L2 open at a time. */
   const toggleL1 = useCallback((id: string) => {
@@ -129,12 +140,19 @@ function SidebarNav({
     setOpenL2Ids({});
   }, []);
 
-  const toggleL2 = useCallback((l2Id: string) => {
-    setOpenL2Ids((prev) => {
-      if (prev[l2Id]) return {};
-      return { [l2Id]: true };
-    });
-  }, []);
+  const toggleL2 = useCallback(
+    (l2Id: string) => {
+      if (pathname.startsWith(ACCOUNT_SERVICES_BASE_PATH)) {
+        setOpenL2Ids((prev) => ({ ...prev, [l2Id]: !prev[l2Id] }));
+        return;
+      }
+      setOpenL2Ids((prev) => {
+        if (prev[l2Id]) return {};
+        return { [l2Id]: true };
+      });
+    },
+    [pathname],
+  );
 
   const onNavigate = useCallback(
     (item: CapabilityMenuItem) => {
@@ -149,6 +167,10 @@ function SidebarNav({
             const q = new URLSearchParams();
             q.set("domain", selectedL1Code);
             q.set("nav", nav);
+            if (pathname.startsWith("/account-services")) {
+              router.push(`/dashboard?${q.toString()}`);
+              return;
+            }
             router.push(`${pathname}?${q.toString()}`);
             return;
           } catch {
@@ -171,11 +193,15 @@ function SidebarNav({
     (domain: CapabilityMenuItem) => {
       skipExpandResetRef.current = true;
       onRequestExpand();
+      if (domain.id === "accounts" || domain.id === "account-services") {
+        router.push(ACCOUNT_SERVICES_BASE_PATH);
+        return;
+      }
       if (taxonomyShellActive && taxonomyMerge) {
-        // Only set L1 in the URL — do not deep-link to a leaf. User expands L2 → L3 in the sidebar.
         const q = new URLSearchParams();
         q.set("domain", domain.id);
-        router.push(`${pathname}?${q.toString()}`);
+        const target = pathname.startsWith("/account-services") ? `/dashboard?${q.toString()}` : `${pathname}?${q.toString()}`;
+        router.push(target);
         return;
       }
       setOpenL1Id(domain.id);
@@ -185,40 +211,88 @@ function SidebarNav({
 
   const sidebarW = collapsed ? dashLayout.sidebarWidthCollapsed : dashLayout.sidebarWidthExpanded;
 
+  const railEntitled = useMemo(() => {
+    let base: CapabilityMenuItem[];
+    if (!taxonomyShellActive) base = menuEntitled;
+    else if (taxonomyMerge?.railDomains?.length) base = taxonomyMerge.railDomains;
+    else base = menuEntitled;
+    return inAccountServices ? filterAccountServicesDomains(base, true) : base;
+  }, [taxonomyShellActive, taxonomyMerge, menuEntitled, inAccountServices]);
+
+  const railAvailable = taxonomyShellActive ? [] : menuAvailable;
+  const railAvailableFiltered = inAccountServices ? filterAccountServicesDomains(railAvailable, true) : railAvailable;
+  const sidebarFullMenu = taxonomyShellActive && taxonomyMerge ? fullMenuForTaxonomy : legacyFullMenu;
+
+  const combinedDomainList = useMemo(() => {
+    if (taxonomyShellActive && sidebarFullMenu.length > 0) return sidebarFullMenu;
+    return [...menuEntitled, ...menuAvailable];
+  }, [taxonomyShellActive, sidebarFullMenu, menuEntitled, menuAvailable]);
+
+  const accountServicesDomain = useMemo(
+    () => findAccountServicesDomain(combinedDomainList),
+    [combinedDomainList],
+  );
+
+  const menuEntitledFiltered = inAccountServices ? filterAccountServicesDomains(menuEntitled, true) : menuEntitled;
+  const menuAvailableFiltered = inAccountServices ? filterAccountServicesDomains(menuAvailable, true) : menuAvailable;
+  const sidebarFullMenuFiltered = inAccountServices ? filterAccountServicesDomains(sidebarFullMenu, true) : sidebarFullMenu;
+
+  const prevAccountServicesRef = useRef(false);
+  useEffect(() => {
+    const on = pathname.startsWith(ACCOUNT_SERVICES_BASE_PATH);
+    if (on && !prevAccountServicesRef.current && collapsed) onRequestExpand();
+    prevAccountServicesRef.current = on;
+  }, [pathname, collapsed, onRequestExpand]);
+
+  useEffect(() => {
+    if (!pathname.startsWith(ACCOUNT_SERVICES_BASE_PATH) || !accountServicesDomain) return;
+    setOpenL1Id(accountServicesDomain.id);
+    setOpenL2Ids(expandedL2IdsForAccountDomain(accountServicesDomain));
+  }, [pathname, accountServicesDomain]);
+
+  const isDomainDrawerOpen = useCallback(
+    (domainId: string) => {
+      if (inAccountServices && accountServicesDomain?.id === domainId) return true;
+      return openL1Id === domainId;
+    },
+    [inAccountServices, accountServicesDomain, openL1Id],
+  );
+
+  const onDomainToggle = useCallback(
+    (domainId: string) => {
+      if (inAccountServices && accountServicesDomain?.id === domainId) return;
+      toggleL1(domainId);
+    },
+    [inAccountServices, accountServicesDomain, toggleL1],
+  );
+
   const renderLegacyDomain = (domain: CapabilityMenuItem) => (
     <SidebarSection
       key={domain.id}
       domain={domain}
       menu={legacyFullMenu}
-      isOpen={openL1Id === domain.id}
-      onToggle={() => toggleL1(domain.id)}
+      isOpen={isDomainDrawerOpen(domain.id)}
+      onToggle={() => onDomainToggle(domain.id)}
       openL2Ids={openL2Ids}
       onToggleL2={toggleL2}
       onNavigate={onNavigate}
       activeNavId={activeNavId}
+      pathname={pathname}
     />
   );
-
-  const railEntitled = useMemo(() => {
-    if (!taxonomyShellActive) return menuEntitled;
-    if (taxonomyMerge?.railDomains?.length) return taxonomyMerge.railDomains;
-    return menuEntitled;
-  }, [taxonomyShellActive, taxonomyMerge, menuEntitled]);
-
-  const railAvailable = taxonomyShellActive ? [] : menuAvailable;
-  const sidebarFullMenu = taxonomyShellActive && taxonomyMerge ? fullMenuForTaxonomy : legacyFullMenu;
 
   const renderTaxonomyDomain = (domain: CapabilityMenuItem) => (
     <SidebarSection
       key={domain.id}
       domain={domain}
       menu={sidebarFullMenu}
-      isOpen={openL1Id === domain.id}
-      onToggle={() => toggleL1(domain.id)}
+      isOpen={isDomainDrawerOpen(domain.id)}
+      onToggle={() => onDomainToggle(domain.id)}
       openL2Ids={openL2Ids}
       onToggleL2={toggleL2}
       onNavigate={onNavigate}
       activeNavId={activeNavId}
+      pathname={pathname}
     />
   );
 
@@ -230,20 +304,20 @@ function SidebarNav({
         </Text>
       );
     }
-    if (taxonomyMerge && sidebarFullMenu.length > 0) {
-      return <>{sidebarFullMenu.map(renderTaxonomyDomain)}</>;
+    if (taxonomyMerge && sidebarFullMenuFiltered.length > 0) {
+      return <>{sidebarFullMenuFiltered.map(renderTaxonomyDomain)}</>;
     }
     if (taxonomyMerge && sidebarFullMenu.length === 0) {
       return (
-        <Text fontFamily="var(--font-graphik)" fontSize="xs" color="rgba(255,255,255,0.45)" px={2} py={1}>
+        <Text fontFamily="var(--font-graphik)" fontSize="xs" color={dashColors.text.muted} px={2} py={1}>
           No service domain is available for this market.
         </Text>
       );
     }
     return (
       <>
-        {menuEntitled.map(renderLegacyDomain)}
-        {menuAvailable.length > 0 ? (
+        {menuEntitledFiltered.map(renderLegacyDomain)}
+        {menuAvailableFiltered.length > 0 ? (
           <Box w="full" pt={1}>
             <Text
               fontFamily="var(--font-graphik)"
@@ -251,14 +325,14 @@ function SidebarNav({
               fontWeight={700}
               letterSpacing="0.16em"
               textTransform="uppercase"
-              color="rgba(255,255,255,0.36)"
+              color={dashColors.text.muted}
               px={2}
               mb={1}
             >
               Available Services
             </Text>
             <VStack align="stretch" spacing={6}>
-              {menuAvailable.map(renderLegacyDomain)}
+              {menuAvailableFiltered.map(renderLegacyDomain)}
             </VStack>
           </Box>
         ) : null}
@@ -317,7 +391,7 @@ function SidebarNav({
             minW="32px"
             borderRadius="md"
             color={dashColors.text.secondary}
-            _hover={{ bg: "rgba(255,255,255,0.12)", color: dashColors.text.primary }}
+            _hover={{ bg: "rgba(1, 5, 145, 0.06)", color: dashColors.text.primary }}
             onClick={onToggleCollapse}
           />
         </Flex>
@@ -327,20 +401,29 @@ function SidebarNav({
             <SidebarCollapsedRail
               activeNavId={activeNavId}
               entitledDomains={railEntitled}
-              availableDomains={railAvailable}
+              availableDomains={railAvailableFiltered}
               fullMenu={sidebarFullMenu}
               onActivateDomain={onCollapsedDomainActivate}
+              pathname={pathname}
             />
           </Box>
         ) : (
           <Box flex="1" minH={0} overflowY="auto" overflowX="hidden" pr={1} sx={{ scrollbarGutter: "stable" }}>
             <VStack align="stretch" spacing={6} pb={2}>
-              {taxonomyShellActive ? (
+              {inAccountServices && !accountServicesDomain ? (
+                <Text fontFamily="var(--font-graphik)" fontSize="sm" color={dashColors.text.muted} px={2} lineHeight={1.5}>
+                  Account Services isn’t listed for this market profile. Use{" "}
+                  <Text as="span" fontWeight={600} color={dashColors.text.secondary}>
+                    Command centre
+                  </Text>{" "}
+                  in the top bar to return to the dashboard.
+                </Text>
+              ) : taxonomyShellActive ? (
                 renderTaxonomyExpanded()
               ) : (
                 <>
-                  {menuEntitled.map(renderLegacyDomain)}
-                  {menuAvailable.length > 0 ? (
+                  {menuEntitledFiltered.map(renderLegacyDomain)}
+                  {menuAvailableFiltered.length > 0 ? (
                     <Box w="full" pt={1}>
                       <Text
                         fontFamily="var(--font-graphik)"
@@ -348,14 +431,14 @@ function SidebarNav({
                         fontWeight={700}
                         letterSpacing="0.16em"
                         textTransform="uppercase"
-                        color="rgba(255,255,255,0.36)"
+                        color={dashColors.text.muted}
                         px={2}
                         mb={1}
                       >
                         Available Services
                       </Text>
                       <VStack align="stretch" spacing={6}>
-                        {menuAvailable.map(renderLegacyDomain)}
+                        {menuAvailableFiltered.map(renderLegacyDomain)}
                       </VStack>
                     </Box>
                   ) : null}

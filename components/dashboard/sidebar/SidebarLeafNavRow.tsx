@@ -1,7 +1,8 @@
 "use client";
 
 import { Box, Flex, Text } from "@chakra-ui/react";
-import { dashColors, dashRadius } from "@/components/dashboard/dashboardTokens";
+import { dashRadius } from "@/components/dashboard/dashboardTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 import { SIDEBAR_L1_ACCENT_W } from "@/components/dashboard/sidebar/sidebarNavTokens";
 import { AccessTooltip } from "@/components/dashboard/sidebar/AccessTooltip";
 import { LockIndicator } from "@/components/dashboard/sidebar/LockIndicator";
@@ -20,6 +21,7 @@ export type SidebarLeafNavRowProps = {
  * Navigable leaf row — L2 and L3 share chrome but typography and active treatments differ.
  */
 export function SidebarLeafNavRow({ label, isActive, locked, partial, onClick, variant }: SidebarLeafNavRowProps) {
+  const { dashColors } = useFabTokens();
   const textMuted = locked ? 0.48 : partial ? 0.82 : 1;
   const isL3 = variant === "l3";
 
@@ -39,16 +41,16 @@ export function SidebarLeafNavRow({ label, isActive, locked, partial, onClick, v
         isActive
           ? isL3
             ? "rgba(0, 140, 255, 0.45)"
-            : "rgba(0, 98, 255, 0.22)"
-          : "rgba(255,255,255,0.06)"
+            : dashColors.navActiveBorder
+          : "rgba(1, 5, 145, 0.1)"
       }
       borderLeftWidth={isActive && isL3 ? SIDEBAR_L1_ACCENT_W : "1px"}
       borderLeftColor={isActive && isL3 ? "rgba(0, 170, 255, 0.95)" : undefined}
       bg={
         isActive
           ? isL3
-            ? "linear-gradient(90deg, rgba(0, 98, 255, 0.32) 0%, rgba(0, 60, 160, 0.22) 100%)"
-            : "rgba(0, 98, 255, 0.14)"
+            ? "linear-gradient(90deg, rgba(0, 98, 255, 0.14) 0%, rgba(0, 98, 255, 0.08) 100%)"
+            : dashColors.navActiveBg
           : "transparent"
       }
       cursor={locked ? "not-allowed" : onClick ? "pointer" : "default"}
@@ -58,7 +60,7 @@ export function SidebarLeafNavRow({ label, isActive, locked, partial, onClick, v
       boxShadow={
         isActive
           ? isL3
-            ? "0 0 18px rgba(0, 98, 255, 0.28), inset 0 1px 0 rgba(255,255,255,0.07)"
+            ? "0 0 14px rgba(0, 98, 255, 0.12), inset 0 1px 0 rgba(255,255,255,0.9)"
             : "none"
           : "none"
       }
@@ -68,15 +70,15 @@ export function SidebarLeafNavRow({ label, isActive, locked, partial, onClick, v
           : {
               bg: isActive
                 ? isL3
-                  ? "linear-gradient(90deg, rgba(0, 108, 255, 0.38) 0%, rgba(0, 70, 180, 0.26) 100%)"
-                  : "rgba(0, 98, 255, 0.18)"
-                : "rgba(255,255,255,0.055)",
+                  ? "linear-gradient(90deg, rgba(0, 98, 255, 0.18) 0%, rgba(0, 98, 255, 0.1) 100%)"
+                  : "rgba(0, 98, 255, 0.14)"
+                : dashColors.navItemHoverBg,
               borderColor: isActive
                 ? isL3
-                  ? "rgba(0, 150, 255, 0.55)"
-                  : "rgba(0, 110, 255, 0.35)"
-                : "rgba(255,255,255,0.09)",
-              boxShadow: isActive && isL3 ? "0 0 22px rgba(0, 98, 255, 0.32), inset 0 1px 0 rgba(255,255,255,0.08)" : undefined,
+                  ? "rgba(0, 98, 255, 0.4)"
+                  : "rgba(0, 98, 255, 0.28)"
+                : dashColors.navItemHoverBorder,
+              boxShadow: isActive && isL3 ? "0 0 16px rgba(0, 98, 255, 0.14), inset 0 1px 0 rgba(255,255,255,0.95)" : undefined,
             }
       }
     >
@@ -87,7 +89,9 @@ export function SidebarLeafNavRow({ label, isActive, locked, partial, onClick, v
         fontWeight={isActive ? (isL3 ? 500 : 600) : isL3 ? 400 : 500}
         lineHeight="1.35"
         letterSpacing={isL3 ? "0.01em" : "0.015em"}
-        color={isActive ? "#fff" : isL3 ? "rgba(255,255,255,0.72)" : dashColors.text.primary}
+        color={
+          isActive ? dashColors.text.primary : isL3 ? dashColors.text.secondary : dashColors.text.primary
+        }
         textAlign="left"
         noOfLines={2}
       >

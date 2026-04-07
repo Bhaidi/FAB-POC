@@ -5,6 +5,7 @@ import { Box, Collapse, Flex, Text } from "@chakra-ui/react";
 import { ChevronDown } from "lucide-react";
 import type { CapabilityMenuItem } from "@/data/dashboardTypes";
 import { dashRadius } from "@/components/dashboard/dashboardTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 import { SidebarLeafNavRow } from "@/components/dashboard/sidebar/SidebarLeafNavRow";
 import { AccessTooltip } from "@/components/dashboard/sidebar/AccessTooltip";
 import { LockIndicator } from "@/components/dashboard/sidebar/LockIndicator";
@@ -57,6 +58,7 @@ function L2LeafRow({
 }
 
 export function SidebarItem({ item, domainId, menu, l2Open, onToggleL2, onNavigate, activeNavId }: SidebarItemProps) {
+  const { dashColors } = useFabTokens();
   const children = item.children;
   const locked = item.access === "locked";
   const partial = item.access === "partial";
@@ -79,7 +81,7 @@ export function SidebarItem({ item, domainId, menu, l2Open, onToggleL2, onNaviga
       pointerEvents="none"
     >
       <Box
-        color="rgba(255,255,255,0.5)"
+        color={dashColors.text.faint}
         lineHeight={0}
         transition={SIDEBAR_CHEVRON_TRANSITION}
         transform={l2Open ? "rotate(180deg)" : "rotate(0deg)"}
@@ -99,7 +101,7 @@ export function SidebarItem({ item, domainId, menu, l2Open, onToggleL2, onNaviga
       py={1.5}
       borderRadius="md"
       borderWidth="1px"
-      borderColor={l2Trail ? "rgba(0, 98, 255, 0.22)" : "rgba(255,255,255,0.05)"}
+      borderColor={l2Trail ? "rgba(0, 98, 255, 0.22)" : "rgba(1, 5, 145, 0.06)"}
       bg={l2Trail ? "rgba(0, 98, 255, 0.1)" : "transparent"}
       opacity={headerOpacity}
       transition="background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease"
@@ -108,8 +110,8 @@ export function SidebarItem({ item, domainId, menu, l2Open, onToggleL2, onNaviga
         locked
           ? {}
           : {
-              bg: l2Trail ? "rgba(0, 98, 255, 0.14)" : "rgba(255,255,255,0.045)",
-              borderColor: l2Trail ? "rgba(0, 98, 255, 0.28)" : "rgba(255,255,255,0.08)",
+              bg: l2Trail ? "rgba(0, 98, 255, 0.12)" : "rgba(1, 5, 145, 0.04)",
+              borderColor: l2Trail ? "rgba(0, 98, 255, 0.28)" : "rgba(1, 5, 145, 0.08)",
             }
       }
     >
@@ -119,7 +121,7 @@ export function SidebarItem({ item, domainId, menu, l2Open, onToggleL2, onNaviga
         fontWeight={l2Trail ? 600 : 500}
         lineHeight="1.4"
         letterSpacing="0.01em"
-        color={l2Trail ? "#fff" : "rgba(255, 255, 255, 0.88)"}
+        color={l2Trail ? dashColors.text.primary : dashColors.text.secondary}
         textAlign="left"
         noOfLines={2}
         flex="1"
@@ -178,10 +180,10 @@ export function SidebarItem({ item, domainId, menu, l2Open, onToggleL2, onNaviga
           py={2}
           px={2}
           borderRadius="8px"
-          bg="rgba(255,255,255,0.04)"
+          bg="rgba(1, 5, 145, 0.03)"
           borderWidth="1px"
-          borderColor="rgba(255,255,255,0.07)"
-          boxShadow="inset 0 1px 0 rgba(255,255,255,0.05)"
+          borderColor="rgba(1, 5, 145, 0.06)"
+          boxShadow="inset 0 1px 0 rgba(255,255,255,0.9)"
           {...SIDEBAR_L3_GROUP_MARGIN}
           display="flex"
           flexDirection="column"

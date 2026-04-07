@@ -9,7 +9,8 @@ import { AuthSplitLayout } from "@/components/auth/AuthSplitLayout";
 import { AuthFailureView } from "@/components/auth/login-flow/AuthFailureView";
 import { LoginFormView } from "@/components/auth/login-flow/LoginFormView";
 import { LoginPushVerifyView } from "@/components/auth/login-flow/LoginPushVerifyView";
-import { authColors, authHeroTypography, authLoginHeroVertical, authSpacing } from "@/components/auth/authTokens";
+import { authLoginHeroVertical, authSpacing } from "@/components/auth/authTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 import { AuthParallaxLayer } from "@/components/auth/AuthStageMotion";
 import { useLoginAuthFlow } from "@/hooks/useLoginAuthFlow";
 
@@ -20,6 +21,7 @@ const EASE_OUT = [0.33, 1, 0.68, 1] as const;
 const TRANS_IN = { duration: 0.28, ease: EASE_OUT } as const;
 
 function LoginHeroColumn() {
+  const { authColors, authHeroTypography } = useFabTokens();
   return (
     <VStack align={{ base: "center", lg: "flex-start" }} spacing={0} w="full" pb={authLoginHeroVertical.descriptionTail}>
       <Text
@@ -81,6 +83,12 @@ export function LoginModeView() {
     setChromeInteractionLocked(locked);
     return () => setChromeInteractionLocked(false);
   }, [flow.phase, setChromeInteractionLocked]);
+
+  useEffect(() => {
+    if (flow.phase === "verifyCompleting" || flow.phase === "verifyApproved") {
+      router.prefetch("/dashboard");
+    }
+  }, [flow.phase, router]);
 
   const goToDashboard = useCallback(() => {
     router.push("/dashboard");
@@ -161,7 +169,8 @@ export function LoginModeView() {
                   exit={{ opacity: 0, y: 10 }}
                   transition={TRANS_IN}
                 >
-                  <AuthParallaxLayer role="verify" idleFloat>
+                  {/* No idleFloat: vertical bob + shell overflow:hidden clips the top eyebrow (“VERIFYING ACCESS”). */}
+                  <AuthParallaxLayer role="verify">
                     <LoginPushVerifyView
                       timelinePhase={flow.phase}
                       challengeNumber={flow.challengeNumber}
@@ -183,7 +192,7 @@ export function LoginModeView() {
                   exit={{ opacity: 0, y: 10 }}
                   transition={TRANS_IN}
                 >
-                  <AuthParallaxLayer role="verify" idleFloat>
+                  <AuthParallaxLayer role="verify">
                     <AuthFailureView
                       variant="rejected"
                       messageOverride={flow.verifyMessage}
@@ -201,7 +210,7 @@ export function LoginModeView() {
                   exit={{ opacity: 0, y: 10 }}
                   transition={TRANS_IN}
                 >
-                  <AuthParallaxLayer role="verify" idleFloat>
+                  <AuthParallaxLayer role="verify">
                     <AuthFailureView
                       variant="expired"
                       messageOverride={flow.verifyMessage}
@@ -218,7 +227,7 @@ export function LoginModeView() {
                   exit={{ opacity: 0, y: 10 }}
                   transition={TRANS_IN}
                 >
-                  <AuthParallaxLayer role="verify" idleFloat>
+                  <AuthParallaxLayer role="verify">
                     <AuthFailureView
                       variant="error"
                       messageOverride={flow.verifyMessage}

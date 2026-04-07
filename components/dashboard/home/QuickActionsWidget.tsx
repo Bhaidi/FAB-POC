@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useReducedMotion } from "framer-motion";
 import { motion } from "framer-motion";
-import { Box, Flex, IconButton, Text, Tooltip } from "@chakra-ui/react";
+import { Box, Flex, IconButton, Text, Tooltip, useColorMode, VStack } from "@chakra-ui/react";
 import { ChevronRight, SlidersHorizontal } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { dashSpace } from "@/components/dashboard/dashboardTokens";
+import { dashSpace, figmaHomeLayoutDark } from "@/components/dashboard/dashboardTokens";
+import { iosGlassQuickActionTile } from "@/lib/iosGlassHomeServiceCard";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 
 export type QuickActionItem = {
   id: string;
@@ -44,6 +46,8 @@ function CountPill({ value, rail }: { value: number; rail?: boolean }) {
   const reduceMotion = useReducedMotion();
   const rm = reduceMotion === true;
   const r = rail === true;
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === "dark";
   return (
     <motion.span
       key={value}
@@ -62,10 +66,10 @@ function CountPill({ value, rail }: { value: number; rail?: boolean }) {
         fontSize="11px"
         fontWeight={r ? 500 : 600}
         letterSpacing="-0.02em"
-        bg="rgba(96, 165, 250, 0.22)"
-        color="rgba(191, 219, 254, 0.98)"
+        bg={isDark ? "rgba(0, 98, 255, 0.28)" : "rgba(0, 98, 255, 0.12)"}
+        color={isDark ? "rgba(255, 255, 255, 0.95)" : "#010591"}
         borderWidth="1px"
-        borderColor="rgba(147, 197, 253, 0.35)"
+        borderColor={isDark ? "rgba(0, 98, 255, 0.4)" : "rgba(0, 98, 255, 0.22)"}
         sx={{ fontVariantNumeric: "tabular-nums" }}
       >
         {value}
@@ -91,21 +95,153 @@ export function QuickActionsWidget({
 }: QuickActionsWidgetProps) {
   const reduceMotion = useReducedMotion();
   const rm = reduceMotion === true;
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === "dark";
+  const { financialOverviewShell, dashColors } = useFabTokens();
   const rail = homeRail === true;
   const compact = compactLayout === true;
   const dense = denseSidebar === true && compact;
   const fill = fillCell === true;
 
-  /** Matches `FinancialOverviewWidget` rail glass so the home stack feels like one system. */
-  const railGlassSx = {
-    WebkitBackdropFilter: "blur(20px)",
-    backgroundImage: `
-      linear-gradient(168deg, rgba(14, 20, 52, 0.92) 0%, rgba(10, 16, 42, 0.82) 48%, rgba(8, 12, 36, 0.94) 100%),
-      linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 36%, rgba(95, 85, 180, 0.055) 100%)
-    `,
-    boxShadow:
-      "0 20px 50px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(255,255,255,0.09), inset 0 1px 0 rgba(255,255,255,0.16), inset 0 0 0 1px rgba(255,255,255,0.04), inset 0 0 72px rgba(40, 60, 140, 0.06)",
-  } as const;
+  /** Figma `558:17853+` — 90×90 glass tiles, label below; customize control top-right. */
+  if (rail && isDark) {
+    const tiles = actions.slice(0, 4);
+    return (
+      <Box w="full" minW={0}>
+        <Flex
+          align="center"
+          justify="space-between"
+          gap={10}
+          mb={figmaHomeLayoutDark.quickActionsTitleToTiles}
+          w="full"
+        >
+          <Text
+            fontFamily="var(--font-graphik)"
+            fontSize="14px"
+            fontWeight={300}
+            letterSpacing="0.1em"
+            textTransform="uppercase"
+            sx={{ color: "#ffffff !important" }}
+          >
+            Quick Actions
+          </Text>
+          {onCustomizeClick ? (
+            <Tooltip label={customizeAriaLabel} placement="top" openDelay={400} fontSize="xs">
+              <IconButton
+                aria-label={customizeAriaLabel}
+                icon={<SlidersHorizontal size={22} strokeWidth={1.75} />}
+                variant="ghost"
+                size="sm"
+                minW="32px"
+                h="32px"
+                borderRadius="md"
+                color="rgba(255,255,255,0.88)"
+                _hover={{
+                  bg: "rgba(255, 255, 255, 0.08)",
+                  color: "#ffffff",
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onCustomizeClick();
+                }}
+              />
+            </Tooltip>
+          ) : null}
+        </Flex>
+
+        {tiles.length === 0 ? (
+          <Text
+            fontFamily="var(--font-graphik)"
+            fontSize="13px"
+            fontWeight={500}
+            lineHeight={1.45}
+            sx={{ color: "#ffffff !important" }}
+          >
+            {emptyMessage}
+          </Text>
+        ) : (
+          <Flex
+            justify="space-between"
+            align="flex-start"
+            gap={figmaHomeLayoutDark.quickActionsTileGap}
+            w="full"
+          >
+            {tiles.map(({ id, label, href, icon: Icon }) => (
+              <Link
+                key={id}
+                href={href}
+                prefetch={false}
+                scroll={false}
+                style={{
+                  textDecoration: "none",
+                  color: "inherit",
+                  flex: "1 1 0",
+                  minWidth: 0,
+                  maxWidth: "91px",
+                }}
+              >
+                <VStack spacing={3} align="center" w="full">
+                  <Box
+                    w={{ base: "80px", sm: "90px", md: iosGlassQuickActionTile.size }}
+                    h={{ base: "80px", sm: "90px", md: iosGlassQuickActionTile.size }}
+                    maxW={iosGlassQuickActionTile.size}
+                    mx="auto"
+                    borderRadius={iosGlassQuickActionTile.radius}
+                    bg={iosGlassQuickActionTile.fill}
+                    backdropFilter={iosGlassQuickActionTile.backdrop}
+                    borderWidth="0"
+                    boxShadow="none"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    overflow="hidden"
+                    transition="transform 0.28s ease"
+                    sx={{ WebkitBackdropFilter: iosGlassQuickActionTile.backdrop }}
+                    _hover={{
+                      transform: "translateY(-2px)",
+                    }}
+                  >
+                    <Box
+                      as="span"
+                      color="#ffffff"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                    >
+                      <Icon size={19} strokeWidth={2} aria-hidden />
+                    </Box>
+                  </Box>
+                  <Text
+                    fontFamily="var(--font-graphik)"
+                    fontSize="14px"
+                    fontWeight={400}
+                    lineHeight={1.35}
+                    textAlign="center"
+                    whiteSpace="pre-wrap"
+                    wordBreak="break-word"
+                    px={0.5}
+                    noOfLines={3}
+                    sx={{ color: "#ffffff !important" }}
+                  >
+                    {label}
+                  </Text>
+                </VStack>
+              </Link>
+            ))}
+          </Flex>
+        )}
+      </Box>
+    );
+  }
+
+  /** Same shell tokens as `FinancialOverviewWidget` rail — dark + light from `financialOverviewPalettes`. */
+  const railGlassSx = rail
+    ? {
+        WebkitBackdropFilter: financialOverviewShell.WebkitBackdropFilter,
+        backgroundImage: financialOverviewShell.backgroundImage,
+        boxShadow: financialOverviewShell.boxShadow,
+      }
+    : {};
 
   return (
     <Box
@@ -124,24 +260,22 @@ export function QuickActionsWidget({
       pt={rail ? "8px" : undefined}
       px={rail ? "18px" : undefined}
       pb={rail ? "18px" : undefined}
-      bg={rail ? undefined : "rgba(255,255,255,0.035)"}
+      bg={rail ? undefined : "#F2F2F3"}
       backgroundImage={
         rail
           ? undefined
-          : "linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.005))"
+          : "linear-gradient(135deg, rgba(255,255,255,0.95), rgba(242,242,243,0.98))"
       }
       borderWidth={rail ? "1px" : undefined}
-      borderColor={rail ? "rgba(255,255,255,0.1)" : undefined}
-      backdropFilter={rail ? "blur(20px)" : "blur(14px)"}
+      borderColor={rail ? financialOverviewShell.border : undefined}
+      backdropFilter={rail ? financialOverviewShell.backdropFilter : "blur(10px)"}
       sx={
-        rail
-          ? railGlassSx
-          : { WebkitBackdropFilter: "blur(14px)" }
+        rail ? railGlassSx : { WebkitBackdropFilter: "blur(10px)" }
       }
       boxShadow={
         rail
           ? undefined
-          : "0 8px 28px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(255,255,255,0.05), inset 0 1px 0 rgba(255,255,255,0.05)"
+          : "0 8px 28px rgba(1, 5, 145, 0.06), 0 0 0 1px rgba(1, 5, 145, 0.06), inset 0 1px 0 rgba(255,255,255,0.9)"
       }
       display="flex"
       flexDirection="column"
@@ -156,9 +290,8 @@ export function QuickActionsWidget({
             ? {}
             : {
                 transform: "translateY(-2px)",
-                borderColor: "rgba(255,255,255,0.17)",
-                boxShadow:
-                  "0 26px 58px rgba(0, 0, 0, 0.48), 0 0 0 1px rgba(255,255,255,0.11), 0 0 36px rgba(45, 107, 255, 0.14), inset 0 1px 0 rgba(255,255,255,0.18), inset 0 0 80px rgba(50, 75, 160, 0.09)",
+                borderColor: financialOverviewShell.hoverBorder,
+                boxShadow: financialOverviewShell.hoverBoxShadow,
               }
           : undefined
       }
@@ -179,7 +312,7 @@ export function QuickActionsWidget({
           fontWeight={600}
           letterSpacing="0.14em"
           textTransform="uppercase"
-          color={rail ? "rgba(255,255,255,0.6)" : "rgba(255,255,255,0.45)"}
+          color={rail ? dashColors.text.tertiary : "rgba(72, 82, 94, 0.55)"}
         >
           Quick Actions
         </Text>
@@ -193,8 +326,11 @@ export function QuickActionsWidget({
               minW="28px"
               h="28px"
               borderRadius="md"
-              color="rgba(255,255,255,0.45)"
-              _hover={{ color: "rgba(255,255,255,0.88)", bg: "rgba(255,255,255,0.06)" }}
+              color={dashColors.text.muted}
+              _hover={{
+                color: dashColors.text.primary,
+                bg: isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(1, 5, 145, 0.05)",
+              }}
               onClick={(e) => {
                 e.preventDefault();
                 onCustomizeClick();
@@ -216,7 +352,7 @@ export function QuickActionsWidget({
             fontFamily="var(--font-graphik)"
             fontSize={rail ? "12px" : "13px"}
             fontWeight={500}
-            color="rgba(255,255,255,0.42)"
+            color={dashColors.text.muted}
             lineHeight={1.45}
           >
             {emptyMessage}
@@ -238,9 +374,11 @@ export function QuickActionsWidget({
                 px={rail ? "11px" : dense ? 1.5 : compact ? 2 : 3}
                 py={rail ? 0 : dense ? 1 : compact ? 1.25 : 2}
                 borderRadius={rail ? "10px" : "12px"}
-                bg="rgba(255,255,255,0.04)"
+                bg={rail && isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(255, 255, 255, 0.85)"}
                 borderWidth="1px"
-                borderColor="rgba(255,255,255,0.06)"
+                borderColor={
+                  rail && isDark ? "rgba(255, 255, 255, 0.12)" : "rgba(1, 5, 145, 0.08)"
+                }
                 cursor="pointer"
                 sx={{
                   transition:
@@ -257,10 +395,12 @@ export function QuickActionsWidget({
                 }
                 whileTap={rm ? undefined : { scale: 0.985 }}
                 _hover={{
-                  bg: "rgba(255,255,255,0.07)",
-                  borderColor: "rgba(255,255,255,0.11)",
+                  bg: rail && isDark ? "rgba(255, 255, 255, 0.12)" : "#FFFFFF",
+                  borderColor: "rgba(0, 98, 255, 0.2)",
                   boxShadow:
-                    "0 12px 26px rgba(0, 0, 0, 0.34), 0 0 24px rgba(96, 165, 250, 0.12), 0 0 0 1px rgba(255,255,255,0.06)",
+                    rail && isDark
+                      ? "0 12px 28px rgba(0, 0, 0, 0.35), 0 0 20px rgba(0, 98, 255, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1)"
+                      : "0 12px 26px rgba(1, 5, 145, 0.08), 0 0 20px rgba(0, 98, 255, 0.08), 0 0 0 1px rgba(1, 5, 145, 0.05)",
                 }}
               >
                 <Box
@@ -268,11 +408,11 @@ export function QuickActionsWidget({
                   w={rail ? "26px" : dense ? "28px" : "32px"}
                   h={rail ? "26px" : dense ? "28px" : "32px"}
                   borderRadius={rail ? "8px" : "9px"}
-                  bg="rgba(0, 98, 255, 0.18)"
+                  bg={rail && isDark ? "rgba(0, 98, 255, 0.25)" : "rgba(0, 98, 255, 0.12)"}
                   display="flex"
                   alignItems="center"
                   justifyContent="center"
-                  color="#93c5fd"
+                  color={rail && isDark ? "rgba(255, 255, 255, 0.95)" : "#010591"}
                 >
                   <Icon size={rail ? 15 : dense ? 16 : 17} strokeWidth={2} aria-hidden />
                 </Box>
@@ -283,7 +423,7 @@ export function QuickActionsWidget({
                     fontSize={rail ? "13px" : "13px"}
                     fontWeight={rail ? 500 : 600}
                     letterSpacing="-0.01em"
-                    color="rgba(255,255,255,0.9)"
+                    color={dashColors.text.secondary}
                     lineHeight={1.2}
                     noOfLines={2}
                   >
@@ -294,7 +434,7 @@ export function QuickActionsWidget({
                       fontFamily="var(--font-graphik)"
                       fontSize="11px"
                       fontWeight={500}
-                      color="rgba(255,255,255,0.38)"
+                      color={dashColors.text.muted}
                       lineHeight={1.25}
                       noOfLines={2}
                     >
@@ -306,7 +446,7 @@ export function QuickActionsWidget({
                   {hasPill ? (
                     <CountPill value={count!} rail={rail} />
                   ) : showChevron ? (
-                    <Box as="span" color="rgba(255,255,255,0.28)" display="flex" aria-hidden>
+                    <Box as="span" color={dashColors.text.faint} display="flex" aria-hidden>
                       <ChevronRight size={rail ? 16 : 18} strokeWidth={2} />
                     </Box>
                   ) : null}

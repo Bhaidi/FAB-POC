@@ -3,19 +3,20 @@
 import { useMemo, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { Box, Heading, SimpleGrid, Text, VStack } from "@chakra-ui/react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { PlatformCard } from "@/components/dashboard/PlatformCard";
 import { useDashboardTaxonomy } from "@/components/dashboard/DashboardTaxonomyContext";
 import { useDashboardSurfaceReady } from "@/components/dashboard/useDashboardSurfaceReady";
-import { dashColors, dashLayout } from "@/components/dashboard/dashboardTokens";
+import { dashLayout } from "@/components/dashboard/dashboardTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 import { DASHBOARD_SERVICE_HOVER_IMAGES } from "@/data/dashboardCardHoverImages";
 import { DASHBOARD_L1_HOME_TILES } from "@/data/dashboardL1Home";
 import type { PlatformDefinition } from "@/data/dashboardPlatforms";
 import type { PlatformHealth } from "@/data/dashboardStubApi";
 import { firstNavigableL3Href } from "@/lib/mergeServiceTaxonomy";
+import { dashSurfaceRevealTransition } from "@/lib/motion/dashboardSurface";
+import { ACCOUNT_SERVICES_BASE_PATH } from "@/lib/accountServicesRoutes";
 import type { ServiceDomain } from "@/types/platformServiceTaxonomy";
-
-const ease = [0.33, 1, 0.68, 1] as const;
 
 function hoverImageForServiceId(id: string): string {
   let h = 0;
@@ -24,6 +25,9 @@ function hoverImageForServiceId(id: string): string {
 }
 
 function buildCardHref(pathname: string, l1Code: string, leafHref: string | null): string {
+  if (l1Code === "accounts") {
+    return ACCOUNT_SERVICES_BASE_PATH;
+  }
   const q = new URLSearchParams();
   q.set("domain", l1Code);
   if (leafHref) {
@@ -65,10 +69,16 @@ export type PlatformServicesPanelsProps = {
 };
 
 export function PlatformServicesPanels({ variant = "default" }: PlatformServicesPanelsProps) {
+  const { dashColors } = useFabTokens();
   const pathname = usePathname() || "/dashboard";
   const { merge, error: taxonomyError } = useDashboardTaxonomy();
   const surfaceReady = useDashboardSurfaceReady();
+  const reduceMotion = useReducedMotion();
   const launchPad = variant === "launchpad";
+  const revealTransition = useMemo(
+    () => dashSurfaceRevealTransition(reduceMotion),
+    [reduceMotion]
+  );
 
   const activeCards = useMemo(() => {
     if (!merge) return [] as { domain: ServiceDomain; href: string }[];
@@ -166,9 +176,12 @@ export function PlatformServicesPanels({ variant = "default" }: PlatformServices
       <PlatformCardBand maxW={launchPad ? "full" : undefined}>
         {activeCards.length > 0 || showGhostGrid ? (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.34, ease, delay: 0.1 }}
+            initial={false}
+            animate={{
+              opacity: surfaceReady ? 1 : 0.76,
+              y: surfaceReady ? 0 : 5,
+            }}
+            transition={revealTransition}
             style={{ width: "100%" }}
           >
             <Heading

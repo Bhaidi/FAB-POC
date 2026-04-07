@@ -1,8 +1,10 @@
 "use client";
 
+import { useMemo } from "react";
 import { Button, Text, VStack } from "@chakra-ui/react";
 import { AuthPrimaryCtaButton } from "@/components/auth/AuthPrimaryCtaButton";
-import { authColors, authColumnTypography, authStepsSectionLabel, authVerificationSpacing } from "@/components/auth/authTokens";
+import { authStepsSectionLabel, authVerificationSpacing } from "@/components/auth/authTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 
 export type AuthFailureVariant = "rejected" | "expired" | "error";
 
@@ -37,18 +39,6 @@ const copy: Record<AuthFailureVariant, FailureCopy> = {
   },
 };
 
-const secondaryLinkStyles = {
-  fontFamily: "var(--font-graphik)",
-  fontWeight: 500,
-  fontSize: { base: "14px", md: "15px" },
-  lineHeight: "1.5",
-  color: authColors.text.secondary,
-  h: "auto",
-  minH: 0,
-  py: 2,
-  _hover: { color: authColors.text.primary, textDecoration: "underline" },
-} as const;
-
 export type AuthFailureViewProps = {
   variant: AuthFailureVariant;
   messageOverride?: string | null;
@@ -57,6 +47,23 @@ export type AuthFailureViewProps = {
 };
 
 export function AuthFailureView({ variant, messageOverride, onPrimary, onSecondary }: AuthFailureViewProps) {
+  const { authColors, authColumnTypography } = useFabTokens();
+  const secondaryLinkStyles = useMemo(
+    () =>
+      ({
+        fontFamily: "var(--font-graphik)",
+        fontWeight: 500,
+        fontSize: { base: "14px", md: "15px" },
+        lineHeight: "1.5",
+        color: authColors.text.secondary,
+        h: "auto",
+        minH: 0,
+        py: 2,
+        _hover: { color: authColors.text.primary, textDecoration: "underline" },
+      }) as const,
+    [authColors],
+  );
+
   const c = copy[variant];
   const body = messageOverride?.trim() ? messageOverride : c.body;
   const showSecondary = Boolean(c.secondaryCta && onSecondary);

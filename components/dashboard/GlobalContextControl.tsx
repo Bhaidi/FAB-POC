@@ -12,12 +12,14 @@ import {
   PopoverTrigger,
   Text,
   Tooltip,
+  useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { Check, ChevronDown, Globe } from "lucide-react";
 import { useDashboardGlobal } from "@/components/dashboard/DashboardGlobalContext";
-import { dashColors } from "@/components/dashboard/dashboardTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
+import { authColorsLight } from "@/lib/fabTheme/authPalettes";
 import { marketFlagEmoji } from "@/lib/marketDisplay";
 import type { PlatformMarket } from "@/types/platformMarkets";
 
@@ -26,6 +28,9 @@ const MotionBox = motion(Box);
 const panelEase: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 const INACTIVE_TOOLTIP = "Not active for your organization";
+
+/** Dropdown panel is always a light surface — ink stays FAB light spec regardless of app color mode. */
+const marketMenuText = authColorsLight.text;
 
 function isOperationalSelectable(m: PlatformMarket): boolean {
   return m.selectable && m.operationalStatus === "active";
@@ -41,9 +46,9 @@ function MarketFlagCell({ marketCode, dimmed }: { marketCode: string | null; dim
       align="center"
       justify="center"
       borderRadius="8px"
-      bg={dimmed ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.1)"}
+      bg={dimmed ? "rgba(1,5,145,0.04)" : "rgba(1,5,145,0.06)"}
       borderWidth="1px"
-      borderColor={dimmed ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.14)"}
+      borderColor={dimmed ? "rgba(1,5,145,0.06)" : "rgba(1,5,145,0.1)"}
       fontSize="18px"
       lineHeight={1}
       opacity={dimmed ? 0.65 : 1}
@@ -52,7 +57,7 @@ function MarketFlagCell({ marketCode, dimmed }: { marketCode: string | null; dim
       {emoji ? (
         emoji
       ) : (
-        <Globe size={17} strokeWidth={2} color="white" style={{ opacity: dimmed ? 0.5 : 0.9 }} />
+        <Globe size={17} strokeWidth={2} color="#48525E" style={{ opacity: dimmed ? 0.5 : 0.9 }} />
       )}
     </Flex>
   );
@@ -99,14 +104,14 @@ function SimpleMarketSelector({
       initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.18, ease: panelEase }}
-      color={dashColors.text.primary}
-      bg="rgba(10, 14, 28, 0.97)"
+      color={marketMenuText.primary}
+      bg="rgba(255, 255, 255, 0.98)"
       backdropFilter="blur(20px)"
       sx={{ WebkitBackdropFilter: "blur(20px)" }}
       borderRadius="14px"
       borderWidth="1px"
-      borderColor="rgba(255,255,255,0.1)"
-      boxShadow="0 20px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04)"
+      borderColor="rgba(1, 5, 145, 0.1)"
+      boxShadow="0 20px 48px rgba(1, 5, 145, 0.1), 0 0 0 1px rgba(1, 5, 145, 0.04)"
       overflow="hidden"
       py={2}
       minW="260px"
@@ -123,9 +128,9 @@ function SimpleMarketSelector({
         <Box
           px={3}
           py={3}
-          bg="rgba(0, 98, 255, 0.2)"
+          bg="rgba(0, 98, 255, 0.1)"
           borderLeftWidth="3px"
-          borderLeftColor="rgba(0, 160, 255, 0.95)"
+          borderLeftColor="rgba(0, 98, 255, 0.85)"
           borderRadius="10px"
         >
           <Flex align="center" gap={3} minH="28px">
@@ -136,12 +141,12 @@ function SimpleMarketSelector({
               fontSize="14px"
               fontWeight={600}
               letterSpacing="-0.01em"
-              color={dashColors.text.primary}
+              color={marketMenuText.primary}
               noOfLines={1}
             >
               {marketsLoading ? "…" : selectedLabel}
             </Text>
-            <Box color="rgba(255,255,255,0.92)" flexShrink={0} lineHeight={0} aria-hidden>
+            <Box color="#010591" flexShrink={0} lineHeight={0} aria-hidden>
               <Check size={17} strokeWidth={2.5} />
             </Box>
           </Flex>
@@ -152,7 +157,7 @@ function SimpleMarketSelector({
         <Box maxH="min(52vh, 340px)" overflowY="auto" sx={{ scrollbarGutter: "stable" }} px={1}>
           {hasActiveOthers ? (
             <>
-              <Divider borderColor="rgba(255,255,255,0.1)" my={3} />
+              <Divider borderColor="rgba(1, 5, 145, 0.1)" my={3} />
               <Box px={2} pb={1} pt={0}>
                 {activeOthers.map((m) => (
                   <Box
@@ -170,13 +175,13 @@ function SimpleMarketSelector({
                     fontSize="14px"
                     fontWeight={500}
                     letterSpacing="-0.01em"
-                    color={dashColors.text.primary}
+                    color={marketMenuText.primary}
                     bg="transparent"
                     border="none"
                     cursor="pointer"
                     transition="background 0.2s ease"
-                    _hover={{ bg: "rgba(255,255,255,0.09)" }}
-                    _active={{ bg: "rgba(255,255,255,0.12)" }}
+                    _hover={{ bg: "rgba(1, 5, 145, 0.05)" }}
+                    _active={{ bg: "rgba(1, 5, 145, 0.08)" }}
                     _focusVisible={{
                       outline: "2px solid",
                       outlineColor: "rgba(0, 98, 255, 0.65)",
@@ -201,7 +206,7 @@ function SimpleMarketSelector({
 
           {hasInactive ? (
             <>
-              <Divider borderColor="rgba(255,255,255,0.12)" borderTopWidth="2px" my={4} />
+              <Divider borderColor="rgba(1, 5, 145, 0.1)" borderTopWidth="2px" my={4} />
               <Box
                 mx={2}
                 mb={2}
@@ -209,10 +214,10 @@ function SimpleMarketSelector({
                 pt={3}
                 pb={2}
                 borderRadius="lg"
-                bg="rgba(0, 0, 0, 0.35)"
+                bg="rgba(1, 5, 145, 0.04)"
                 borderWidth="1px"
-                borderColor="rgba(255,255,255,0.08)"
-                boxShadow="inset 0 1px 0 rgba(255,255,255,0.04)"
+                borderColor="rgba(1, 5, 145, 0.08)"
+                boxShadow="inset 0 1px 0 rgba(255,255,255,0.9)"
               >
                 <Text
                   fontFamily="var(--font-graphik)"
@@ -220,7 +225,7 @@ function SimpleMarketSelector({
                   fontWeight={700}
                   letterSpacing="0.14em"
                   textTransform="uppercase"
-                  color={dashColors.text.tertiary}
+                  color={marketMenuText.tertiary}
                   mb={3}
                   px={0.5}
                 >
@@ -234,8 +239,8 @@ function SimpleMarketSelector({
                       placement="left"
                       hasArrow
                       openDelay={280}
-                      bg="rgba(8, 12, 24, 0.96)"
-                      color="white"
+                      bg="rgba(255, 255, 255, 0.98)"
+                      color="#48525E"
                       fontSize="xs"
                       px={3}
                       py={2}
@@ -249,7 +254,7 @@ function SimpleMarketSelector({
                         borderRadius="md"
                         cursor="default"
                         aria-disabled
-                        _hover={{ bg: "rgba(255,255,255,0.02)" }}
+                        _hover={{ bg: "rgba(1, 5, 145, 0.04)" }}
                         transition="background 0.15s ease"
                       >
                         <Flex align="center" gap={3} pointerEvents="none">
@@ -259,7 +264,7 @@ function SimpleMarketSelector({
                             fontSize="14px"
                             fontWeight={500}
                             letterSpacing="-0.01em"
-                            color={dashColors.text.secondary}
+                            color={marketMenuText.secondary}
                             noOfLines={1}
                             flex="1"
                           >
@@ -284,6 +289,9 @@ function SimpleMarketSelector({
  */
 export function GlobalContextControl() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === "dark";
+  const { dashColors } = useFabTokens();
 
   const { marketCode, selectedMarketName, markets, marketsLoading, error, selectMarket } = useDashboardGlobal();
 
@@ -308,8 +316,12 @@ export function GlobalContextControl() {
           fontFamily="var(--font-graphik)"
           lineHeight={1.2}
           transition="background 0.2s ease"
-          _hover={{ bg: "rgba(255,255,255,0.1)" }}
-          _active={{ bg: "rgba(255,255,255,0.12)" }}
+          _hover={{
+            bg: isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(1, 5, 145, 0.06)",
+          }}
+          _active={{
+            bg: isDark ? "rgba(255, 255, 255, 0.14)" : "rgba(1, 5, 145, 0.09)",
+          }}
           _focusVisible={{ outline: "none", boxShadow: "0 0 0 2px rgba(0, 98, 255, 0.45)" }}
           aria-label={`Operating market: ${selectedMarketName}`}
           aria-haspopup="listbox"
@@ -323,22 +335,31 @@ export function GlobalContextControl() {
             align="center"
             justify="center"
             borderRadius="8px"
-            bg="rgba(255,255,255,0.12)"
+            bg={isDark ? "rgba(255, 255, 255, 0.08)" : "#F2F2F3"}
             borderWidth="1px"
-            borderColor="rgba(255,255,255,0.16)"
+            borderColor={isDark ? "rgba(255, 255, 255, 0.14)" : "rgba(1, 5, 145, 0.1)"}
             fontSize="16px"
             lineHeight={1}
             aria-hidden
           >
-            {headerFlag ? headerFlag : <Globe size={16} strokeWidth={2} color="white" style={{ opacity: 0.92 }} />}
+            {headerFlag ? (
+              headerFlag
+            ) : (
+              <Globe
+                size={16}
+                strokeWidth={2}
+                color={isDark ? "rgba(255, 255, 255, 0.85)" : "#48525E"}
+                style={{ opacity: 0.92 }}
+              />
+            )}
           </Flex>
           <Text
             as="span"
             fontSize="14px"
             fontWeight={600}
             letterSpacing="-0.02em"
-            color="#FFFFFF"
-            textShadow="0 1px 3px rgba(0,0,0,0.45)"
+            color={dashColors.text.primary}
+            textShadow="none"
             noOfLines={1}
             minW={0}
             flexShrink={1}
@@ -346,7 +367,7 @@ export function GlobalContextControl() {
             {marketsLoading ? "…" : selectedMarketName}
           </Text>
           <Box
-            color="rgba(255,255,255,0.72)"
+            color={dashColors.text.tertiary}
             lineHeight={0}
             flexShrink={0}
             transition="transform 0.2s ease"

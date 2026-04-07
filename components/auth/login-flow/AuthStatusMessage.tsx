@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Text } from "@chakra-ui/react";
-import { authColors } from "@/components/auth/authTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 
 type Tone = "error" | "info";
 
@@ -14,6 +14,7 @@ export function AuthStatusMessage({
   tone?: Tone;
   role?: "alert" | "status";
 }) {
+  const { authColors } = useFabTokens();
   const color = tone === "error" ? "rgba(255, 160, 160, 0.95)" : authColors.text.secondary;
   const border = tone === "error" ? "rgba(255, 120, 120, 0.35)" : authColors.border.default;
   const bg = tone === "error" ? "rgba(120, 20, 20, 0.2)" : "rgba(255,255,255,0.04)";

@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import {
   Box,
   Icon,
@@ -7,7 +8,10 @@ import {
   InputGroup,
   InputLeftElement,
   Text,
+  useColorMode,
 } from "@chakra-ui/react";
+import { AUTH_INPUT_FIGMA_LAYOUT, getAuthInputFieldStyles } from "@/components/auth/authInputStyles";
+import { getDsTextFieldStyles } from "@/lib/fabTheme/dsTextField";
 
 interface LoginInputProps {
   id?: string;
@@ -18,7 +22,7 @@ interface LoginInputProps {
 }
 
 /**
- * Dark sleek input for login/fintech screens. Glass-style with blue focus glow.
+ * Dark credential field — Design System text field (Figma 558:17083).
  */
 export function LoginInput({
   id,
@@ -27,6 +31,21 @@ export function LoginInput({
   type = "text",
   leftIcon,
 }: LoginInputProps) {
+  const { colorMode } = useColorMode();
+  const field = useMemo(() => {
+    if (leftIcon) {
+      return {
+        ...getDsTextFieldStyles({
+          colorMode: colorMode === "dark" ? "dark" : "light",
+          height: "48px",
+          paddingX: false,
+        }),
+        ...AUTH_INPUT_FIGMA_LAYOUT,
+      } as const;
+    }
+    return getAuthInputFieldStyles(colorMode);
+  }, [leftIcon, colorMode]);
+
   return (
     <Box>
       <Text
@@ -41,31 +60,19 @@ export function LoginInput({
         {label}
       </Text>
       <InputGroup>
-        {leftIcon && (
-          <InputLeftElement pointerEvents="none" h="44px">
+        {leftIcon ? (
+          <InputLeftElement pointerEvents="none" h="48px" w="48px">
             <Icon as={leftIcon} color="whiteAlpha.500" boxSize={5} />
           </InputLeftElement>
-        )}
+        ) : null}
         <Input
           id={id}
           type={type}
           placeholder={placeholder}
-          pl={leftIcon ? 10 : 4}
-          h="44px"
-          minH="44px"
-          borderRadius="md"
-          bg="loginScreen.inputBg"
-          border="1px solid"
-          borderColor="loginScreen.inputBorder"
-          color="white"
-          fontSize="sm"
-          _placeholder={{ color: "whiteAlpha.4" }}
-          _hover={{ borderColor: "whiteAlpha.2" }}
-          _focus={{
-            borderColor: "accent.linkCta",
-            boxShadow: "0 0 0 1px var(--chakra-colors-accent-linkCta), 0 0 20px rgba(15, 98, 254, 0.15)",
-            outline: "none",
-          }}
+          variant="unstyled"
+          {...field}
+          pl={leftIcon ? 12 : undefined}
+          pr={leftIcon ? "24px" : undefined}
         />
       </InputGroup>
     </Box>

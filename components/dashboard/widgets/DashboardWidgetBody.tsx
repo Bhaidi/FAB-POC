@@ -1,8 +1,9 @@
 "use client";
 
 import { Box, Flex, Text, VStack } from "@chakra-ui/react";
+import type { FabTokens } from "@/lib/fabTheme/buildFabTokens";
 import type { DashboardWidget } from "@/types/platformDashboard";
-import { dashColors } from "@/components/dashboard/dashboardTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 
 function num(v: unknown): number {
   const n = typeof v === "number" ? v : Number(v);
@@ -19,7 +20,7 @@ function formatShort(iso: string): string {
   return new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(d);
 }
 
-function rowStyles(compact: boolean) {
+function rowStyles(compact: boolean, dashColors: FabTokens["dashColors"]) {
   return {
     rowText: {
       fontFamily: "var(--font-graphik)",
@@ -39,12 +40,14 @@ function StatRow({
   label,
   value,
   compact,
+  dashColors,
 }: {
   label: string;
   value: string | number;
   compact?: boolean;
+  dashColors: FabTokens["dashColors"];
 }) {
-  const { rowText, valueText } = rowStyles(!!compact);
+  const { rowText, valueText } = rowStyles(!!compact, dashColors);
   return (
     <Flex justify="space-between" align="baseline" gap={compact ? 2 : 3} py={compact ? 0.5 : 1}>
       <Text {...rowText} noOfLines={1}>
@@ -61,24 +64,25 @@ function StatRow({
  * Renders `widget.data` by API `kind` — no persona branching.
  */
 export function DashboardWidgetBody({ widget, compact = false }: { widget: DashboardWidget; compact?: boolean }) {
+  const { dashColors } = useFabTokens();
   const { kind, data } = widget;
-  const { rowText, valueText } = rowStyles(compact);
+  const { rowText, valueText } = rowStyles(compact, dashColors);
 
   switch (kind) {
     case "maker_submitted_items":
       return (
         <VStack align="stretch" spacing={0} pt={compact ? 0 : 1}>
-          <StatRow compact={compact} label="Awaiting approval" value={num(data.awaitingApproval)} />
-          <StatRow compact={compact} label="Rejected" value={num(data.rejected)} />
-          <StatRow compact={compact} label="Processed" value={num(data.processed)} />
+          <StatRow dashColors={dashColors} compact={compact} label="Awaiting approval" value={num(data.awaitingApproval)} />
+          <StatRow dashColors={dashColors} compact={compact} label="Rejected" value={num(data.rejected)} />
+          <StatRow dashColors={dashColors} compact={compact} label="Processed" value={num(data.processed)} />
         </VStack>
       );
 
     case "maker_needs_attention":
       return (
         <VStack align="stretch" spacing={0} pt={compact ? 0 : 1}>
-          <StatRow compact={compact} label="Rejected items" value={num(data.rejectedItems)} />
-          <StatRow compact={compact} label="Failed transactions" value={num(data.failedTransactions)} />
+          <StatRow dashColors={dashColors} compact={compact} label="Rejected items" value={num(data.rejectedItems)} />
+          <StatRow dashColors={dashColors} compact={compact} label="Failed transactions" value={num(data.failedTransactions)} />
         </VStack>
       );
 
@@ -114,7 +118,7 @@ export function DashboardWidgetBody({ widget, compact = false }: { widget: Dashb
       const last = str(data.lastEdited);
       return (
         <VStack align="stretch" spacing={1} pt={compact ? 0 : 1}>
-          <StatRow compact={compact} label="Saved drafts" value={num(data.count)} />
+          <StatRow dashColors={dashColors} compact={compact} label="Saved drafts" value={num(data.count)} />
           {last ? (
             <Text {...rowText} fontSize={compact ? "10px" : "12px"} noOfLines={2}>
               Last edited {formatShort(last)}
@@ -143,7 +147,15 @@ export function DashboardWidgetBody({ widget, compact = false }: { widget: Dashb
           <VStack align="stretch" spacing={0}>
             {breakdown.slice(0, compact ? 3 : breakdown.length).map((b) => {
               const row = b as Record<string, unknown>;
-              return <StatRow key={str(row.label)} compact={compact} label={str(row.label)} value={num(row.count)} />;
+              return (
+                <StatRow
+                  key={str(row.label)}
+                  dashColors={dashColors}
+                  compact={compact}
+                  label={str(row.label)}
+                  value={num(row.count)}
+                />
+              );
             })}
           </VStack>
         </VStack>
@@ -174,7 +186,7 @@ export function DashboardWidgetBody({ widget, compact = false }: { widget: Dashb
     case "checker_aging_approvals":
       return (
         <VStack align="stretch" spacing={compact ? 1 : 2} pt={compact ? 0 : 1}>
-          <StatRow compact={compact} label="Pending over 24h" value={num(data.countOver24h)} />
+          <StatRow dashColors={dashColors} compact={compact} label="Pending over 24h" value={num(data.countOver24h)} />
           <Box>
             <Text {...rowText} fontSize={compact ? "10px" : "12px"} mb={0.5}>
               Oldest

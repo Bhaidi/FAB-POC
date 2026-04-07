@@ -4,12 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Box, Flex, Text, VStack } from "@chakra-ui/react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { AuthPrimaryCtaButton } from "@/components/auth/AuthPrimaryCtaButton";
-import {
-  authColors,
-  authColumnTypography,
-  authStepsSectionLabel,
-  authVerifyScreenSpacing,
-} from "@/components/auth/authTokens";
+import { authStepsSectionLabel, authVerifyScreenSpacing } from "@/components/auth/authTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 import { AuthRecoveryActions } from "@/components/auth/login-flow/AuthRecoveryActions";
 import { ChallengeNumberCard, type VerifyCardPhase } from "@/components/auth/login-flow/ChallengeNumberCard";
 import { VerifyCodeExpiryTimer } from "@/components/auth/login-flow/VerifyCodeExpiryTimer";
@@ -70,6 +66,7 @@ export function LoginPushVerifyView({
 }: LoginPushVerifyViewProps) {
   const reduceMotion = useReducedMotion();
   const rm = reduceMotion === true;
+  const { authColors, authColumnTypography } = useFabTokens();
   const [resendBusy, setResendBusy] = useState(false);
   const [shimmerNonce, setShimmerNonce] = useState(0);
   const [codeExpired, setCodeExpired] = useState(false);
@@ -234,7 +231,15 @@ export function LoginPushVerifyView({
       }
       style={{ width: "100%" }}
     >
-      <VStack align="center" spacing={0} w="full" maxW="min(520px, 100%)" mx="auto" pb={{ base: 10, md: 12, lg: 14 }}>
+      <VStack
+        align="center"
+        spacing={0}
+        w="full"
+        maxW="min(520px, 100%)"
+        mx="auto"
+        pt={2}
+        pb={{ base: 10, md: 12, lg: 14 }}
+      >
         {isPendingOnly ? (
           <motion.div {...fadeUp(STAGGER.eyebrow)} style={{ width: "100%" }}>
             <Text
@@ -352,7 +357,7 @@ export function LoginPushVerifyView({
               mt={s.titleToSecondary}
               px={{ base: 2, md: 0 }}
             >
-              Open your FAB Corporate Mobile App and confirm this request.
+              Open your FAB Corporate Mobile App and approve the request. Enter the number if prompted.
             </Text>
           </motion.div>
         ) : (
@@ -375,7 +380,7 @@ export function LoginPushVerifyView({
                     textAlign="center"
                     px={{ base: 2, md: 0 }}
                   >
-                    Open your FAB Corporate Mobile App and confirm this request.
+                    Open your FAB Corporate Mobile App and approve the request. Enter the number if prompted.
                   </Text>
                 </motion.div>
               ) : (
@@ -505,8 +510,8 @@ export function LoginPushVerifyView({
                   style={{ width: "100%", display: "flex", justifyContent: "center" }}
                 >
                   <AuthPrimaryCtaButton
+                    type="button"
                     stableMetrics
-                    visualTone="success"
                     align="center"
                     onClick={handleContinue}
                   >

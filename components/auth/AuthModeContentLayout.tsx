@@ -1,14 +1,8 @@
 "use client";
 
 import { Box, Text, VStack } from "@chakra-ui/react";
-import {
-  authColors,
-  authColumnTypography,
-  authHeroTypography,
-  authLayout,
-  authLoginFormVertical,
-  authSpacing,
-} from "@/components/auth/authTokens";
+import { authLayout, authLoginFormVertical, authSpacing } from "@/components/auth/authTokens";
+import { useFabTokens } from "@/components/theme/FabTokensContext";
 
 export type AuthModeContentLayoutProps = {
   eyebrow: string;
@@ -39,6 +33,7 @@ export function AuthModeContentLayout({
   secondaryActions,
   verticalProfile = "default",
 }: AuthModeContentLayoutProps) {
+  const { authColors, authColumnTypography, authHeroTypography } = useFabTokens();
   const hasIntroSupporting = Boolean(secondary || tertiary);
   const isLoginForm = verticalProfile === "loginForm";
 

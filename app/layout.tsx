@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { ChakraColorModeScript } from "@/components/ChakraColorModeScript";
 import { Providers } from "@/components/providers";
 import "./globals.css";
 
@@ -34,6 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={graphik.variable}>
       <body className={graphik.className}>
+        <ChakraColorModeScript />
         <Providers>{children}</Providers>
       </body>
     </html>
