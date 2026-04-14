@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Box, Text, VStack } from "@chakra-ui/react";
+import { Box, Text, useColorMode, VStack } from "@chakra-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useOptionalAuthChrome } from "@/components/auth/AuthChromeContext";
 import { AuthSplitLayout } from "@/components/auth/AuthSplitLayout";
@@ -21,21 +21,41 @@ const EASE_OUT = [0.33, 1, 0.68, 1] as const;
 const TRANS_IN = { duration: 0.28, ease: EASE_OUT } as const;
 
 function LoginHeroColumn() {
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === "dark";
   const { authColors, authHeroTypography } = useFabTokens();
+  const overlineColor = isDark ? authColors.text.muted : authColors.accent;
+  const subtitleColor = isDark ? authColors.text.tertiary : authColors.text.heroBody;
+  /** Login hero headline — DS: Graphik 80 / 300, secondary blue */
+  const loginHeroHeadline = {
+    fontSize: "80px",
+    fontStyle: "normal" as const,
+    fontWeight: 300,
+    lineHeight: "normal",
+    color: "var(--color-secondary-blue-600, #004ABF)",
+  };
+  const heroBodyLight = {
+    fontSize: "24px",
+    fontStyle: "normal" as const,
+    fontWeight: 300,
+    lineHeight: "normal",
+    letterSpacing: "0.24px",
+    color: "var(--text-body, #6A6C6F)",
+  };
   return (
     <VStack align={{ base: "center", lg: "flex-start" }} spacing={0} w="full" pb={authLoginHeroVertical.descriptionTail}>
       <Text
         fontFamily="var(--font-graphik)"
         {...authHeroTypography.overline}
-        color={authColors.text.muted}
+        color={overlineColor}
         textAlign={{ base: "center", lg: "left" }}
+        mt={{ base: -2, md: -3, lg: -4 }}
       >
         Corporate banking
       </Text>
       <Text
         fontFamily="var(--font-graphik)"
-        {...authHeroTypography.headline}
-        color={authColors.text.primary}
+        {...loginHeroHeadline}
         whiteSpace="pre-wrap"
         textAlign={{ base: "center", lg: "left" }}
         mt={authLoginHeroVertical.eyebrowToHeading}
@@ -48,8 +68,7 @@ function LoginHeroColumn() {
       </Text>
       <Text
         fontFamily="var(--font-graphik)"
-        {...authHeroTypography.subtitle}
-        color={authColors.text.tertiary}
+        {...(isDark ? { ...authHeroTypography.subtitle, color: subtitleColor } : heroBodyLight)}
         textAlign={{ base: "center", lg: "left" }}
         maxW={authSpacing.heroBodyMaxW}
         mt={authLoginHeroVertical.headingToDescription}

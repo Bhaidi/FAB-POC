@@ -19,6 +19,7 @@ import type { Table as TanstackTable } from "@tanstack/react-table";
 import { SlidersHorizontal } from "lucide-react";
 import { useFabTokens } from "@/components/theme/FabTokensContext";
 import type { CorporateBankingGridRow } from "@/data/corporateBankingGridTypes";
+import { glassTokens } from "@/lib/glassTokens";
 import type { CorporateGridColMeta } from "@/components/account-services/portfolio/corporateGrid/corporateGridColumnMeta";
 
 type Props = {
@@ -40,13 +41,18 @@ export function PortfolioColumnVisibilityTrigger({ table }: Props) {
         />
       </PopoverTrigger>
       <PopoverContent
-        bg="rgba(14, 18, 36, 0.98)"
-        borderWidth={0}
+        bg={glassTokens.fill.panel}
+        borderWidth="1px"
+        borderColor={glassTokens.border.default}
+        backdropFilter={glassTokens.blur.card}
+        sx={{
+          WebkitBackdropFilter: glassTokens.blur.card,
+          boxShadow: glassTokens.shadowStack.panel,
+        }}
         w="280px"
         zIndex={160}
-        boxShadow="0 16px 48px rgba(0,0,0,0.35)"
       >
-        <PopoverArrow bg="rgba(14, 18, 36, 0.98)" />
+        <PopoverArrow bg={glassTokens.fill.panel} borderColor={glassTokens.border.default} />
         <PopoverCloseButton color="rgba(255,255,255,0.5)" />
         <PopoverHeader
           borderBottomWidth={0}

@@ -1,10 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
 import {
+  Box,
   Flex,
   IconButton,
-  Input,
   Select,
   Text,
   useColorMode,
@@ -12,8 +11,9 @@ import {
 import type { Table as TanstackTable } from "@tanstack/react-table";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { CorporateBankingGridRow } from "@/data/corporateBankingGridTypes";
+import { GlassCredentialFieldFrame } from "@/components/auth/GlassCredentialFieldFrame";
 import { useFabTokens } from "@/components/theme/FabTokensContext";
-import { getDsTextFieldStyles } from "@/lib/fabTheme/dsTextField";
+import { DsTextField } from "@/components/ui/DsTextField";
 
 type Props = {
   table: TanstackTable<CorporateBankingGridRow>;
@@ -22,15 +22,7 @@ type Props = {
 export function PortfolioPagination({ table }: Props) {
   const { corpTable } = useFabTokens();
   const { colorMode } = useColorMode();
-  const pageFieldStyles = useMemo(
-    () =>
-      getDsTextFieldStyles({
-        colorMode: colorMode === "dark" ? "dark" : "light",
-        height: "32px",
-        paddingX: "6px",
-      }),
-    [colorMode],
-  );
+  const isDark = colorMode === "dark";
   const { pageIndex, pageSize } = table.getState().pagination;
   const filtered = table.getFilteredRowModel().rows.length;
   const pageCount = Math.max(1, table.getPageCount());
@@ -59,10 +51,10 @@ export function PortfolioPagination({ table }: Props) {
           _hover={{ bg: "rgba(255,255,255,0.08)" }}
         />
         <Flex align="center" gap={1}>
-          <Input
+          <DsTextField
             w="52px"
-            size="sm"
-            variant="unstyled"
+            fieldHeight="32px"
+            fieldPaddingX="6px"
             textAlign="center"
             type="number"
             min={1}
@@ -74,7 +66,6 @@ export function PortfolioPagination({ table }: Props) {
               table.setPageIndex(Math.min(v - 1, pageCount - 1));
             }}
             sx={{ fontVariantNumeric: "tabular-nums" }}
-            {...pageFieldStyles}
           />
           <Text
             fontFamily={corpTable.chromeFontFamily}
@@ -96,28 +87,62 @@ export function PortfolioPagination({ table }: Props) {
           onClick={() => table.nextPage()}
           _hover={{ bg: "rgba(255,255,255,0.08)" }}
         />
-        <Select
-          size="sm"
-          w="auto"
-          ml={1}
-          value={String(pageSize)}
-          onChange={(e) => table.setPageSize(Number(e.target.value))}
-          bg={corpTable.filterInputBg}
-          borderWidth={0}
-          sx={{
-            fontFamily: corpTable.chromeFontFamily,
-            fontWeight: corpTable.chromeFontWeight,
-            fontSize: corpTable.chromeFontSize,
-            letterSpacing: corpTable.chromeLetterSpacing,
-            color: corpTable.chromeText,
-          }}
-        >
-          {[10, 25, 50, 100, 500, 1000].map((n) => (
-            <option key={n} value={n} style={{ background: corpTable.selectOptionBg }}>
-              {n} / page
-            </option>
-          ))}
-        </Select>
+        {isDark ? (
+          <Box ml={1}>
+            <GlassCredentialFieldFrame height="32px" w="auto" maxW="none">
+              <Select
+                size="sm"
+                w="auto"
+                minW="118px"
+                variant="unstyled"
+                h="full"
+                cursor="pointer"
+                bg="transparent"
+                borderWidth={0}
+                value={String(pageSize)}
+                onChange={(e) => table.setPageSize(Number(e.target.value))}
+                iconColor="rgba(255,255,255,0.45)"
+                sx={{
+                  px: "10px",
+                  fontFamily: corpTable.chromeFontFamily,
+                  fontWeight: corpTable.chromeFontWeight,
+                  fontSize: corpTable.chromeFontSize,
+                  letterSpacing: corpTable.chromeLetterSpacing,
+                  color: corpTable.chromeText,
+                }}
+              >
+                {[10, 25, 50, 100, 500, 1000].map((n) => (
+                  <option key={n} value={n} style={{ background: corpTable.selectOptionBg }}>
+                    {n} / page
+                  </option>
+                ))}
+              </Select>
+            </GlassCredentialFieldFrame>
+          </Box>
+        ) : (
+          <Select
+            size="sm"
+            w="auto"
+            ml={1}
+            value={String(pageSize)}
+            onChange={(e) => table.setPageSize(Number(e.target.value))}
+            bg={corpTable.filterInputBg}
+            borderWidth={0}
+            sx={{
+              fontFamily: corpTable.chromeFontFamily,
+              fontWeight: corpTable.chromeFontWeight,
+              fontSize: corpTable.chromeFontSize,
+              letterSpacing: corpTable.chromeLetterSpacing,
+              color: corpTable.chromeText,
+            }}
+          >
+            {[10, 25, 50, 100, 500, 1000].map((n) => (
+              <option key={n} value={n} style={{ background: corpTable.selectOptionBg }}>
+                {n} / page
+              </option>
+            ))}
+          </Select>
+        )}
       </Flex>
 
       <Text

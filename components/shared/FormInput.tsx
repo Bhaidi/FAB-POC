@@ -1,15 +1,12 @@
 "use client";
 
-import { useMemo } from "react";
 import {
   FormControl,
   FormLabel,
   FormErrorMessage,
-  Input,
   InputProps,
-  useColorMode,
 } from "@chakra-ui/react";
-import { getDsTextFieldStyles } from "@/lib/fabTheme/dsTextField";
+import { DsTextField } from "@/components/ui/DsTextField";
 
 interface FormInputProps extends InputProps {
   label?: string;
@@ -17,16 +14,6 @@ interface FormInputProps extends InputProps {
 }
 
 export function FormInput({ label, error, id, ...inputProps }: FormInputProps) {
-  const { colorMode } = useColorMode();
-  const ds = useMemo(
-    () =>
-      getDsTextFieldStyles({
-        colorMode: colorMode === "dark" ? "dark" : "light",
-        height: "48px",
-      }),
-    [colorMode],
-  );
-
   return (
     <FormControl isInvalid={!!error}>
       {label && (
@@ -34,7 +21,7 @@ export function FormInput({ label, error, id, ...inputProps }: FormInputProps) {
           {label}
         </FormLabel>
       )}
-      <Input id={id} variant="unstyled" {...ds} placeholder={inputProps.placeholder} {...inputProps} />
+      <DsTextField id={id} w="full" placeholder={inputProps.placeholder} {...inputProps} />
       {error && <FormErrorMessage>{error}</FormErrorMessage>}
     </FormControl>
   );

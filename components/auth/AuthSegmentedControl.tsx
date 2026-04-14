@@ -12,6 +12,8 @@ import {
 } from "react";
 import { Box, useColorMode } from "@chakra-ui/react";
 import { animate, motion, useMotionValue, useReducedMotion, type MotionStyle } from "framer-motion";
+import { GlassCornerRim } from "@/components/ui/GlassCornerRim";
+import { glassCornerRimPaletteAuth } from "@/lib/fabTheme/glassCornerRim";
 import { useFabTokens } from "@/components/theme/FabTokensContext";
 
 export type AuthSegmentedOption<T extends string = string> = {
@@ -49,6 +51,13 @@ const GAP_DARK = 12;
 const TRACK_OUTER_W_DARK = 406;
 const TRACK_OUTER_H_DARK = 64;
 const INNER_H_DARK = TRACK_OUTER_H_DARK - 2 * PAD_DARK;
+
+/** Login/register master toggle — compact so it doesn’t dominate the header */
+const PAD_AUTH = 5;
+const GAP_AUTH = 10;
+const TRACK_OUTER_W_AUTH = 320;
+const TRACK_OUTER_H_AUTH = 52;
+const INNER_H_AUTH = TRACK_OUTER_H_AUTH - 2 * PAD_AUTH;
 
 /** Pill snap — soft, iOS-weighted motion */
 const SNAP_SPRING = {
@@ -123,13 +132,24 @@ export function AuthSegmentedControl<T extends string>({
   const { colorMode } = useColorMode();
   const isDark = colorMode === "dark";
   const tokens = useFabTokens();
+  /** Figma `558:17096` — login/register light track matches dark dimensions (406×64, 6px pad). */
+  const authPageLight = !isDark && layout === "auth";
   const seg =
-    surface === "canvas" ? tokens.authSegmentedControlCanvas : tokens.authSegmentedControlTheme;
+    authPageLight && surface !== "canvas"
+      ? tokens.authSegmentedControlLoginLight
+      : surface === "canvas"
+        ? tokens.authSegmentedControlCanvas
+        : tokens.authSegmentedControlTheme;
 
-  const pad = isDark ? PAD_DARK : PAD_LIGHT;
-  const gap = isDark ? GAP_DARK : GAP_LIGHT;
-  const innerH = isDark ? INNER_H_DARK : INNER_H_LIGHT;
-  const trackOuterH = isDark ? TRACK_OUTER_H_DARK : INNER_H_LIGHT + 2 * PAD_LIGHT;
+  const authToggleCompact = layout === "auth" && (isDark || authPageLight);
+  const pad = authToggleCompact ? PAD_AUTH : isDark || authPageLight ? PAD_DARK : PAD_LIGHT;
+  const gap = authToggleCompact ? GAP_AUTH : isDark || authPageLight ? GAP_DARK : GAP_LIGHT;
+  const innerH = authToggleCompact ? INNER_H_AUTH : isDark || authPageLight ? INNER_H_DARK : INNER_H_LIGHT;
+  const trackOuterH = authToggleCompact
+    ? TRACK_OUTER_H_AUTH
+    : isDark || authPageLight
+      ? TRACK_OUTER_H_DARK
+      : INNER_H_LIGHT + 2 * PAD_LIGHT;
 
   const {
     track: trackChrome,
@@ -153,12 +173,18 @@ export function AuthSegmentedControl<T extends string>({
             inactive: { opacity: 1, scale: 1 },
             inactiveHover: { opacity: 1, scale: 1 },
           } as const)
-        : ({
-            active: { color: labelChrome.active, fontWeight: 650, opacity: 1, scale: 1 },
-            inactive: { color: labelChrome.inactive, fontWeight: 600, opacity: 0.88, scale: 1 },
-            inactiveHover: { color: labelChrome.inactiveHover, fontWeight: 600, opacity: 1, scale: 1.02 },
-          } as const),
-    [isDark, labelChrome],
+        : authPageLight
+          ? ({
+              active: { color: labelChrome.active, fontWeight: 500, opacity: 1, scale: 1 },
+              inactive: { color: labelChrome.inactive, fontWeight: 400, opacity: 1, scale: 1 },
+              inactiveHover: { color: labelChrome.inactiveHover, fontWeight: 400, opacity: 1, scale: 1 },
+            } as const)
+          : ({
+              active: { color: labelChrome.active, fontWeight: 650, opacity: 1, scale: 1 },
+              inactive: { color: labelChrome.inactive, fontWeight: 600, opacity: 0.88, scale: 1 },
+              inactiveHover: { color: labelChrome.inactiveHover, fontWeight: 600, opacity: 1, scale: 1.02 },
+            } as const),
+    [authPageLight, isDark, labelChrome],
   );
 
   const reduceMotion = useReducedMotion();
@@ -279,14 +305,18 @@ export function AuthSegmentedControl<T extends string>({
     [N, gap, innerGapsPx, metrics.thumbW],
   );
 
-  const thumbRadiusPx = isDark ? 74 : 9999;
+  const thumbRadiusPx = authPageLight || isDark ? (isDark ? 74 : 100) : 9999;
   /** DS outer `border-radius: 100px`; inner well = 100 − pad (no track border in DS) */
-  const trackOuterRadiusPx = isDark ? 100 : 9999;
-  const trackInnerWellRadius = isDark ? 100 - pad : 9999;
+  const trackOuterRadiusPx = authPageLight || isDark ? 100 : 9999;
+  const trackInnerWellRadius = authPageLight || isDark ? 100 - pad : 9999;
 
   const thumbVisual = isDragging ? { ...thumbChrome, ...thumbDragChrome } : thumbChrome;
   const thumbLift =
-    isDark || reduceMotion ? { scale: 1, y: 0 } : isDragging ? { scale: 1.04, y: -1.5 } : { scale: 1, y: 0 };
+    isDark || authPageLight || reduceMotion
+      ? { scale: 1, y: 0 }
+      : isDragging
+        ? { scale: 1.04, y: -1.5 }
+        : { scale: 1, y: 0 };
 
   const innerWellShadow = trackInnerWellShadow ?? "none";
 
@@ -294,16 +324,19 @@ export function AuthSegmentedControl<T extends string>({
 
   const auraShadow = isDragging ? thumbDraggingAura ?? thumbAura : thumbAura;
 
+  const darkLabelCompactSx: CSSProperties | undefined =
+    authToggleCompact && isDark ? { fontSize: "14px", lineHeight: "20px" } : undefined;
+
   const outerStyle =
     layout === "auth"
-      ? isDark
+      ? isDark || authPageLight
         ? {
             display: "flex" as const,
             flexDirection: "column" as const,
             justifyContent: "center" as const,
             alignItems: "flex-start" as const,
             gap: 12,
-            width: TRACK_OUTER_W_DARK,
+            width: authToggleCompact ? TRACK_OUTER_W_AUTH : TRACK_OUTER_W_DARK,
             maxWidth: "100%" as const,
             minWidth: 0,
           }
@@ -323,10 +356,10 @@ export function AuthSegmentedControl<T extends string>({
     ...outerStyle,
     height: trackOuterH,
     minHeight: trackOuterH,
-    maxHeight: layout === "auth" && isDark ? TRACK_OUTER_H_DARK : undefined,
+    maxHeight: layout === "auth" && (isDark || authPageLight) ? trackOuterH : undefined,
     marginLeft: layout === "auth" ? "auto" : undefined,
     marginRight: layout === "auth" ? "auto" : undefined,
-    padding: layout === "auth" && isDark ? `${PAD_DARK}px` : pad,
+    padding: layout === "auth" && (isDark || authPageLight) ? `${pad}px` : pad,
     borderRadius: trackOuterRadiusPx === 9999 ? 9999 : trackOuterRadiusPx,
     transform: "translateZ(0)",
     isolation: "isolate",
@@ -335,16 +368,24 @@ export function AuthSegmentedControl<T extends string>({
     ...trackChrome,
   };
 
+  const segmentOuterGlassR =
+    isDark && layout === "auth"
+      ? `${Math.min(trackOuterRadiusPx, trackOuterH / 2)}px`
+      : null;
+
   return (
     <motion.div
       ref={containerRef}
       className="auth-segmented-control"
       style={trackSurfaceStyle}
       initial={false}
-      whileTap={isDisabled || dragEnabled || isDark ? undefined : { scale: 0.992 }}
+      whileTap={isDisabled || dragEnabled || isDark || authPageLight ? undefined : { scale: 0.992 }}
       transition={reduceMotion ? { duration: 0.18, ease: [0.25, 0.1, 0.25, 1] } : SNAP_SPRING}
       data-auth-segmented-disabled={isDisabled ? "" : undefined}
     >
+      {segmentOuterGlassR ? (
+        <GlassCornerRim radius={segmentOuterGlassR} palette={glassCornerRimPaletteAuth} zIndex={4} />
+      ) : null}
       {trackSheen ? (
         <Box
           position="absolute"
@@ -403,7 +444,8 @@ export function AuthSegmentedControl<T extends string>({
         top={`${pad}px`}
         right={`${pad}px`}
         h={`${innerH}px`}
-        zIndex={3}
+        /** Above the thumb so selected label (light mode: white on blue) paints on the pill; thumb stays below for hit-testing via `pointerEvents` on segments */
+        zIndex={8}
         pointerEvents="none"
       >
         {options.map((opt, ix) => (
@@ -420,7 +462,7 @@ export function AuthSegmentedControl<T extends string>({
             bottom={0}
             w={thumbWpx}
             minW={0}
-            zIndex={activeIndex === ix ? 3 : 5}
+            zIndex={1}
             display="flex"
             alignItems="center"
             justifyContent="center"
@@ -429,7 +471,9 @@ export function AuthSegmentedControl<T extends string>({
             cursor={isDisabled ? "not-allowed" : "pointer"}
             outline="none"
             px={layout === "toolbar" ? (isDark ? 4 : 1) : 4}
-            pointerEvents={isDisabled ? "none" : "auto"}
+            pointerEvents={
+              isDisabled ? "none" : activeIndex === ix ? "none" : "auto"
+            }
             className="auth-segmented-control__segment"
             sx={{
               userSelect: "none",
@@ -471,8 +515,8 @@ export function AuthSegmentedControl<T extends string>({
               style={
                 isDark
                   ? activeIndex === ix
-                    ? AUTH_SEG_LABEL_DARK_SELECTED
-                    : AUTH_SEG_LABEL_DARK_INACTIVE
+                    ? { ...AUTH_SEG_LABEL_DARK_SELECTED, ...darkLabelCompactSx }
+                    : { ...AUTH_SEG_LABEL_DARK_INACTIVE, ...darkLabelCompactSx }
                   : {
                       display: "flex",
                       alignItems: "center",
@@ -482,9 +526,10 @@ export function AuthSegmentedControl<T extends string>({
                       textOverflow: layout === "toolbar" ? "ellipsis" : undefined,
                       whiteSpace: "nowrap",
                       fontFamily: "var(--font-graphik)",
-                      fontSize: "clamp(14px, 2.5vw, 15px)",
+                      fontSize:
+                        layout === "auth" ? "clamp(12px, 2.2vw, 13px)" : "clamp(14px, 2.5vw, 15px)",
                       lineHeight: 1.35,
-                      letterSpacing: "-0.02em",
+                      letterSpacing: layout === "auth" ? "-0.015em" : "-0.02em",
                       userSelect: "none",
                       pointerEvents: "none",
                       transformOrigin: "center center",

@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Box,
   Button,
   Flex,
   Menu,
@@ -11,8 +12,10 @@ import {
 } from "@chakra-ui/react";
 import { HiChevronDown } from "react-icons/hi2";
 import { countries } from "@/data/countries";
+import { GlassCornerRim } from "@/components/ui/GlassCornerRim";
 import { dashRadius } from "@/components/dashboard/dashboardTokens";
 import { useFabTokens } from "@/components/theme/FabTokensContext";
+import { glassCornerRimPaletteAuth } from "@/lib/fabTheme/glassCornerRim";
 
 type CountrySelectorProps = {
   valueCode: string;
@@ -24,32 +27,39 @@ export function CountrySelector({ valueCode, onChange }: CountrySelectorProps) {
   const { dashColors } = useFabTokens();
   const selected = countries.find((c) => c.code === valueCode) ?? countries[0];
 
+  const r = dashRadius.surface;
+
   return (
     <Menu placement="bottom-end" strategy="fixed">
-      <MenuButton
-        as={Button}
-        size="sm"
-        variant="ghost"
-        fontFamily="var(--font-graphik)"
-        fontWeight={400}
-        fontSize="13px"
-        color={dashColors.text.secondary}
-        borderRadius={dashRadius.surface}
-        border="1px solid"
-        borderColor="rgba(255,255,255,0.1)"
-        bg="rgba(255,255,255,0.04)"
-        px={3}
-        h="36px"
-        _hover={{ bg: "rgba(255,255,255,0.08)", color: dashColors.text.primary }}
-        _active={{ bg: "rgba(255,255,255,0.1)" }}
-      >
-        <Flex align="center" gap={1}>
-          <Text as="span" noOfLines={1} maxW="140px">
-            {selected.name}
-          </Text>
-          <HiChevronDown size={16} opacity={0.85} />
-        </Flex>
-      </MenuButton>
+      <Box position="relative" display="inline-block" overflow="visible">
+        <MenuButton
+          as={Button}
+          position="relative"
+          zIndex={2}
+          size="sm"
+          variant="ghost"
+          fontFamily="var(--font-graphik)"
+          fontWeight={400}
+          fontSize="13px"
+          color={dashColors.text.secondary}
+          borderRadius={r}
+          border="1px solid"
+          borderColor="rgba(255,255,255,0.1)"
+          bg="rgba(255,255,255,0.04)"
+          px={3}
+          h="36px"
+          _hover={{ bg: "rgba(255,255,255,0.08)", color: dashColors.text.primary }}
+          _active={{ bg: "rgba(255,255,255,0.1)" }}
+        >
+          <Flex align="center" gap={1}>
+            <Text as="span" noOfLines={1} maxW="140px">
+              {selected.name}
+            </Text>
+            <HiChevronDown size={16} opacity={0.85} />
+          </Flex>
+        </MenuButton>
+        <GlassCornerRim radius={r} palette={glassCornerRimPaletteAuth} zIndex={3} />
+      </Box>
       <MenuList
         bg="rgba(12, 16, 32, 0.96)"
         borderColor="rgba(255,255,255,0.12)"

@@ -8,6 +8,12 @@ export const authColorsDark = {
     tertiary: "rgba(255, 255, 255, 0.58)",
     muted: "rgba(255, 255, 255, 0.42)",
     faint: "rgba(255, 255, 255, 0.32)",
+    /** Field labels — aligned with light DS `label` role */
+    label: "rgba(255, 255, 255, 0.72)",
+    heroHeadline: "rgba(255, 255, 255, 0.96)",
+    heroBody: "rgba(255, 255, 255, 0.58)",
+    formTitle: "rgba(255, 255, 255, 0.96)",
+    linkMuted: "rgba(255, 255, 255, 0.58)",
   },
   border: {
     subtle: "rgba(255, 255, 255, 0.09)",
@@ -25,6 +31,38 @@ export const authColorsDark = {
   accentSoft: "rgba(0, 98, 255, 0.88)",
   warning: "rgba(255, 200, 140, 0.98)",
   warningSoft: "rgba(255, 200, 140, 0.78)",
+} as const;
+
+/** Full-perimeter stroke — TL/BR overlays fade into this along the edge. */
+export const LOGIN_GLASS_BORDER_BASE = "rgba(255, 255, 255, 0.42)";
+/** Peak brightness at the middle of each corner accent (chord gradient). */
+export const LOGIN_GLASS_CORNER_STROKE = "rgba(255, 255, 255, 0.76)";
+/** Intermediate stops so the corner stroke eases from {@link LOGIN_GLASS_BORDER_BASE} without banding. */
+export const LOGIN_GLASS_CORNER_BLEND_SOFT = "rgba(255, 255, 255, 0.52)";
+export const LOGIN_GLASS_CORNER_BLEND_MED = "rgba(255, 255, 255, 0.66)";
+
+/** Login text fields — glass: light fill + blur + base border (no fill smudge). */
+export const loginAuthInputGlassSx = {
+  background: "rgba(255, 255, 255, 0.055)",
+  backdropFilter: "blur(16px)",
+  WebkitBackdropFilter: "blur(16px)",
+  border: `1px solid ${LOGIN_GLASS_BORDER_BASE}`,
+  boxShadow: "none",
+} as const;
+
+/** `GlassCredentialFieldFrame` union / non-login DS only. */
+export const authLoginFieldChromeDark = {
+  fill: "rgba(255, 255, 255, 0.055)",
+  fillHover: "rgba(255, 255, 255, 0.055)",
+  fillFocus: "rgba(255, 255, 255, 0.055)",
+  backdrop: "blur(16px)",
+  border: `1px solid ${LOGIN_GLASS_BORDER_BASE}`,
+  borderHover: `1px solid ${LOGIN_GLASS_BORDER_BASE}`,
+  borderFocus: `1px solid ${LOGIN_GLASS_BORDER_BASE}`,
+  borderColor: LOGIN_GLASS_BORDER_BASE,
+  inset: "none",
+  insetHover: "none",
+  insetFocus: "none",
 } as const;
 
 export const authShadowDark = {
@@ -87,11 +125,23 @@ export const authColorsLight = {
     tertiary: "rgba(58, 69, 86, 0.88)",
     muted: "rgba(58, 69, 86, 0.65)",
     faint: "rgba(58, 69, 86, 0.48)",
+    /** Figma DS `558:17096` — marketing hero headline */
+    heroHeadline: "#004ABF",
+    /** Figma — hero + form supporting copy */
+    heroBody: "#6A6C6F",
+    /** Figma — form column title */
+    formTitle: "#383A3F",
+    /** Figma — field labels (`body/xs`) */
+    label: "#6A6C6F",
+    /** Figma — helper links under CTA */
+    linkMuted: "#6A6C6F",
   },
   border: {
     subtle: "rgba(1, 5, 145, 0.1)",
     default: "rgba(1, 5, 145, 0.14)",
     strong: "rgba(1, 5, 145, 0.22)",
+    /** Figma — login/register pill inputs */
+    inputNeutral: "#9B9C9F",
   },
   glass: {
     tint: "rgba(255, 255, 255, 0.88)",
@@ -127,8 +177,41 @@ export const authChallengeCardLight = {
 } as const;
 
 /**
- * Light mode reuses the approved dark typographic scale (sizes, weights, spacing).
- * Only `authColorsLight` / surfaces change ink; do not diverge these from dark.
+ * Figma DS **Option 1 light** (`558:17096`) — marketing column + distinct form title scale.
  */
-export const authHeroTypographyLight = authHeroTypographyDark;
-export const authColumnTypographyLight = authColumnTypographyDark;
+export const authHeroTypographyLight = {
+  overline: {
+    fontWeight: 400,
+    fontSize: "14px",
+    lineHeight: "1",
+    letterSpacing: "0.1em",
+    textTransform: "uppercase" as const,
+  },
+  headline: {
+    fontWeight: 300,
+    fontSize: { base: "40px", sm: "56px", md: "64px", lg: "80px" },
+    lineHeight: "1.1",
+    letterSpacing: "-0.02em",
+  },
+  subtitle: {
+    fontWeight: 400,
+    fontSize: { base: "18px", md: "24px" },
+    lineHeight: "1.45",
+    letterSpacing: "0.01em",
+  },
+} as const;
+
+/** Figma — right column “Login to your Corporate Account” + body */
+export const authColumnTypographyLight = {
+  title: {
+    fontWeight: 500,
+    fontSize: { base: "26px", sm: "30px", md: "32px" },
+    lineHeight: "1.12",
+    letterSpacing: "0.01em",
+  },
+  supporting: {
+    fontWeight: 400,
+    fontSize: { base: "14px", md: "15px" },
+    lineHeight: "1.6",
+  },
+} as const;

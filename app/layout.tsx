@@ -27,6 +27,12 @@ export const metadata: Metadata = {
   description: "Corporate portal frontend",
 };
 
+/** Match Figma / browser scale — avoid implicit zoom on mobile; 1:1 with design px at 100%. */
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, type ReactNode } from "react";
+import { useColorMode } from "@chakra-ui/react";
 
 const ALLOW_SCROLL_X = "[data-auth-allow-scroll-x]";
 
@@ -37,6 +38,8 @@ function insideAllowScrollX(target: EventTarget | null): boolean {
  * Horizontal scroll inside `[data-auth-allow-scroll-x]` is preserved (register steps).
  */
 export function AuthScrollLock({ children }: { children: ReactNode }) {
+  const { colorMode } = useColorMode();
+
   const onWheel = useCallback((e: WheelEvent) => {
     if (canConsumeVerticalWheel(e.target, e.deltaY)) return;
 
@@ -69,8 +72,8 @@ export function AuthScrollLock({ children }: { children: ReactNode }) {
     body.style.height = "100%";
     body.style.minHeight = "100%";
     body.style.overscrollBehavior = "none";
-    /** Near-black fallback behind fixed backdrop (overscroll / rare gaps — avoid blue-tint band). */
-    body.style.backgroundColor = "#060606";
+    /** Match theme so overscroll / gaps don’t flash wrong color over the fixed backdrop */
+    body.style.backgroundColor = colorMode === "dark" ? "#060606" : "#f5f7fb";
 
     window.addEventListener("wheel", onWheel, { passive: false, capture: true });
 
@@ -86,7 +89,7 @@ export function AuthScrollLock({ children }: { children: ReactNode }) {
       body.style.overscrollBehavior = prev.bodyOverscroll;
       body.style.backgroundColor = prev.bodyBg;
     };
-  }, [onWheel]);
+  }, [onWheel, colorMode]);
 
   return (
     <div className="auth-stage-root">

@@ -1,9 +1,11 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-import { Box, Menu, MenuButton, MenuItem, MenuList, Text } from "@chakra-ui/react";
+import { Box, Menu, MenuButton, MenuItem, MenuList, Text, useColorMode } from "@chakra-ui/react";
 import { dashRadius } from "@/components/dashboard/dashboardTokens";
 import type { StubAccountRecord } from "@/data/accountServicesTypes";
+import { LIGHT_SURFACE } from "@/lib/fabTheme/lightModePrimitives";
+import { glassTokens } from "@/lib/glassTokens";
 import { formatBalanceCompact } from "@/lib/accountServicesService";
 
 type AccountSelectorProps = {
@@ -20,6 +22,8 @@ export function AccountSelector({
   onSelect,
   variant = "default",
 }: AccountSelectorProps) {
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === "dark";
   const selected = accounts.find((a) => a.accountId === selectedId) ?? accounts[0];
   const bar = variant === "bar";
 
@@ -32,20 +36,30 @@ export function AccountSelector({
         minH={bar ? "40px" : undefined}
         borderRadius={dashRadius.panel}
         borderWidth="1px"
-        borderColor="rgba(255,255,255,0.14)"
-        bg="rgba(255,255,255,0.06)"
-        backdropFilter="blur(12px)"
-        sx={{ WebkitBackdropFilter: "blur(12px)" }}
+        borderColor={isDark ? glassTokens.border.default : "rgba(1, 5, 145, 0.12)"}
+        bg={isDark ? glassTokens.fill.button : LIGHT_SURFACE.elevated}
+        backdropFilter={isDark ? glassTokens.blur.button : "blur(12px)"}
+        sx={{
+          WebkitBackdropFilter: isDark ? glassTokens.blur.button : "blur(12px)",
+          boxShadow: isDark
+            ? `${glassTokens.shadow.insetTopSheen}, ${glassTokens.shadow.innerLens}`
+            : "inset 0 1px 0 rgba(255,255,255,0.95), 0 1px 2px rgba(1, 5, 145, 0.05)",
+        }}
         textAlign="left"
         w={bar ? "full" : { base: "full", md: "min(420px, 100%)" }}
         transition="border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease"
         _hover={{
-          bg: "rgba(255,255,255,0.09)",
-          borderColor: "rgba(255,255,255,0.2)",
-          boxShadow: "0 0 24px rgba(0, 98, 255, 0.12)",
+          bg: isDark ? "rgba(255,255,255,0.1)" : LIGHT_SURFACE.hover,
+          borderColor: isDark ? glassTokens.border.hover : "rgba(0, 98, 255, 0.28)",
+          boxShadow: isDark
+            ? `${glassTokens.shadowStack.button}, ${glassTokens.shadow.activeGlow}`
+            : "0 4px 16px rgba(1, 5, 145, 0.08)",
         }}
-        _active={{ bg: "rgba(255,255,255,0.1)" }}
-        _focusVisible={{ outline: "none", boxShadow: "0 0 0 2px rgba(0, 98, 255, 0.45)" }}
+        _active={{ bg: isDark ? "rgba(255,255,255,0.12)" : LIGHT_SURFACE.hover }}
+        _focusVisible={{
+          outline: "none",
+          boxShadow: isDark ? glassTokens.search.focusRing : "0 0 0 2px rgba(0, 98, 255, 0.35)",
+        }}
       >
         <Box as="span" display="flex" alignItems="center" justifyContent="space-between" gap={3} w="full">
           <Text
@@ -53,7 +67,7 @@ export function AccountSelector({
             fontFamily="var(--font-graphik)"
             fontSize={bar ? "13px" : "14px"}
             fontWeight={500}
-            color="rgba(255,255,255,0.94)"
+            color={isDark ? "rgba(255,255,255,0.94)" : "#1a1d21"}
             noOfLines={1}
           >
             {selected?.accountName ?? "Select account"}
@@ -67,10 +81,14 @@ export function AccountSelector({
         w={{ base: "calc(100vw - 32px)", md: "420px" }}
         maxH="280px"
         overflowY="auto"
-        bg="rgba(10, 14, 32, 0.97)"
-        borderColor="rgba(255,255,255,0.12)"
+        bg={isDark ? glassTokens.fill.card : "rgba(255,255,255,0.98)"}
+        borderColor={isDark ? glassTokens.border.default : "rgba(1, 5, 145, 0.1)"}
         borderWidth="1px"
-        boxShadow="0 20px 50px rgba(0,0,0,0.5)"
+        backdropFilter={isDark ? glassTokens.blur.card : "blur(16px)"}
+        sx={{
+          WebkitBackdropFilter: isDark ? glassTokens.blur.card : "blur(16px)",
+          boxShadow: isDark ? glassTokens.shadowStack.card : "0 20px 48px rgba(1, 5, 145, 0.1)",
+        }}
         py={1}
         px={0}
       >

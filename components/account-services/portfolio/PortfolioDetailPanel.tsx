@@ -47,6 +47,10 @@ export function PortfolioDetailPanel({ row, onClose, variant = "standalone" }: P
   const { corpTable } = useFabTokens();
   const detailsHref = `${ACCOUNT_SERVICES_BASE_PATH}/details?accountId=${encodeURIComponent(row.id)}`;
   const embedded = variant === "embedded";
+  const embedBackdrop =
+    embedded && corpTable.detailEmbedBackdrop !== "none" ? corpTable.detailEmbedBackdrop : undefined;
+  const embedShadow =
+    embedded && corpTable.detailEmbedShadow !== "none" ? corpTable.detailEmbedShadow : corpTable.cardShadow;
 
   return (
     <Box
@@ -56,7 +60,11 @@ export function PortfolioDetailPanel({ row, onClose, variant = "standalone" }: P
       display="flex"
       flexDirection="column"
       bg={embedded ? corpTable.detailEmbedBg : corpTable.cardBg}
-      boxShadow={corpTable.cardShadow}
+      backdropFilter={embedBackdrop}
+      sx={{
+        WebkitBackdropFilter: embedBackdrop,
+      }}
+      boxShadow={embedded ? embedShadow : corpTable.cardShadow}
       overflow="hidden"
       borderLeftWidth={embedded ? "1px" : 0}
       borderColor={embedded ? corpTable.detailEmbedBorder : undefined}

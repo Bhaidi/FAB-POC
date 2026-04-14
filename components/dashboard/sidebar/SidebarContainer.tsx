@@ -2,18 +2,20 @@
 
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Box, Flex, IconButton, Text, VStack } from "@chakra-ui/react";
+import { Box, Flex, IconButton, Text, useColorMode, VStack } from "@chakra-ui/react";
 import { ChevronsLeft, ChevronsRight } from "lucide-react";
 import type { CapabilityMenuItem } from "@/data/dashboardTypes";
 import { useDashboardEntitlements } from "@/components/dashboard/DashboardEntitlementsContext";
 import { useDashboardGlobal } from "@/components/dashboard/DashboardGlobalContext";
 import { useDashboardTaxonomy } from "@/components/dashboard/DashboardTaxonomyContext";
 import { dashLayout } from "@/components/dashboard/dashboardTokens";
+import { GlassSurface } from "@/components/ui/GlassSurface";
 import { useFabTokens } from "@/components/theme/FabTokensContext";
 import { SidebarCollapsedRail } from "@/components/dashboard/sidebar/SidebarCollapsedRail";
 import { SidebarSection } from "@/components/dashboard/sidebar/SidebarSection";
 import { resolveSelectedL1Code } from "@/lib/taxonomyNavUtils";
 import { findActiveBranchIds } from "@/lib/sidebarNavUtils";
+import { glassTokens } from "@/lib/glassTokens";
 import {
   ACCOUNT_SERVICES_BASE_PATH,
   expandedL2IdsForAccountDomain,
@@ -42,7 +44,10 @@ function SidebarNav({
   activeNavId,
   domainParam,
 }: SidebarNavProps) {
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === "dark";
   const { dashColors, dashEffects, dashShadow } = useFabTokens();
+  const navLayoutReserve = isDark ? dashLayout.primaryNavLayoutReserve : dashLayout.primaryNavLayoutReserveLight;
   const router = useRouter();
   const pathname = usePathname() || "";
   const inAccountServices = isAccountServicesPath(pathname);
@@ -209,7 +214,12 @@ function SidebarNav({
     [taxonomyShellActive, taxonomyMerge, onRequestExpand, router, pathname]
   );
 
-  const sidebarW = collapsed ? dashLayout.sidebarWidthCollapsed : dashLayout.sidebarWidthExpanded;
+  const sidebarTrackW = collapsed
+    ? {
+        base: dashLayout.sidebarWidthCollapsed,
+        md: `calc(${dashLayout.sidebarWidthCollapsed} + ${dashLayout.sidebarCollapsedFloatInset} + ${dashLayout.sidebarCollapsedFloatInset})`,
+      }
+    : dashLayout.sidebarWidthExpanded;
 
   const railEntitled = useMemo(() => {
     let base: CapabilityMenuItem[];
@@ -346,52 +356,61 @@ function SidebarNav({
     return () => window.clearTimeout(t);
   }, []);
 
-  return (
-    <Box
-      ref={asideRef}
-      as="aside"
-      data-fab-sidebar="true"
-      className={navBootSoft ? "fab-sidebar-boot-soft" : undefined}
-      w={sidebarW}
-      flexShrink={0}
-      minH={{ base: "auto", md: `calc(100dvh - ${dashLayout.primaryNavLayoutReserve})` }}
-      position={{ base: "relative", md: "sticky" }}
-      top={{ md: dashLayout.primaryNavLayoutReserve }}
-      alignSelf={{ md: "flex-start" }}
-      zIndex={2}
-      transition="width 0.24s ease, padding 0.24s ease"
-      overflow="hidden"
-      borderRightWidth="1px"
-      borderColor={dashColors.sidebarBorder}
-      bg={dashColors.sidebarGlass}
-      backgroundBlendMode="normal"
-      backdropFilter={dashEffects.surfaceBlur}
-      sx={{
-        WebkitBackdropFilter: dashEffects.surfaceBlur,
-        boxShadow: dashShadow.sidebarCapability,
-      }}
-    >
+  /** Figma `558:17725` — collapsed rail is a floating rounded shell (md+). */
+  const collapsedFloat = collapsed;
+  const collapsedRailComfort = collapsedFloat && isDark;
+  /** Figma `558:17874` — light launch: navy collapsed rail (same affordances as dark glass rail). */
+  const collapsedRailLightNavy = collapsedFloat && !isDark;
+
+  const railBody = (
       <VStack
         align="stretch"
         spacing={0}
-        minH={{ md: `calc(100dvh - ${dashLayout.primaryNavLayoutReserve} - 24px)` }}
-        py={{ base: 2, md: 3 }}
+        minH={
+          collapsedFloat
+            ? { md: 0 }
+            : { md: `calc(100dvh - ${navLayoutReserve} - 24px)` }
+        }
+        flex={{ md: 1 }}
+        py={collapsedRailComfort || collapsedRailLightNavy ? 6 : { base: 2, md: 3 }}
         px={collapsed ? 2 : { base: 3, md: 3.5 }}
       >
-        <Flex justify={collapsed ? "center" : "flex-end"} flexShrink={0} pr={collapsed ? 0 : 0.5} pt={0} pb={2}>
+        <Flex
+          justify={collapsed ? "center" : "flex-end"}
+          flexShrink={0}
+          pr={collapsed ? 0 : 0.5}
+          pt={0}
+          pb={collapsedRailComfort || collapsedRailLightNavy ? `${glassTokens.sidebarRail.collapsedChevronGapPx}px` : 2}
+        >
           <IconButton
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             icon={
-              collapsed ? <ChevronsRight size={16} strokeWidth={2} aria-hidden /> : <ChevronsLeft size={16} strokeWidth={2} aria-hidden />
+              collapsed ? (
+                <ChevronsRight
+                  size={collapsedRailComfort || collapsedRailLightNavy ? 24 : 16}
+                  strokeWidth={2}
+                  aria-hidden
+                />
+              ) : (
+                <ChevronsLeft size={16} strokeWidth={2} aria-hidden />
+              )
             }
             variant="ghost"
             size="sm"
-            w="32px"
-            h="32px"
-            minW="32px"
+            w={collapsedRailComfort || collapsedRailLightNavy ? "40px" : "32px"}
+            h={collapsedRailComfort || collapsedRailLightNavy ? "40px" : "32px"}
+            minW={collapsedRailComfort || collapsedRailLightNavy ? "40px" : "32px"}
             borderRadius="md"
-            color={dashColors.text.secondary}
-            _hover={{ bg: "rgba(1, 5, 145, 0.06)", color: dashColors.text.primary }}
+            color={
+              collapsedRailComfort || collapsedRailLightNavy
+                ? "rgba(255, 255, 255, 0.72)"
+                : dashColors.text.secondary
+            }
+            _hover={
+              collapsedRailComfort || collapsedRailLightNavy
+                ? { bg: "rgba(255, 255, 255, 0.08)", color: "rgba(255, 255, 255, 0.92)" }
+                : { bg: "rgba(1, 5, 145, 0.06)", color: dashColors.text.primary }
+            }
             onClick={onToggleCollapse}
           />
         </Flex>
@@ -448,6 +467,92 @@ function SidebarNav({
           </Box>
         )}
       </VStack>
+  );
+
+  const shellRadius = collapsed ? dashLayout.sidebarCollapsedOuterRadius : 0;
+  const floatShadow = isDark ? "none" : collapsed
+    ? `${dashShadow.sidebarCapability}, 0 16px 40px rgba(1, 5, 145, 0.12)`
+    : dashShadow.sidebarCapability;
+
+  return (
+    <Box
+      ref={asideRef}
+      as="aside"
+      data-fab-sidebar="true"
+      className={navBootSoft ? "fab-sidebar-boot-soft" : undefined}
+      w={sidebarTrackW}
+      flexShrink={0}
+      minH={{ base: "auto", md: `calc(100dvh - ${navLayoutReserve})` }}
+      position={{ base: "relative", md: "sticky" }}
+      top={{ md: navLayoutReserve }}
+      alignSelf={{ md: "flex-start" }}
+      zIndex={2}
+      transition="width 0.24s ease, padding 0.24s ease"
+      overflow={collapsedFloat ? { base: "hidden", md: "visible" } : "hidden"}
+      display={{ md: collapsedFloat ? "flex" : "block" }}
+      flexDirection={{ md: collapsedFloat ? "column" : undefined }}
+      pl={collapsedFloat ? { base: 0, md: dashLayout.sidebarCollapsedFloatInset } : 0}
+      pr={collapsedFloat ? { base: 0, md: dashLayout.sidebarCollapsedFloatInset } : 0}
+      pt={collapsedFloat ? { base: 0, md: dashLayout.sidebarCollapsedFloatInset } : 0}
+      pb={collapsedFloat ? { base: 0, md: dashLayout.sidebarCollapsedFloatInset } : 0}
+    >
+      {isDark ? (
+        <GlassSurface
+          variant="shell"
+          w={collapsedFloat ? { base: "full", md: dashLayout.sidebarWidthCollapsed } : "full"}
+          flex={collapsedFloat ? { md: 1 } : undefined}
+          minH={
+            collapsedFloat
+              ? { base: "auto", md: 0 }
+              : { base: "auto", md: `calc(100dvh - ${navLayoutReserve})` }
+          }
+          borderRadius={shellRadius}
+          display={collapsedFloat ? { md: "flex" } : undefined}
+          flexDirection={collapsedFloat ? { md: "column" } : undefined}
+          sx={{
+            ...(collapsedFloat
+              ? {
+                  border: "none",
+                }
+              : {
+                  border: "none",
+                  borderRight: "none",
+                }),
+            boxShadow: floatShadow,
+            h: collapsedFloat ? { base: "auto", md: "full" } : { base: "auto", md: "full" },
+          }}
+        >
+          {railBody}
+        </GlassSurface>
+      ) : (
+        <Box
+          h="full"
+          w={collapsedFloat ? { base: "full", md: dashLayout.sidebarWidthCollapsed } : "full"}
+          flex={collapsedFloat ? { md: 1 } : undefined}
+          minH={
+            collapsedFloat
+              ? { base: "auto", md: 0 }
+              : { base: "auto", md: `calc(100dvh - ${navLayoutReserve})` }
+          }
+          display={collapsedFloat ? { md: "flex" } : undefined}
+          flexDirection={collapsedFloat ? { md: "column" } : undefined}
+          overflow="hidden"
+          borderWidth={collapsedFloat ? "1px" : undefined}
+          borderColor={collapsedFloat ? dashColors.sidebarBorder : undefined}
+          borderRightWidth={collapsedFloat ? undefined : "1px"}
+          borderRightColor={collapsedFloat ? undefined : dashColors.sidebarBorder}
+          borderRadius={shellRadius}
+          bg={collapsed ? dashColors.sidebarRailSolid : dashColors.sidebarGlass}
+          backgroundBlendMode="normal"
+          backdropFilter={collapsed ? undefined : dashEffects.surfaceBlur}
+          sx={{
+            WebkitBackdropFilter: collapsed ? undefined : dashEffects.surfaceBlur,
+            boxShadow: floatShadow,
+          }}
+        >
+          {railBody}
+        </Box>
+      )}
     </Box>
   );
 }

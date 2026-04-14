@@ -15,9 +15,12 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { HiArrowRightOnRectangle, HiChevronDown, HiHome } from "react-icons/hi2";
+import { GlassCornerRim } from "@/components/ui/GlassCornerRim";
 import { dashRadius } from "@/components/dashboard/dashboardTokens";
 import { useFabTokens } from "@/components/theme/FabTokensContext";
 import { authColorsLight } from "@/lib/fabTheme/authPalettes";
+import { glassCornerRimPaletteAuth } from "@/lib/fabTheme/glassCornerRim";
+import { glassTokens } from "@/lib/glassTokens";
 
 export type UserProfileMenuProps = {
   displayName: string;
@@ -48,27 +51,35 @@ export function UserProfileMenu({
   const isDark = colorMode === "dark";
   const { dashColors } = useFabTokens();
   const menuInk = authColorsLight.text;
+  const menuInkResolved = isDark
+    ? { primary: glassTokens.text.primary, muted: glassTokens.text.muted }
+    : menuInk;
+  const menuChromeRadius = dashRadius.surface;
+
   return (
     <Menu placement="bottom-end" strategy="fixed">
-      <MenuButton
-        as={Button}
-        variant="ghost"
-        h="auto"
-        py={avatarOnly ? 0 : 1.5}
-        px={avatarOnly ? 0 : 2}
-        borderRadius={avatarOnly ? "full" : dashRadius.surface}
-        _hover={{
-          bg: avatarOnly
-            ? isDark
-              ? "rgba(255,255,255,0.1)"
-              : "rgba(1,5,145,0.06)"
-            : "rgba(1,5,145,0.05)",
-        }}
-        _active={{
-          bg: avatarOnly ? (isDark ? "rgba(255,255,255,0.14)" : "rgba(1,5,145,0.08)") : "rgba(1,5,145,0.08)",
-        }}
-      >
-        <Flex align="center" gap={2}>
+      <Box position="relative" display="inline-block" overflow="visible">
+        <MenuButton
+          as={Button}
+          variant="ghost"
+          position="relative"
+          zIndex={2}
+          h="auto"
+          py={avatarOnly ? 0 : 1.5}
+          px={avatarOnly ? 0 : 2}
+          borderRadius={avatarOnly ? "full" : menuChromeRadius}
+          _hover={{
+            bg: avatarOnly
+              ? isDark
+                ? "rgba(255,255,255,0.1)"
+                : "rgba(1,5,145,0.06)"
+              : "rgba(1,5,145,0.05)",
+          }}
+          _active={{
+            bg: avatarOnly ? (isDark ? "rgba(255,255,255,0.14)" : "rgba(1,5,145,0.08)") : "rgba(1,5,145,0.08)",
+          }}
+        >
+          <Flex align="center" gap={2}>
           <Avatar
             size={avatarOnly ? "md" : "sm"}
             name={displayName}
@@ -103,40 +114,52 @@ export function UserProfileMenu({
             </>
           ) : null}
         </Flex>
-      </MenuButton>
+        </MenuButton>
+        {isDark && !avatarOnly ? (
+          <GlassCornerRim radius={menuChromeRadius} palette={glassCornerRimPaletteAuth} zIndex={3} />
+        ) : null}
+      </Box>
       <MenuList
+        position="relative"
+        overflow="visible"
         minW="240px"
-        bg="rgba(255, 255, 255, 0.98)"
-        borderColor="rgba(1, 5, 145, 0.1)"
-        backdropFilter="blur(12px)"
+        borderRadius={menuChromeRadius}
+        bg={isDark ? glassTokens.fill.panel : "rgba(255, 255, 255, 0.98)"}
+        borderWidth="1px"
+        borderColor={isDark ? glassTokens.border.default : "rgba(1, 5, 145, 0.1)"}
+        backdropFilter={isDark ? glassTokens.blur.card : "blur(12px)"}
+        sx={{
+          WebkitBackdropFilter: isDark ? glassTokens.blur.card : "blur(12px)",
+          boxShadow: isDark ? glassTokens.shadowStack.panel : undefined,
+        }}
         py={2}
         zIndex={200}
       >
-        <Box px={3} pb={2}>
-          <Text fontFamily="var(--font-graphik)" fontSize="xs" color={menuInk.muted}>
+        <Box position="relative" zIndex={2} px={3} pb={2}>
+          <Text fontFamily="var(--font-graphik)" fontSize="xs" color={menuInkResolved.muted}>
             Corporate ID
           </Text>
-          <Text fontFamily="var(--font-graphik)" fontSize="sm" color={menuInk.primary} fontWeight={500}>
+          <Text fontFamily="var(--font-graphik)" fontSize="sm" color={menuInkResolved.primary} fontWeight={500}>
             {corporateId}
           </Text>
-          <Text fontFamily="var(--font-graphik)" fontSize="xs" color={menuInk.muted} mt={2}>
+          <Text fontFamily="var(--font-graphik)" fontSize="xs" color={menuInkResolved.muted} mt={2}>
             User ID
           </Text>
-          <Text fontFamily="var(--font-graphik)" fontSize="sm" color={menuInk.primary} fontWeight={500}>
+          <Text fontFamily="var(--font-graphik)" fontSize="sm" color={menuInkResolved.primary} fontWeight={500}>
             {userId}
           </Text>
         </Box>
-        <MenuDivider borderColor="rgba(1, 5, 145, 0.08)" />
+        <MenuDivider borderColor={isDark ? glassTokens.border.default : "rgba(1, 5, 145, 0.08)"} />
         <MenuItem
           as={Link}
           href="/dashboard"
           prefetch={false}
           icon={<HiHome size={18} />}
           fontFamily="var(--font-graphik)"
-          color={menuInk.primary}
+          color={menuInkResolved.primary}
           bg="transparent"
-          _hover={{ bg: "rgba(1, 5, 145, 0.05)" }}
-          _focus={{ bg: "rgba(1, 5, 145, 0.05)" }}
+          _hover={{ bg: isDark ? "rgba(255,255,255,0.08)" : "rgba(1, 5, 145, 0.05)" }}
+          _focus={{ bg: isDark ? "rgba(255,255,255,0.08)" : "rgba(1, 5, 145, 0.05)" }}
         >
           Home
         </MenuItem>
@@ -144,14 +167,17 @@ export function UserProfileMenu({
           <MenuItem
             icon={<HiArrowRightOnRectangle size={18} />}
             fontFamily="var(--font-graphik)"
-            color={menuInk.primary}
+            color={menuInkResolved.primary}
             bg="transparent"
-            _hover={{ bg: "rgba(1, 5, 145, 0.05)" }}
-            _focus={{ bg: "rgba(1, 5, 145, 0.05)" }}
+            _hover={{ bg: isDark ? "rgba(255,255,255,0.08)" : "rgba(1, 5, 145, 0.05)" }}
+            _focus={{ bg: isDark ? "rgba(255,255,255,0.08)" : "rgba(1, 5, 145, 0.05)" }}
             onClick={onSignOut}
           >
             Sign out
           </MenuItem>
+        ) : null}
+        {isDark ? (
+          <GlassCornerRim radius={menuChromeRadius} palette={glassCornerRimPaletteAuth} zIndex={3} />
         ) : null}
       </MenuList>
     </Menu>

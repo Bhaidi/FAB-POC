@@ -108,7 +108,7 @@ export function DashboardShell({
                     w="full"
                     maxW="none"
                     mx={0}
-                    px={{ base: 4, md: 8, lg: 10 }}
+                    px={{ base: 4, md: 6, lg: 8 }}
                     pt={{ base: 0, md: 2, lg: 2 }}
                     pb={{ base: 6, md: 10, lg: 4 }}
                     display="flex"

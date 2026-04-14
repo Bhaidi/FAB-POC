@@ -166,7 +166,7 @@ export function SimpleDashboardHome({ footer, welcomeName = "Daniel Okonkwo" }: 
               md: dashSpace.md,
               lg:
                 colorMode === "dark"
-                  ? `16px ${figmaHomeLayoutDark.contentPaddingXLg}`
+                  ? "16px 0"
                   : "16px 40px",
             }}
             flex="1"
@@ -189,10 +189,10 @@ export function SimpleDashboardHome({ footer, welcomeName = "Daniel Okonkwo" }: 
               >
                 <Heading
                   as="h1"
-                  color={dashColors.pageTitle}
+                  color={dashColors.homeWelcomeAccent}
                   textAlign="left"
                   fontFamily="var(--font-graphik)"
-                  fontSize={{ base: "28px", md: "34px" }}
+                  fontSize={{ base: "26px", md: "32px" }}
                   fontStyle="normal"
                   fontWeight={400}
                   lineHeight="1.1"
@@ -206,9 +206,9 @@ export function SimpleDashboardHome({ footer, welcomeName = "Daniel Okonkwo" }: 
                 </Heading>
                 <Text
                   fontFamily="var(--font-graphik)"
-                  fontSize="15px"
+                  fontSize="16px"
                   lineHeight="1.35"
-                  color={dashColors.pageSubtitle}
+                  color={dashColors.homeWelcomeMuted}
                   textAlign="left"
                   mb={0}
                 >

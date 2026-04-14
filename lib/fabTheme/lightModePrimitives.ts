@@ -3,7 +3,8 @@
  * Consumed by dashboard + auth palettes; keeps FAB deep blue ink + cool ambient tint.
  */
 export const LIGHT_SURFACE = {
-  base: "#F5F7FB",
+  /** Figma DS launch `558:17874` — Option 1 light canvas */
+  base: "#F5F5FA",
   elevated: "#FFFFFF",
   subtle: "#EEF2F8",
   hover: "#E6EBF5",

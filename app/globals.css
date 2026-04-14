@@ -24,6 +24,15 @@ body {
 }
 
 /* Light shell base — matches design system surface ramp (overscroll / portals). */
+html[data-fab-theme="light"] {
+  --text-body: #6a6c6f;
+  --color-secondary-blue-600: #004abf;
+}
+
+html[data-fab-theme="dark"] {
+  --color-secondary-blue-600: #004abf;
+}
+
 html[data-fab-theme="light"] body {
   background-color: #f5f7fb;
 }
@@ -38,6 +47,30 @@ html[data-fab-theme="light"] body {
 .chakra-portal-zIndex,
 [id^="chakra-toast-manager"] {
   font-family: var(--font-graphik) !important;
+}
+
+/**
+ * Dashboard home — “Quick Actions” rail eyebrow (#BFD8FF).
+ * Chakra `Text`/`Box` theme `color: neutral.mainText` can override `sx`; plain `h2` + this rule wins.
+ */
+h2.fab-quick-actions-eyebrow {
+  margin: 0;
+  font-family: var(--font-graphik), system-ui, sans-serif;
+  color: #bfd8ff !important;
+  text-transform: uppercase;
+  line-height: normal;
+}
+
+h2.fab-quick-actions-eyebrow--tile {
+  font-size: 12px;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+}
+
+h2.fab-quick-actions-eyebrow--list {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
 }
 
 button,
@@ -95,25 +128,25 @@ optgroup {
 }
 
 /*
- * Photo layer: modest inset bleed for cover — NOT huge vmax boxes.
+ * Photo layer — image is rendered by `next/image` in `ExactBackground` (reliable vs CSS bg on Chakra).
+ * This class keeps inset bleed + stacking hooks for OTP / sweep comments.
  */
-/* Default: light (matches Chakra `initialColorMode`). Dark override via `data-fab-theme` (FabTokensProvider). */
 .auth-exact-bg-image-layer {
   position: absolute;
   inset: -10%;
   z-index: 0;
   transform-origin: center center;
-  background-image: url(/images/lightbackground.jpg);
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
   backface-visibility: hidden;
-  filter: brightness(1.02) contrast(1.02) saturate(1.02);
 }
 
-[data-fab-theme="dark"] .auth-exact-bg-image-layer {
-  background-image: url(/assets/fab-login-bg.png);
-  filter: brightness(1.06) contrast(1.04) saturate(1.06);
+@keyframes fabDashBgBreath {
+  0%,
+  100% {
+    opacity: 0.22;
+  }
+  50% {
+    opacity: 0.34;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -122,7 +155,8 @@ optgroup {
   .fab-ghost-card-sheen::after,
   .fab-ghost-fx-sheen::after,
   .fab-ghost-market-pill::after,
-  .fab-sidebar-boot-soft {
+  .fab-sidebar-boot-soft,
+  .fab-dash-bg-breath-layer {
     animation: none !important;
     opacity: 0.5 !important;
     transform: none !important;

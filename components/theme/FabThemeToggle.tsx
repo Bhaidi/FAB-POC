@@ -29,6 +29,7 @@ export function FabThemeToggle({ variant = "nav" }: FabThemeToggleProps) {
         size="sm"
         borderRadius="full"
         color={authColors.text.secondary}
+        transition="background 0.22s ease-in-out, color 0.22s ease-in-out"
         _hover={{ bg: authColors.glass.tintHover, color: authColors.text.primary }}
       />
     );

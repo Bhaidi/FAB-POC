@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Flex, useColorMode } from "@chakra-ui/react";
 import { useOptionalAuthChrome } from "@/components/auth/AuthChromeContext";
 import type { MasterSegmentedToggleProps } from "@/components/auth/MasterSegmentedToggle";
 import { MasterSegmentedToggle } from "@/components/auth/MasterSegmentedToggle";
@@ -21,19 +21,19 @@ const CONTENT_INSET = {
   pr: { base: 4, md: 5, lg: "max(0.75rem, 2vw)" },
 } as const;
 
-/** Login — content clears fixed toggle. */
-const MAIN_PT_LOGIN = { base: "9.875rem", md: "10.5rem", lg: "11.75rem" } as const;
+/** Login — content clears fixed toggle + extra air below the bar. */
+const MAIN_PT_LOGIN = { base: "12.5rem", md: "13.25rem", lg: "14.5rem" } as const;
 /** Login — post-submit flow (no segmented toggle); clears logo + comfortable top air. */
-const MAIN_PT_LOGIN_COMPACT = { base: "5.5rem", md: "6rem", lg: "6.5rem" } as const;
-/**
- * Register — ~48px breathing room below toggle bottom (toggle ~54px tall; top offset 4.75rem / 5.25rem).
- */
-const MAIN_PT_REGISTER = { base: "11.125rem", md: "11.5rem", lg: "11.625rem" } as const;
+const MAIN_PT_LOGIN_COMPACT = { base: "9rem", md: "9.5rem", lg: "10rem" } as const;
+/** Register — same toggle row as login; extra space below the bar before hero/form. */
+const MAIN_PT_REGISTER = { base: "13.75rem", md: "14.25rem", lg: "15.5rem" } as const;
 
 /**
  * Shared auth canvas: FAB logo, centered master toggle, animated mode content below.
  */
 export function AuthPageShell({ activeMode, onModeChange, children }: AuthPageShellProps) {
+  const { colorMode } = useColorMode();
+  const logoSrc = colorMode === "dark" ? "/assets/fab-logo.svg" : "/images/fablogoblue.png";
   const chrome = useOptionalAuthChrome();
   const segmentedToggleVisible = chrome?.segmentedToggleVisible ?? true;
   const chromeLocked = chrome?.chromeInteractionLocked ?? false;
@@ -58,7 +58,7 @@ export function AuthPageShell({ activeMode, onModeChange, children }: AuthPageSh
         <AuthParallaxLayer role="logo">
           <Box position="relative" h={{ base: "32px", md: "40px" }} w={{ base: "100px", md: "140px" }}>
             <Image
-              src="/assets/fab-logo.svg"
+              src={logoSrc}
               alt="FAB"
               fill
               style={{ objectFit: "contain", objectPosition: "left center" }}
@@ -75,7 +75,7 @@ export function AuthPageShell({ activeMode, onModeChange, children }: AuthPageSh
       {showSegmentedToggle ? (
         <Flex
           position="fixed"
-          top={{ base: "4.75rem", lg: "5.25rem" }}
+          top={{ base: "4.25rem", lg: "4.75rem" }}
           left={0}
           right={0}
           justify="center"
@@ -116,7 +116,7 @@ export function AuthPageShell({ activeMode, onModeChange, children }: AuthPageSh
           w="full"
           minH={0}
           overflow="hidden"
-          pt={activeMode === "register" ? 0 : { base: 2, md: 3, lg: 4 }}
+          pt={activeMode === "register" ? 0 : { base: 4, md: 5, lg: 6 }}
           pb={{
             base: authSpacing.authPageBottomAir.base,
             md: authSpacing.authPageBottomAir.md,

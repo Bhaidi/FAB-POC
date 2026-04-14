@@ -1,4 +1,5 @@
 import { LIGHT_INK_PRIMARY, LIGHT_SURFACE } from "@/lib/fabTheme/lightModePrimitives";
+import { glassTokens } from "@/lib/glassTokens";
 
 /** Corporate grid — dark boundaryless canvas (original). */
 export const corpTableDark = {
@@ -17,7 +18,7 @@ export const corpTableDark = {
   filterInputPlaceholder: "#9B9C9F",
   tableCanvasBg: "transparent",
   theadBg: "transparent",
-  theadStickyBg: "linear-gradient(180deg, rgba(32, 44, 98, 0.98) 0%, rgba(22, 30, 72, 0.99) 100%)",
+  theadStickyBg: `linear-gradient(180deg, rgba(18, 22, 52, 0.92) 0%, rgba(12, 16, 40, 0.96) 100%)`,
   theadBorder: "transparent",
   headerLabel: "rgba(255, 255, 255, 0.62)",
   bodyPrimary: "rgba(255, 255, 255, 0.94)",
@@ -68,8 +69,10 @@ export const corpTableDark = {
   groupChipIconMuted: "rgba(255, 255, 255, 0.65)",
   toolbarDropActiveBg: "rgba(0, 98, 255, 0.12)",
   toolbarDropActiveRing: "0 0 0 2px rgba(0, 98, 255, 0.45)",
-  detailEmbedBg: "rgba(0, 0, 0, 0.12)",
-  detailEmbedBorder: "rgba(255, 255, 255, 0.08)",
+  detailEmbedBg: glassTokens.fill.panel,
+  detailEmbedBackdrop: glassTokens.blur.card,
+  detailEmbedShadow: glassTokens.shadowStack.panel,
+  detailEmbedBorder: glassTokens.border.default,
   detailCtaBg: "rgba(0, 98, 255, 0.22)",
   detailCtaHoverBg: "rgba(0, 98, 255, 0.32)",
 } as const;
@@ -145,6 +148,8 @@ export const corpTableLight = {
   toolbarDropActiveBg: "rgba(0, 98, 255, 0.12)",
   toolbarDropActiveRing: "0 0 0 2px rgba(0, 98, 255, 0.35)",
   detailEmbedBg: LIGHT_SURFACE.subtle,
+  detailEmbedBackdrop: "none",
+  detailEmbedShadow: "none",
   detailEmbedBorder: "rgba(1, 5, 145, 0.12)",
   detailCtaBg: "rgba(0, 98, 255, 0.14)",
   detailCtaHoverBg: "rgba(0, 98, 255, 0.22)",

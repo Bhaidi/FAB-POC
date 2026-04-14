@@ -1,12 +1,10 @@
 "use client";
 
-import { useMemo } from "react";
 import {
   Box,
   Button,
   Flex,
   IconButton,
-  Input,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -15,15 +13,14 @@ import {
   PopoverHeader,
   PopoverTrigger,
   Text,
-  useColorMode,
 } from "@chakra-ui/react";
 import type { Column } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown, Filter, GripVertical } from "lucide-react";
-import { corpChromeTypographyFrom } from "@/components/account-services/portfolio/corporatePortfolioTableTheme";
 import { useFabTokens } from "@/components/theme/FabTokensContext";
 import { PORTFOLIO_COLUMN_DRAG_MIME } from "@/components/account-services/portfolio/portfolioDragConstants";
 import type { CorporateBankingGridRow } from "@/data/corporateBankingGridTypes";
-import { getDsTextFieldStyles } from "@/lib/fabTheme/dsTextField";
+import { DsTextField } from "@/components/ui/DsTextField";
+import { glassTokens } from "@/lib/glassTokens";
 
 type Props = {
   column: Column<CorporateBankingGridRow, unknown>;
@@ -33,17 +30,6 @@ type Props = {
 
 export function PortfolioColumnHeader({ column, title, filterable = true }: Props) {
   const { corpTable } = useFabTokens();
-  const { colorMode } = useColorMode();
-  const corpChromeTypography = corpChromeTypographyFrom(corpTable);
-  const filterFieldStyles = useMemo(
-    () =>
-      getDsTextFieldStyles({
-        colorMode: colorMode === "dark" ? "dark" : "light",
-        height: "32px",
-        paddingX: "10px",
-      }),
-    [colorMode],
-  );
   const canSort = column.getCanSort();
   const canGroup = column.getCanGroup() === true;
   const sorted = column.getIsSorted();
@@ -130,13 +116,18 @@ export function PortfolioColumnHeader({ column, title, filterable = true }: Prop
             />
           </PopoverTrigger>
           <PopoverContent
-            bg="rgba(14, 18, 36, 0.98)"
-            borderWidth={0}
+            bg={glassTokens.fill.panel}
+            borderWidth="1px"
+            borderColor={glassTokens.border.default}
+            backdropFilter={glassTokens.blur.card}
+            sx={{
+              WebkitBackdropFilter: glassTokens.blur.card,
+              boxShadow: glassTokens.shadowStack.panel,
+            }}
             width="220px"
             zIndex={150}
-            boxShadow="0 16px 48px rgba(0,0,0,0.35)"
           >
-            <PopoverArrow bg="rgba(14, 18, 36, 0.98)" />
+            <PopoverArrow bg={glassTokens.fill.panel} borderColor={glassTokens.border.default} />
             <PopoverCloseButton color="rgba(255,255,255,0.5)" />
             <PopoverHeader
               borderBottomWidth={0}
@@ -149,13 +140,13 @@ export function PortfolioColumnHeader({ column, title, filterable = true }: Prop
               Filter: {title}
             </PopoverHeader>
             <PopoverBody>
-              <Input
-                size="sm"
-                variant="unstyled"
+              <DsTextField
+                fieldHeight="32px"
+                fieldPaddingX="10px"
+                w="full"
                 value={filterVal}
                 onChange={(e) => column.setFilterValue(e.target.value || undefined)}
                 placeholder="Contains…"
-                {...filterFieldStyles}
                 _placeholder={{ color: corpTable.filterInputPlaceholder }}
               />
               <Button

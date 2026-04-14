@@ -16,27 +16,30 @@ import {
   makeDashboardCardHover,
   makeDashboardGlassCardHover,
   makeDashboardLaunchModuleHover,
-  makeIosGlassHomeTileHover,
+  makeIosGlassHomeTileShadowOnly,
 } from "@/lib/dashboardCardAnimations";
 import { dashboardDarkCardSurface } from "@/lib/dashboardDarkCardSurface";
 import { iosGlassHomeServiceCard } from "@/lib/iosGlassHomeServiceCard";
+import { GlassCornerRim } from "@/components/ui/GlassCornerRim";
 import { useFabTokens } from "@/components/theme/FabTokensContext";
+import { glassCornerRimPaletteAuth } from "@/lib/fabTheme/glassCornerRim";
 
 const MotionDiv = motion.div;
 const MotionBox = motion(Box);
 
 /** Figma dark home tiles — hex in `sx` so Chakra `Heading`/`Text` base styles don’t override CSS vars. */
 const FIGMA_HOME_CARD_INK = "#ffffff";
-/** Brand white for body line under title (DS `neutral-white`). */
-const BRAND_WHITE = "#ffffff";
 
 /** Aligned with `ServiceTile` / FABAccess API `AnimatedAPICard`. */
 const TITLE_COLOR = "#010591";
+/** Figma launch `558:17874` — light launchpad tiles */
+const LAUNCH_TITLE_LIGHT = "#004ABF";
+const LAUNCH_BODY_LIGHT = "#6A6C6F";
 const CTA_BG = "#000245";
 const BORDER_HOVER = "#0f62fe";
 
 /** Dashboard home launchpad — fixed height for uniform tiles, top-stacked copy. */
-const HOME_LAUNCHPAD_TILE_H = "188px";
+const HOME_LAUNCHPAD_TILE_H = "168px";
 
 export type PlatformCardProps = {
   platform: PlatformDefinition;
@@ -114,7 +117,7 @@ export function PlatformCard({
   const figmaUniformDark = uniform && isDark;
   const lm = moduleStyle === "launchModule";
   const cardMotion = useMemo(() => {
-    if (figmaUniformDark) return makeIosGlassHomeTileHover();
+    if (figmaUniformDark) return makeIosGlassHomeTileShadowOnly();
     if (isDark) return makeDashboardGlassCardHover();
     if (bh) return dashboardBankHomeHover;
     if (lm) return makeDashboardLaunchModuleHover(dashShadow.cardGlow, dashShadow.cardGlowHover);
@@ -202,64 +205,8 @@ export function PlatformCard({
     if (!isMobile) setIsHovered(false);
   };
 
-  const cardInner = (
-        <MotionBox
-          position="relative"
-          backdropFilter={cardBackdrop}
-          bg={cardBg}
-          border={cardBorder}
-          display="flex"
-          flexDirection="column"
-          alignItems="flex-start"
-          justifyContent={figmaUniformDark ? "flex-start" : uniform ? "flex-start" : "space-between"}
-          overflow="hidden"
-          w={figmaUniformDark ? { base: "full", lg: figmaHomeServiceCard.width } : "full"}
-          maxW={figmaUniformDark ? figmaHomeServiceCard.width : undefined}
-          mx={figmaUniformDark ? { base: 0, lg: "auto" } : undefined}
-          h={
-            uniform
-              ? uniformTileH
-              : bh
-                ? "auto"
-                : lm
-                  ? "156px"
-                  : "full"
-          }
-          minH={
-            uniform
-              ? uniformTileH
-              : bh
-                ? bankHomeComfortable
-                  ? "160px"
-                  : "148px"
-                : lm
-                  ? "156px"
-                  : compact
-                    ? 0
-                    : { base: "132px", md: "148px" }
-          }
-          maxH={uniform ? uniformTileH : lm ? "160px" : undefined}
-          p={cardPad}
-          gap={outerGap}
-          borderRadius={cardRadius}
-          cursor={ghost ? "default" : isEnabled ? "pointer" : "not-allowed"}
-          opacity={ghost ? 1 : isEnabled ? 1 : 0.72}
-          variants={cardMotion}
-          initial="rest"
-          whileHover={ghost || isMobile || !interactive ? "rest" : "hover"}
-          whileFocus={ghost || isMobile || !interactive ? "rest" : "hover"}
-          whileTap={interactive ? { scale: 0.995 } : undefined}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          sx={{
-            WebkitBackdropFilter: cardBackdrop,
-            isolation: figmaUniformDark ? "isolate" : undefined,
-            transition:
-              figmaUniformDark || bh || lm
-                ? "transform 0.32s cubic-bezier(0.33, 1, 0.68, 1), border-color 0.28s ease, box-shadow 0.32s ease, backdrop-filter 0.28s ease"
-                : undefined,
-          }}
-        >
+  const cardChildren = (
+    <>
           {ghost ? <span className="fab-ghost-card-sheen" aria-hidden /> : null}
           <Flex
             direction="column"
@@ -280,12 +227,12 @@ export function PlatformCard({
               gap={uniform ? 2 : 3}
               w="full"
               flexShrink={0}
-              minH={figmaUniformDark ? "28px" : uniform ? "32px" : undefined}
+              minH={figmaUniformDark ? "26px" : uniform ? "32px" : undefined}
             >
               <Box
                 w={
                   figmaUniformDark
-                    ? "28px"
+                    ? "26px"
                     : uniform
                       ? "32px"
                       : bh
@@ -298,7 +245,7 @@ export function PlatformCard({
                 }
                 h={
                   figmaUniformDark
-                    ? "28px"
+                    ? "26px"
                     : uniform
                       ? "32px"
                       : bh
@@ -310,7 +257,7 @@ export function PlatformCard({
                             : "44px"
                 }
                 flexShrink={0}
-                borderRadius={figmaUniformDark ? "10px" : bh || lm ? "12px" : compact ? "10px" : "12px"}
+                borderRadius={figmaUniformDark ? "9px" : bh || lm ? "12px" : compact ? "10px" : "12px"}
                 bg={
                   figmaUniformDark
                     ? iosGlassHomeServiceCard.iconChipBg
@@ -320,29 +267,46 @@ export function PlatformCard({
                         ? "rgba(0, 6, 80, 0.055)"
                         : "rgba(0, 6, 80, 0.06)"
                 }
-                border={
-                  figmaUniformDark
-                    ? `1px solid ${iosGlassHomeServiceCard.iconChipBorder}`
-                    : isDark
-                      ? `1px solid ${dashboardDarkCardSurface.iconBoxBorder}`
-                      : "1px solid rgba(0, 6, 80, 0.08)"
-                }
+                border={figmaUniformDark || (isDark && uniform) ? "none" : "1px solid rgba(0, 6, 80, 0.08)"}
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
-                color={figmaUniformDark ? FIGMA_HOME_CARD_INK : isDark ? dashboardDarkCardSurface.title : TITLE_COLOR}
+                color={
+                  figmaUniformDark
+                    ? FIGMA_HOME_CARD_INK
+                    : isDark
+                      ? dashboardDarkCardSurface.title
+                      : uniform
+                        ? LAUNCH_TITLE_LIGHT
+                        : TITLE_COLOR
+                }
                 opacity={ghost ? 0.42 : 1}
+                backdropFilter={
+                  figmaUniformDark
+                    ? iosGlassHomeServiceCard.backdrop
+                    : isDark && uniform && !figmaUniformDark
+                      ? dashboardDarkCardSurface.backdrop
+                      : undefined
+                }
                 sx={
                   ghost
-                    ? { filter: "saturate(0.92)", ...(figmaUniformDark ? { color: `${FIGMA_HOME_CARD_INK} !important` } : {}) }
+                    ? {
+                        filter: "saturate(0.92)",
+                        ...(figmaUniformDark ? { color: `${FIGMA_HOME_CARD_INK} !important` } : {}),
+                      }
                     : figmaUniformDark
-                      ? { color: `${FIGMA_HOME_CARD_INK} !important` }
-                      : undefined
+                      ? {
+                          color: `${FIGMA_HOME_CARD_INK} !important`,
+                          WebkitBackdropFilter: iosGlassHomeServiceCard.backdrop,
+                        }
+                      : isDark && uniform && !figmaUniformDark
+                        ? { WebkitBackdropFilter: dashboardDarkCardSurface.backdrop }
+                        : undefined
                 }
               >
                 <DomainNavIcon
                   domainId={platform.id}
-                  size={figmaUniformDark ? 18 : uniform ? 20 : bh ? 22 : lm ? 24 : compact ? 22 : 26}
+                  size={figmaUniformDark ? 16 : uniform ? 20 : bh ? 22 : lm ? 24 : compact ? 22 : 26}
                 />
               </Box>
               <Box
@@ -366,7 +330,7 @@ export function PlatformCard({
                   fontFamily='"Graphik Trial", var(--font-graphik), system-ui, sans-serif'
                   fontStyle="normal"
                   fontWeight={400}
-                  fontSize="24px"
+                  fontSize="22px"
                   lineHeight={1.25}
                   letterSpacing="normal"
                   noOfLines={1}
@@ -379,23 +343,28 @@ export function PlatformCard({
                   {platform.title}
                 </Heading>
                 {description ? (
-                  <Text
+                  <Box
+                    as="p"
+                    margin={0}
+                    flexShrink={0}
+                    w="full"
                     fontFamily='"Graphik Trial", var(--font-graphik), system-ui, sans-serif'
                     fontStyle="normal"
                     fontSize="12px"
                     fontWeight={300}
                     lineHeight={1.35}
                     letterSpacing="normal"
-                    noOfLines={2}
-                    flexShrink={0}
-                    w="full"
                     sx={{
-                      color: `var(--neutral-white, ${BRAND_WHITE}) !important`,
+                      color: "#ffffff",
+                      overflow: "hidden",
+                      display: "-webkit-box",
+                      WebkitBoxOrient: "vertical",
+                      WebkitLineClamp: 2,
                       ...(ghost ? { filter: "blur(0.35px)" } : {}),
                     }}
                   >
                     {description}
-                  </Text>
+                  </Box>
                 ) : null}
               </VStack>
             ) : (
@@ -419,7 +388,9 @@ export function PlatformCard({
                   }
                   lineHeight={uniform ? 1.25 : bh ? 1.3 : lm ? 1.2 : "1.25"}
                   letterSpacing={isDark ? "0" : "-0.02em"}
-                  color={isDark ? dashboardDarkCardSurface.title : TITLE_COLOR}
+                  color={
+                    isDark ? dashboardDarkCardSurface.title : uniform ? LAUNCH_TITLE_LIGHT : TITLE_COLOR
+                  }
                   noOfLines={uniform ? 2 : bh || lm ? 2 : compact ? 2 : 3}
                   flex={uniform ? undefined : "1"}
                   mt={uniform && !isDark ? "14px" : bh && !isDark ? "12px" : undefined}
@@ -441,7 +412,7 @@ export function PlatformCard({
                       isDark
                         ? dashboardDarkCardSurface.body
                         : uniform
-                          ? TITLE_COLOR
+                          ? LAUNCH_BODY_LIGHT
                           : bh
                             ? "rgba(1, 5, 145, 0.65)"
                             : "rgba(1, 5, 145, 0.55)"
@@ -568,7 +539,122 @@ export function PlatformCard({
               </Flex>
             </MotionBox>
           </Box>
-        </MotionBox>
+    </>
+  );
+
+  const cardInner = figmaUniformDark ? (
+    <Box
+      position="relative"
+      overflow="visible"
+      w={{ base: "full", lg: figmaHomeServiceCard.width }}
+      maxW={figmaHomeServiceCard.width}
+      mx={{ base: 0, lg: "auto" }}
+      h={uniformTileH}
+      minH={uniformTileH}
+      maxH={uniformTileH}
+      transition="transform 0.22s cubic-bezier(0.22, 1, 0.36, 1)"
+      sx={
+        interactive && !ghost && !isMobile
+          ? { _hover: { transform: "translateY(-2px)" } }
+          : undefined
+      }
+    >
+      <MotionBox
+        position="relative"
+        backdropFilter={cardBackdrop}
+        bg={cardBg}
+        border="none"
+        display="flex"
+        flexDirection="column"
+        alignItems="flex-start"
+        justifyContent="flex-start"
+        overflow={isDark ? "visible" : "hidden"}
+        w="full"
+        h="full"
+        minH={0}
+        p={cardPad}
+        gap={outerGap}
+        borderRadius={cardRadius}
+        cursor={ghost ? "default" : isEnabled ? "pointer" : "not-allowed"}
+        opacity={ghost ? 1 : isEnabled ? 1 : 0.72}
+        variants={cardMotion}
+        initial="rest"
+        whileHover={ghost || isMobile || !interactive ? "rest" : "hover"}
+        whileFocus={ghost || isMobile || !interactive ? "rest" : "hover"}
+        whileTap={interactive ? { scale: 0.995 } : undefined}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        sx={{
+          WebkitBackdropFilter: cardBackdrop,
+          /**
+           * Pass-through blend: keep default stacking; glass lives on a layer that is not Framer-transformed.
+           */
+          isolation: "auto",
+          transition: "box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1)",
+        }}
+      >
+        {cardChildren}
+      </MotionBox>
+      {isDark ? <GlassCornerRim radius={cardRadius} palette={glassCornerRimPaletteAuth} zIndex={3} /> : null}
+    </Box>
+  ) : (
+    <MotionBox
+      position="relative"
+      backdropFilter={cardBackdrop}
+      bg={cardBg}
+      border={cardBorder}
+      display="flex"
+      flexDirection="column"
+      alignItems="flex-start"
+      justifyContent={uniform ? "flex-start" : "space-between"}
+      overflow={isDark ? "visible" : "hidden"}
+      w="full"
+      h={
+        uniform
+          ? uniformTileH
+          : bh
+            ? "auto"
+            : lm
+              ? "156px"
+              : "full"
+      }
+      minH={
+        uniform
+          ? uniformTileH
+          : bh
+            ? bankHomeComfortable
+              ? "160px"
+              : "148px"
+            : lm
+              ? "156px"
+              : compact
+                ? 0
+                : { base: "132px", md: "148px" }
+      }
+      maxH={uniform ? uniformTileH : lm ? "160px" : undefined}
+      p={cardPad}
+      gap={outerGap}
+      borderRadius={cardRadius}
+      cursor={ghost ? "default" : isEnabled ? "pointer" : "not-allowed"}
+      opacity={ghost ? 1 : isEnabled ? 1 : 0.72}
+      variants={cardMotion}
+      initial="rest"
+      whileHover={ghost || isMobile || !interactive ? "rest" : "hover"}
+      whileFocus={ghost || isMobile || !interactive ? "rest" : "hover"}
+      whileTap={interactive ? { scale: 0.995 } : undefined}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      sx={{
+        WebkitBackdropFilter: cardBackdrop,
+        transition:
+          bh || lm
+            ? "transform 0.32s cubic-bezier(0.33, 1, 0.68, 1), border-color 0.28s ease, box-shadow 0.32s ease, backdrop-filter 0.28s ease"
+            : undefined,
+      }}
+    >
+      {cardChildren}
+      {isDark ? <GlassCornerRim radius={cardRadius} palette={glassCornerRimPaletteAuth} zIndex={3} /> : null}
+    </MotionBox>
   );
 
   const uniformFillStyle = uniform
@@ -585,7 +671,8 @@ export function PlatformCard({
         height: "100%",
         width: "100%",
         textDecoration: "none" as const,
-        color: "inherit" as const,
+        /** Avoid grey `Text` theme color on children; dark tiles are white-on-glass */
+        color: figmaUniformDark ? "#ffffff" : "inherit",
       }
     : {
         display: "block",

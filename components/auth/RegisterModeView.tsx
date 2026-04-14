@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Flex, Text, VStack } from "@chakra-ui/react";
+import { Box, Flex, Text, useColorMode, VStack } from "@chakra-ui/react";
 import { AuthPrimaryCtaButton } from "@/components/auth/AuthPrimaryCtaButton";
 import { RegisterDetailSteps } from "@/components/auth/RegisterDetailSteps";
 import { AuthParallaxLayer } from "@/components/auth/AuthStageMotion";
@@ -18,7 +18,10 @@ const REGISTER_CONTENT_MAX_W = "min(1100px, 100%)";
  * Register — single centered task flow (no split hero); same min-height zone as login split layout.
  */
 export function RegisterModeView({ onLoginNow }: RegisterModeViewProps) {
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === "dark";
   const { authColors, authHeroTypography } = useFabTokens();
+  const registerHeadlineColor = isDark ? authColors.text.primary : authColors.text.formTitle;
   return (
     <Box
       display="flex"
@@ -50,7 +53,7 @@ export function RegisterModeView({ onLoginNow }: RegisterModeViewProps) {
               fontWeight={authHeroTypography.headline.fontWeight}
               lineHeight={authHeroTypography.headline.lineHeight}
               letterSpacing={authHeroTypography.headline.letterSpacing}
-              color={authColors.text.primary}
+              color={registerHeadlineColor}
               textAlign="center"
               maxW="100%"
               w="full"

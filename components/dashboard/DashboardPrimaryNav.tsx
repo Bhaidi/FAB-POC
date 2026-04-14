@@ -7,6 +7,7 @@ import {
   Box,
   Flex,
   HStack,
+  Icon,
   IconButton,
   Input,
   InputGroup,
@@ -15,9 +16,12 @@ import {
   Kbd,
   useColorMode,
 } from "@chakra-ui/react";
+import { GlassCredentialFieldFrame } from "@/components/auth/GlassCredentialFieldFrame";
 import Link from "next/link";
-import { Bell, LogOut, Search } from "lucide-react";
+import { Bell, LayoutGrid, LogOut, Search } from "lucide-react";
 import { dashLayout, dashRadius } from "@/components/dashboard/dashboardTokens";
+import { GlassSurface } from "@/components/ui/GlassSurface";
+import { glassTokens } from "@/lib/glassTokens";
 import { useDashboardGlobal } from "@/components/dashboard/DashboardGlobalContext";
 import { useDashboardSurfaceReady } from "@/components/dashboard/useDashboardSurfaceReady";
 import { GlobalContextControl } from "@/components/dashboard/GlobalContextControl";
@@ -26,6 +30,7 @@ import { UserProfileMenu } from "@/components/dashboard/UserProfileMenu";
 import { FabThemeToggle } from "@/components/theme/FabThemeToggle";
 import { useFabTokens } from "@/components/theme/FabTokensContext";
 import { isAccountServicesPath } from "@/lib/accountServicesRoutes";
+import { getDsGlassTextFieldInnerStyles } from "@/lib/fabTheme/dsTextField";
 
 export type DashboardPrimaryNavProps = {
   displayName: string;
@@ -46,7 +51,7 @@ export function DashboardPrimaryNav({
   const { colorMode } = useColorMode();
   const isDark = colorMode === "dark";
   const { dashColors, dashEffects, dashPrimaryNavChrome, dashShadow } = useFabTokens();
-  const searchInputStyles = dashPrimaryNavChrome.search;
+  const lightSearchInputStyles = dashPrimaryNavChrome.search;
   const iconBtnProps = dashPrimaryNavChrome.iconButton;
 
   const { isGlobalClient, userContextLoading } = useDashboardGlobal();
@@ -130,15 +135,99 @@ export function DashboardPrimaryNav({
     </Link>
   );
 
-  const search = (
-    <InputGroup maxW={{ base: "full", md: "420px" }} w={{ base: "full", md: "420px" }}>
-      <InputLeftElement h="40px" w="40px" pointerEvents="none" color={dashPrimaryNavChrome.searchIcon}>
-        <Search size={18} strokeWidth={2} aria-hidden />
+  const commandCenter =
+    !isAccountServicesPath(pathname) && !isDark ? (
+      <Link
+        href="/dashboard"
+        prefetch={false}
+        aria-label="Command Center"
+        style={{ textDecoration: "none" }}
+      >
+        <Flex
+          align="center"
+          gap={3}
+          h="46px"
+          px={4}
+          borderRadius="9999px"
+          border="1px solid"
+          borderColor={dashPrimaryNavChrome.commandCenterBorder}
+          transition="background 0.2s ease, border-color 0.2s ease"
+          _hover={{ bg: "rgba(0, 98, 255, 0.06)" }}
+        >
+          <Icon as={LayoutGrid} boxSize="20px" color="#383A3F" aria-hidden />
+          <Box
+            as="span"
+            fontFamily="var(--font-graphik)"
+            fontSize="14px"
+            fontWeight={500}
+            lineHeight="20px"
+            color="#383A3F"
+            whiteSpace="nowrap"
+          >
+            Command Center
+          </Box>
+        </Flex>
+      </Link>
+    ) : null;
+
+  const search = isDark ? (
+    <Box maxW={{ base: "full", md: "420px" }} w={{ base: "full", md: "420px" }}>
+      <GlassCredentialFieldFrame height="40px" w="100%" maxW="100%">
+        <Flex align="center" w="full" minW={0} pl="10px" pr={2} gap={2}>
+          <Box
+            as="span"
+            display="flex"
+            alignItems="center"
+            flexShrink={0}
+            pointerEvents="none"
+            color={dashPrimaryNavChrome.searchIcon}
+            aria-hidden
+          >
+            <Search size={18} strokeWidth={2} />
+          </Box>
+          <Input
+            ref={searchInputRef}
+            variant="unstyled"
+            placeholder="Search services, payments, reports, or accounts"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") onSearchSubmit();
+            }}
+            aria-label="Search"
+            {...getDsGlassTextFieldInnerStyles({ paddingX: false })}
+          />
+          <Flex
+            display={{ base: "none", md: "flex" }}
+            alignItems="center"
+            flexShrink={0}
+            pointerEvents="none"
+          >
+            <Kbd
+              fontFamily="var(--font-graphik)"
+              fontSize="11px"
+              fontWeight={500}
+              px={2}
+              py={1}
+              borderRadius="md"
+              borderWidth="1px"
+              {...dashPrimaryNavChrome.kbd}
+            >
+              {searchKbdHint}
+            </Kbd>
+          </Flex>
+        </Flex>
+      </GlassCredentialFieldFrame>
+    </Box>
+  ) : (
+    <InputGroup maxW={{ base: "full", md: "496px" }} w={{ base: "full", md: "496px" }}>
+      <InputLeftElement h="46px" w="46px" pointerEvents="none" color={dashPrimaryNavChrome.searchIcon}>
+        <Search size={20} strokeWidth={2} aria-hidden />
       </InputLeftElement>
       <Input
-        {...searchInputStyles}
+        {...lightSearchInputStyles}
         ref={searchInputRef}
-        placeholder="Search services, payments, reports, or accounts"
+        placeholder="Search payments, services, accounts, reports...etc"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={(e) => {
@@ -147,7 +236,7 @@ export function DashboardPrimaryNav({
         aria-label="Search"
       />
       <InputRightElement
-        h="40px"
+        h="46px"
         w="auto"
         pr={3}
         display={{ base: "none", md: "flex" }}
@@ -261,54 +350,76 @@ export function DashboardPrimaryNav({
     </Flex>
   );
 
+  const headerInner = (
+    <Flex
+      align="center"
+      w="full"
+      columnGap={{ base: 3, md: 6 }}
+      rowGap={3}
+      flexWrap={{ base: "wrap", md: "nowrap" }}
+    >
+      <Flex align="center" gap={{ base: 2, md: 6 }} flexShrink={0} minW={0} flexWrap="wrap">
+        {brand}
+        {commandCenter}
+        {isAccountServicesPath(pathname) ? <CommandCentreBackButton /> : null}
+      </Flex>
+
+      <Box flex="1" minW={0} order={{ base: 2, md: 1 }} w={{ base: "100%", md: "auto" }}>
+        <Flex justify={{ base: "stretch", md: "center" }} w="full">
+          {search}
+        </Flex>
+      </Box>
+
+      <Flex flexShrink={0} order={{ base: 1, md: 2 }} ml={{ base: "auto", md: 0 }} align="center">
+        {utilities}
+      </Flex>
+    </Flex>
+  );
+
   return (
     <Box
       position="sticky"
-      top={dashLayout.primaryNavFloatInset}
+      top={{ base: dashLayout.primaryNavFloatInset, lg: dashLayout.primaryNavFloatInset }}
       zIndex={100}
       flexShrink={0}
       mt={dashLayout.primaryNavFloatInset}
-      mx={dashLayout.primaryNavFloatInset}
+      mx={{ base: dashLayout.primaryNavFloatInset, lg: 6 }}
       mb={dashLayout.primaryNavFloatBottom}
       alignSelf="stretch"
     >
-      <Flex
-        as="header"
-        align="center"
-        minH={dashLayout.primaryNavMinH}
-        px={{ base: 4, md: "24px", lg: "32px" }}
-        py={{ base: 3, md: 0 }}
-        borderRadius={dashRadius.panel}
-        borderBottom="1px solid"
-        borderColor={dashColors.primaryNavBorder}
-        bg={dashColors.primaryNavBg}
-        backdropFilter={dashEffects.primaryNavBlur}
-        sx={{ WebkitBackdropFilter: dashEffects.primaryNavBlur }}
-        boxShadow={dashShadow.primaryNavFloat}
-      >
+      {isDark ? (
+        <GlassSurface variant="shell" w="full" borderRadius={glassTokens.radius.shell}>
+          <Flex
+            as="header"
+            align="center"
+            minH={dashLayout.primaryNavMinH}
+            px={{ base: 4, md: "24px", lg: "32px" }}
+            py={{ base: 3, md: 0 }}
+          >
+            {headerInner}
+          </Flex>
+        </GlassSurface>
+      ) : (
         <Flex
+          as="header"
           align="center"
-          w="full"
-          columnGap={{ base: 3, md: 6 }}
-          rowGap={3}
-          flexWrap={{ base: "wrap", md: "nowrap" }}
+          minH={dashLayout.primaryNavMinHLight}
+          px={{ base: 4, md: "24px", lg: "32px" }}
+          py={{ base: 3, md: 0 }}
+          borderRadius={dashRadius.panel}
+          borderBottom="1px solid"
+          borderColor={dashColors.primaryNavBorder}
+          bg={dashColors.primaryNavBg}
+          backdropFilter={dashEffects.primaryNavBlur === "none" ? undefined : dashEffects.primaryNavBlur}
+          sx={{
+            WebkitBackdropFilter:
+              dashEffects.primaryNavBlur === "none" ? undefined : dashEffects.primaryNavBlur,
+          }}
+          boxShadow={dashShadow.primaryNavFloat}
         >
-          <Flex align="center" gap={{ base: 2, md: 3 }} flexShrink={0} minW={0} flexWrap="wrap">
-            {brand}
-            {isAccountServicesPath(pathname) ? <CommandCentreBackButton /> : null}
-          </Flex>
-
-          <Box flex="1" minW={0} order={{ base: 2, md: 1 }} w={{ base: "100%", md: "auto" }}>
-            <Flex justify={{ base: "stretch", md: "center" }} w="full">
-              {search}
-            </Flex>
-          </Box>
-
-          <Flex flexShrink={0} order={{ base: 1, md: 2 }} ml={{ base: "auto", md: 0 }} align="center">
-            {utilities}
-          </Flex>
+          {headerInner}
         </Flex>
-      </Flex>
+      )}
     </Box>
   );
 }

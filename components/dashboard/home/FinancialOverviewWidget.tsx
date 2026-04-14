@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { useDashboardGlobal } from "@/components/dashboard/DashboardGlobalContext";
 import { figmaHomeLayoutDark } from "@/components/dashboard/dashboardTokens";
 import { useFabTokens } from "@/components/theme/FabTokensContext";
+import { glassTokens } from "@/lib/glassTokens";
 import {
   getDashboardHomeFinancialStub,
   type DashboardFinancialCurrencyRow,
@@ -149,7 +150,7 @@ function CurrencyAllocationList({
       : compact
         ? "12px"
         : "14px";
-  const fontSummary = figmaDarkRail ? "14px" : rail ? "13px" : d ? "12px" : compact ? "13px" : "14px";
+  const fontSummary = figmaDarkRail ? "12px" : rail ? "13px" : d ? "12px" : compact ? "13px" : "14px";
 
   return (
     <Box w="full" sx={tabularProps}>
@@ -200,12 +201,12 @@ function CurrencyAllocationList({
                   lineHeight={1.35}
                   color="#ffffff"
                 >
-                  <Text flex="1" minW={0} noOfLines={1}>
+                  <Text flex="1" minW={0} noOfLines={1} sx={{ color: "#ffffff !important" }}>
                     {row.code}
                   </Text>
                   <Flex align="center" gap={6} flexShrink={0}>
-                    <Text sx={tabularProps}>{row.displayAmount}</Text>
-                    <Text sx={{ ...tabularProps, color: "rgba(255, 255, 255, 0.92) !important" }}>
+                    <Text sx={{ ...tabularProps, color: "#ffffff !important" }}>{row.displayAmount}</Text>
+                    <Text sx={{ ...tabularProps, color: "#ffffff !important" }}>
                       {sharePct}%
                     </Text>
                   </Flex>
@@ -215,9 +216,10 @@ function CurrencyAllocationList({
                     w="100%"
                     h="6px"
                     borderRadius="40px"
-                    bg="#1b2683"
+                    bg={glassTokens.progress.trackRail}
                     overflow="hidden"
                     position="relative"
+                    boxShadow={`inset 0 1px 2px rgba(0,0,0,0.35)`}
                   >
                     <motion.div
                       initial={rm || !growBars ? { width: `${barPct}%` } : { width: "0%" }}
@@ -234,8 +236,9 @@ function CurrencyAllocationList({
                       style={{
                         height: 6,
                         borderRadius: 40,
-                        background: "#60aaee",
+                        background: glassTokens.progress.fill,
                         minWidth: barPct > 0 ? 2 : 0,
+                        boxShadow: isTop ? glassTokens.progress.fillGlow : undefined,
                       }}
                     />
                   </Box>
@@ -347,7 +350,7 @@ function CurrencyAllocationList({
           h="auto"
           minH={0}
           fontFamily="var(--font-graphik)"
-          fontSize={figmaDarkRail ? "14px" : "12px"}
+          fontSize="12px"
           fontWeight={figmaDarkRail ? 400 : 500}
           letterSpacing={figmaDarkRail ? "normal" : "0.02em"}
           color={figmaDarkRail ? "#ffffff" : dashColors.text.muted}
@@ -452,7 +455,7 @@ export function FinancialOverviewWidget({
   }, [rm, deferRichMotion, financialStub.heroMillions]);
 
   const railFigmaDark = rail && isDark;
-  const summaryFontSize = railFigmaDark ? "16px" : rail ? "12px" : dense ? "12px" : compact ? "13px" : "14px";
+  const summaryFontSize = railFigmaDark ? "13px" : rail ? "12px" : dense ? "12px" : compact ? "13px" : "14px";
 
   return (
     <Box
@@ -521,7 +524,7 @@ export function FinancialOverviewWidget({
               }
       }
     >
-      {!railFigmaDark ? (
+      {!isDark && !railFigmaDark ? (
       <Box
         position="absolute"
         pointerEvents="none"
@@ -562,7 +565,7 @@ export function FinancialOverviewWidget({
       >
           <Text
             fontFamily='"Graphik Trial", var(--font-graphik), system-ui, sans-serif'
-            fontSize={railFigmaDark ? "14px" : rail ? "11px" : { base: "11px", md: "12px" }}
+            fontSize={railFigmaDark ? "12px" : rail ? "11px" : { base: "11px", md: "12px" }}
             fontStyle={railFigmaDark ? "normal" : undefined}
             fontWeight={railFigmaDark ? 300 : 600}
             letterSpacing={railFigmaDark ? "1.4px" : "0.14em"}
@@ -618,7 +621,7 @@ export function FinancialOverviewWidget({
             fontFamily="var(--font-graphik)"
             fontSize={
               railFigmaDark
-                ? { base: "40px", md: "54px" }
+                ? { base: "32px", md: "42px" }
                 : rail
                   ? { base: "30px", md: "32px" }
                   : dense
@@ -666,25 +669,31 @@ export function FinancialOverviewWidget({
                 borderColor: "rgba(255, 255, 255, 0.14)",
               }}
             >
-              <Box as="span">
+              <Box as="span" sx={{ color: "#ffffff !important" }}>
                 {accountsHref ? (
-                  <Link href={accountsHref} prefetch={false} style={{ color: "inherit", textDecoration: "none" }}>
+                  <Link
+                    href={accountsHref}
+                    prefetch={false}
+                    style={{ color: "#ffffff", textDecoration: "none" }}
+                  >
                     {financialStub.accountCount} Accounts
                   </Link>
                 ) : (
-                  <Text as="span">{financialStub.accountCount} Accounts</Text>
+                  <Text as="span" sx={{ color: "#ffffff !important" }}>
+                    {financialStub.accountCount} Accounts
+                  </Text>
                 )}
               </Box>
             </Tooltip>
             <Box w="1px" h="14px" bg="rgba(255,255,255,0.22)" flexShrink={0} aria-hidden />
             <Tooltip label={currenciesTooltip} {...tipProps} {...{ bg: "rgba(12, 16, 32, 0.97)", color: "rgba(255, 255, 255, 0.96)", borderColor: "rgba(255, 255, 255, 0.14)" }}>
-              <Text as="span" cursor="default">
+              <Text as="span" cursor="default" sx={{ color: "#ffffff !important" }}>
                 {financialStub.currencyRows.length} Currencies
               </Text>
             </Tooltip>
             <Box w="1px" h="14px" bg="rgba(255,255,255,0.22)" flexShrink={0} aria-hidden />
             <Tooltip label={financialStub.countriesTooltip} {...tipProps} {...{ bg: "rgba(12, 16, 32, 0.97)", color: "rgba(255, 255, 255, 0.96)", borderColor: "rgba(255, 255, 255, 0.14)" }}>
-              <Text as="span" cursor="default">
+              <Text as="span" cursor="default" sx={{ color: "#ffffff !important" }}>
                 {financialStub.countryCount} Countries
               </Text>
             </Tooltip>
@@ -749,7 +758,7 @@ export function FinancialOverviewWidget({
             minW={0}
             w="full"
             fontFamily="var(--font-graphik)"
-            fontSize="14px"
+            fontSize="12px"
             fontWeight={400}
             lineHeight={1.35}
             sx={{ color: "#ffffff !important" }}

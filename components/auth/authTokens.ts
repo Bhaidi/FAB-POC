@@ -29,7 +29,8 @@ export const authLoginFormVertical = {
 
 /** Login hero column — spec’d gaps (left side) */
 export const authLoginHeroVertical = {
-  eyebrowToHeading: authVerticalSpace.sm,
+  /** Overline (“Corporate banking”) → hero headline — generous separation from 80px title */
+  eyebrowToHeading: authVerticalSpace.xl,
   headingToDescription: authVerticalSpace.lg,
   descriptionTail: authVerticalSpace.xl,
 } as const;

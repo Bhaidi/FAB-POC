@@ -9,7 +9,7 @@ import { getStubPortfolioSummary } from "@/lib/accountServicesService";
 const BAR_DURATION = 0.65;
 
 export function AccountFinancialSummary() {
-  const { corpTable, dashShadow, financialOverviewShell } = useFabTokens();
+  const { corpTable, financialOverviewShell } = useFabTokens();
   const portfolio = getStubPortfolioSummary();
   const rm = useReducedMotion() === true;
   const supporting = `Across ${portfolio.accountCount} accounts · ${portfolio.currencyCount} currencies · ${portfolio.countryCount} countries`;
@@ -19,7 +19,7 @@ export function AccountFinancialSummary() {
       borderRadius="16px"
       sx={{
         ...financialOverviewShell,
-        boxShadow: `${financialOverviewShell.boxShadow}, ${dashShadow.cardGlow}`,
+        boxShadow: financialOverviewShell.boxShadow,
       }}
       px={{ base: 5, md: 6 }}
       py={{ base: 5, md: 6 }}

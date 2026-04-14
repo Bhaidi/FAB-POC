@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Text, VStack } from "@chakra-ui/react";
+import { Box, Text, useColorMode, VStack } from "@chakra-ui/react";
 import { authLayout, authLoginFormVertical, authSpacing } from "@/components/auth/authTokens";
 import { useFabTokens } from "@/components/theme/FabTokensContext";
 
@@ -33,7 +33,11 @@ export function AuthModeContentLayout({
   secondaryActions,
   verticalProfile = "default",
 }: AuthModeContentLayoutProps) {
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === "dark";
   const { authColors, authColumnTypography, authHeroTypography } = useFabTokens();
+  const eyebrowColor = isDark ? authColors.text.muted : authColors.accent;
+  const titleColor = isDark ? authColors.text.primary : authColors.text.formTitle;
   const hasIntroSupporting = Boolean(secondary || tertiary);
   const isLoginForm = verticalProfile === "loginForm";
 
@@ -70,7 +74,7 @@ export function AuthModeContentLayout({
         <Text
           fontFamily="var(--font-graphik)"
           {...authHeroTypography.overline}
-          color={authColors.text.muted}
+          color={eyebrowColor}
         >
           {eyebrow}
         </Text>
@@ -78,7 +82,7 @@ export function AuthModeContentLayout({
           as="h1"
           fontFamily="var(--font-graphik)"
           {...authColumnTypography.title}
-          color={authColors.text.primary}
+          color={titleColor}
         >
           {title}
         </Text>

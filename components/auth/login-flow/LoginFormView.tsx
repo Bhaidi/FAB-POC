@@ -1,11 +1,9 @@
 "use client";
 
-import type { FormEvent, ReactNode } from "react";
+import type { FormEvent } from "react";
 import { useMemo } from "react";
 import NextLink from "next/link";
-import { Box, Flex, Input, Text, useColorMode, VStack } from "@chakra-ui/react";
-import { GlassCredentialFieldFrame } from "@/components/auth/GlassCredentialFieldFrame";
-import { getAuthGlassCredentialInputStyles, getAuthInputFieldStyles } from "@/components/auth/authInputStyles";
+import { Box, Flex, Text, useColorMode, VStack } from "@chakra-ui/react";
 import { AuthModeContentLayout } from "@/components/auth/AuthModeContentLayout";
 import { AuthPrimaryCtaButton } from "@/components/auth/AuthPrimaryCtaButton";
 import { authLoginFormVertical } from "@/components/auth/authTokens";
@@ -13,6 +11,7 @@ import { useFabTokens } from "@/components/theme/FabTokensContext";
 import type { FieldErrors } from "@/hooks/useLoginAuthFlow";
 import { AuthStatusMessage } from "@/components/auth/login-flow/AuthStatusMessage";
 import { InlineFieldError } from "@/components/auth/login-flow/InlineFieldError";
+import { DsTextField } from "@/components/ui/DsTextField";
 
 const fieldStackProps = {
   w: "full" as const,
@@ -29,21 +28,6 @@ const inputPlaceholderSx = {
     textTransform: "none" as const,
   },
 };
-
-function CredentialGlassShell({
-  isDark,
-  isDisabled,
-  children,
-}: {
-  isDark: boolean;
-  isDisabled: boolean;
-  children: ReactNode;
-}) {
-  if (isDark) {
-    return <GlassCredentialFieldFrame isDisabled={isDisabled}>{children}</GlassCredentialFieldFrame>;
-  }
-  return <>{children}</>;
-}
 
 export type LoginFormViewProps = {
   corporateId: string;
@@ -69,28 +53,24 @@ export function LoginFormView({
   isSubmitting,
   onSubmit,
 }: LoginFormViewProps) {
-  const tokens = useFabTokens();
-  const { authColors } = tokens;
   const { colorMode } = useColorMode();
   const isDark = colorMode === "dark";
-  const credentialInputStyles = useMemo(
-    () => (isDark ? getAuthGlassCredentialInputStyles() : getAuthInputFieldStyles(colorMode)),
-    [colorMode, isDark],
-  );
+  const tokens = useFabTokens();
+  const { authColors } = tokens;
 
   const linkStyles = useMemo(
     () =>
       ({
         fontFamily: "var(--font-graphik)",
-        fontSize: "13px",
+        fontSize: isDark ? "13px" : "12px",
         fontWeight: 500,
-        color: authColors.text.tertiary,
+        color: authColors.text.linkMuted,
         lineHeight: "1.4",
         textDecoration: "none",
         transition: "color 0.2s ease",
         _hover: { color: authColors.text.primary, textDecoration: "underline" },
       }) as const,
-    [authColors],
+    [authColors, isDark],
   );
 
   return (
@@ -114,8 +94,8 @@ export function LoginFormView({
                   fontFamily="var(--font-graphik)"
                   fontWeight={500}
                   fontSize="12px"
-                  lineHeight="1.375"
-                  color={authColors.text.secondary}
+                  lineHeight="20px"
+                  color={authColors.text.label}
                   flexShrink={0}
                   as="label"
                   htmlFor="auth-corporate-id"
@@ -123,24 +103,22 @@ export function LoginFormView({
                 >
                   Corporate ID
                 </Text>
-                <CredentialGlassShell isDark={isDark} isDisabled={isSubmitting}>
-                  <Input
-                    id="auth-corporate-id"
-                    name="corporateId"
-                    autoComplete="username"
-                    placeholder="Enter Corporate ID"
-                    value={corporateId}
-                    onChange={(e) => onCorporateIdChange(e.target.value)}
-                    isDisabled={isSubmitting}
-                    aria-invalid={Boolean(fieldErrors.corporateId)}
-                    aria-describedby={
-                      fieldErrors.corporateId ? "err-corporate-id" : formLevelError ? "form-level-err" : undefined
-                    }
-                    variant="unstyled"
-                    {...credentialInputStyles}
-                    sx={inputPlaceholderSx}
-                  />
-                </CredentialGlassShell>
+                <DsTextField
+                  authLayout
+                  authLoginChrome
+                  id="auth-corporate-id"
+                  name="corporateId"
+                  autoComplete="username"
+                  placeholder="Enter Corporate ID"
+                  value={corporateId}
+                  onChange={(e) => onCorporateIdChange(e.target.value)}
+                  isDisabled={isSubmitting}
+                  aria-invalid={Boolean(fieldErrors.corporateId)}
+                  aria-describedby={
+                    fieldErrors.corporateId ? "err-corporate-id" : formLevelError ? "form-level-err" : undefined
+                  }
+                  sx={inputPlaceholderSx}
+                />
                 {fieldErrors.corporateId ? <InlineFieldError id="err-corporate-id" message={fieldErrors.corporateId} /> : null}
               </Box>
               <Box {...fieldStackProps}>
@@ -148,8 +126,8 @@ export function LoginFormView({
                   fontFamily="var(--font-graphik)"
                   fontWeight={500}
                   fontSize="12px"
-                  lineHeight="1.375"
-                  color={authColors.text.secondary}
+                  lineHeight="20px"
+                  color={authColors.text.label}
                   flexShrink={0}
                   as="label"
                   htmlFor="auth-user-id"
@@ -157,24 +135,22 @@ export function LoginFormView({
                 >
                   User ID
                 </Text>
-                <CredentialGlassShell isDark={isDark} isDisabled={isSubmitting}>
-                  <Input
-                    id="auth-user-id"
-                    name="userId"
-                    autoComplete="username"
-                    placeholder="Enter User ID"
-                    value={userId}
-                    onChange={(e) => onUserIdChange(e.target.value)}
-                    isDisabled={isSubmitting}
-                    aria-invalid={Boolean(fieldErrors.userId)}
-                    aria-describedby={
-                      fieldErrors.userId ? "err-user-id" : formLevelError ? "form-level-err" : undefined
-                    }
-                    variant="unstyled"
-                    {...credentialInputStyles}
-                    sx={inputPlaceholderSx}
-                  />
-                </CredentialGlassShell>
+                <DsTextField
+                  authLayout
+                  authLoginChrome
+                  id="auth-user-id"
+                  name="userId"
+                  autoComplete="username"
+                  placeholder="Enter User ID"
+                  value={userId}
+                  onChange={(e) => onUserIdChange(e.target.value)}
+                  isDisabled={isSubmitting}
+                  aria-invalid={Boolean(fieldErrors.userId)}
+                  aria-describedby={
+                    fieldErrors.userId ? "err-user-id" : formLevelError ? "form-level-err" : undefined
+                  }
+                  sx={inputPlaceholderSx}
+                />
                 {fieldErrors.userId ? <InlineFieldError id="err-user-id" message={fieldErrors.userId} /> : null}
               </Box>
               {formLevelError ? (
@@ -217,9 +193,9 @@ export function LoginFormView({
           align="center"
           justify={{ base: "center", lg: "flex-start" }}
           flexWrap="wrap"
-          gap={{ base: 2, sm: 3 }}
+          gap={{ base: 3, sm: 6 }}
           w="full"
-          columnGap={4}
+          columnGap={6}
           rowGap={2}
           opacity={isSubmitting ? 0.45 : 1}
           pointerEvents={isSubmitting ? "none" : "auto"}

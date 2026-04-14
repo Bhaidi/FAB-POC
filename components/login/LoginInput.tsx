@@ -1,17 +1,17 @@
 "use client";
 
-import { useMemo } from "react";
 import {
   Box,
+  Flex,
   Icon,
   Input,
-  InputGroup,
-  InputLeftElement,
   Text,
   useColorMode,
 } from "@chakra-ui/react";
+import { GlassCredentialFieldFrame } from "@/components/auth/GlassCredentialFieldFrame";
 import { AUTH_INPUT_FIGMA_LAYOUT, getAuthInputFieldStyles } from "@/components/auth/authInputStyles";
-import { getDsTextFieldStyles } from "@/lib/fabTheme/dsTextField";
+import { DsTextField } from "@/components/ui/DsTextField";
+import { getDsGlassTextFieldInnerStyles } from "@/lib/fabTheme/dsTextField";
 
 interface LoginInputProps {
   id?: string;
@@ -22,7 +22,7 @@ interface LoginInputProps {
 }
 
 /**
- * Dark credential field — Design System text field (Figma 558:17083).
+ * Credential field — same DS glass treatment as the main login form ({@link DsTextField}).
  */
 export function LoginInput({
   id,
@@ -32,19 +32,56 @@ export function LoginInput({
   leftIcon,
 }: LoginInputProps) {
   const { colorMode } = useColorMode();
-  const field = useMemo(() => {
-    if (leftIcon) {
-      return {
-        ...getDsTextFieldStyles({
-          colorMode: colorMode === "dark" ? "dark" : "light",
-          height: "48px",
-          paddingX: false,
-        }),
-        ...AUTH_INPUT_FIGMA_LAYOUT,
-      } as const;
-    }
-    return getAuthInputFieldStyles(colorMode);
-  }, [leftIcon, colorMode]);
+  const isDark = colorMode === "dark";
+
+  if (!leftIcon) {
+    return (
+      <Box>
+        <Text
+          as="label"
+          htmlFor={id}
+          fontSize="xs"
+          color="whiteAlpha.800"
+          mb={2}
+          display="block"
+          fontWeight={500}
+        >
+          {label}
+        </Text>
+        <DsTextField authLayout authLoginChrome id={id} type={type} placeholder={placeholder} />
+      </Box>
+    );
+  }
+
+  if (isDark) {
+    return (
+      <Box>
+        <Text
+          as="label"
+          htmlFor={id}
+          fontSize="xs"
+          color="whiteAlpha.800"
+          mb={2}
+          display="block"
+          fontWeight={500}
+        >
+          {label}
+        </Text>
+        <GlassCredentialFieldFrame chrome="authLogin" height="48px" w="100%" maxW="100%">
+          <Flex align="center" w="full" minW={0} pl="12px" pr="24px" gap={3}>
+            <Icon as={leftIcon} color="whiteAlpha.500" boxSize={5} flexShrink={0} pointerEvents="none" />
+            <Input
+              id={id}
+              type={type}
+              placeholder={placeholder}
+              variant="unstyled"
+              {...getDsGlassTextFieldInnerStyles({ paddingX: false })}
+            />
+          </Flex>
+        </GlassCredentialFieldFrame>
+      </Box>
+    );
+  }
 
   return (
     <Box>
@@ -59,22 +96,20 @@ export function LoginInput({
       >
         {label}
       </Text>
-      <InputGroup>
-        {leftIcon ? (
-          <InputLeftElement pointerEvents="none" h="48px" w="48px">
-            <Icon as={leftIcon} color="whiteAlpha.500" boxSize={5} />
-          </InputLeftElement>
-        ) : null}
+      <Flex align="center" {...AUTH_INPUT_FIGMA_LAYOUT} position="relative">
+        <Box position="absolute" left={3} pointerEvents="none" zIndex={1} display="flex" alignItems="center">
+          <Icon as={leftIcon} color="gray.500" boxSize={5} />
+        </Box>
         <Input
           id={id}
           type={type}
           placeholder={placeholder}
           variant="unstyled"
-          {...field}
-          pl={leftIcon ? 12 : undefined}
-          pr={leftIcon ? "24px" : undefined}
+          {...getAuthInputFieldStyles(colorMode)}
+          pl={12}
+          pr="24px"
         />
-      </InputGroup>
+      </Flex>
     </Box>
   );
 }

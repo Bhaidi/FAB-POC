@@ -50,43 +50,45 @@ export function AuthPrimaryCtaButton({
   const alignSelf =
     align === "center" ? ("center" as const) : ({ base: "stretch", lg: "flex-start" } as const);
 
+  /** Figma `558:17096` light — same metrics as dark login CTA: #0062FF, 46×434, radius 24px */
+  const loginLightCta = !successTone && !isDark && stableMetrics;
+  const solidPrimaryCta = (!successTone && isDark) || loginLightCta;
+
   const thinSpinner = (
     <Spinner
       boxSize="18px"
       thickness="2px"
       speed="0.7s"
-      color={isDark && !successTone ? "white" : authColors.accent}
-      emptyColor={isDark && !successTone ? "rgba(255, 255, 255, 0.22)" : "rgba(0, 98, 255, 0.14)"}
+      color={solidPrimaryCta && !successTone ? "white" : authColors.accent}
+      emptyColor={solidPrimaryCta && !successTone ? "rgba(255, 255, 255, 0.22)" : "rgba(0, 98, 255, 0.14)"}
     />
   );
-
-  const darkDefault = !successTone && isDark;
   /**
    * FAB DS 558:17087 — flat only: 434×46, padding 24px (horizontal; vertical centering in 46px),
    * gap 12px, radius 24px, #0062FF. No shadow, blur, or extra border.
    */
-  const ctaBg = darkDefault ? "#0062FF" : "white";
-  const ctaColor = darkDefault ? "#FFFFFF" : "#000245";
-  const ctaBorder = darkDefault ? "none" : "1px solid";
-  const ctaBorderColor = darkDefault ? undefined : "rgba(255,255,255,0.14)";
-  const ctaRadius = darkDefault ? "24px" : authRadius.pill;
+  const ctaBg = solidPrimaryCta ? "#0062FF" : "white";
+  const ctaColor = solidPrimaryCta ? "#FFFFFF" : "#000245";
+  const ctaBorder = solidPrimaryCta ? "none" : "1px solid";
+  const ctaBorderColor = solidPrimaryCta ? undefined : "rgba(255,255,255,0.14)";
+  const ctaRadius = solidPrimaryCta ? "24px" : authRadius.pill;
   const ctaHeight =
-    stableMetrics && darkDefault
+    stableMetrics && solidPrimaryCta
       ? { base: "46px", md: "46px" }
       : stableMetrics
         ? { base: "48px", md: "52px" }
         : undefined;
-  const ctaPy = stableMetrics && darkDefault ? 0 : stableMetrics ? 0 : { base: 3, md: 4 };
-  const ctaPx = darkDefault ? 6 : 7;
-  const ctaFontWeight = darkDefault ? 400 : 500;
-  const ctaLineHeight = darkDefault ? "24px" : "1.35";
-  const ctaWidth = darkDefault && stableMetrics ? { base: "full", lg: "434px" } : { base: "full", lg: "auto" };
+  const ctaPy = stableMetrics && solidPrimaryCta ? 0 : stableMetrics ? 0 : { base: 3, md: 4 };
+  const ctaPx = solidPrimaryCta ? 6 : 7;
+  const ctaFontWeight = solidPrimaryCta ? 400 : 500;
+  const ctaLineHeight = solidPrimaryCta ? "24px" : "1.35";
+  const ctaWidth = solidPrimaryCta && stableMetrics ? { base: "full", lg: "434px" } : { base: "full", lg: "auto" };
   const ctaMinW = stableMetrics
-    ? darkDefault
+    ? solidPrimaryCta
       ? undefined
       : { base: "100%", lg: "232px" }
     : undefined;
-  const ctaBoxShadow = successTone ? SUCCESS_CTA_SHADOW : darkDefault ? "none" : authShadow.primaryCta;
+  const ctaBoxShadow = successTone ? SUCCESS_CTA_SHADOW : solidPrimaryCta ? "none" : authShadow.primaryCta;
 
   return (
     <MotionButton
@@ -126,7 +128,7 @@ export function AuthPrimaryCtaButton({
                 y: -2,
                 boxShadow: "0 10px 32px rgba(255, 255, 255, 0.16), 0 0 24px rgba(255, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.14)",
               }
-            : darkDefault
+            : solidPrimaryCta
               ? undefined
               : {
                   scale: 1.02,
@@ -134,7 +136,7 @@ export function AuthPrimaryCtaButton({
                 }
       }
       whileTap={
-        disabled ? undefined : successTone ? { scale: 0.99 } : darkDefault ? undefined : { scale: 0.98 }
+        disabled ? undefined : successTone ? { scale: 0.99 } : solidPrimaryCta ? undefined : { scale: 0.98 }
       }
       transition={
         successTone
@@ -142,23 +144,23 @@ export function AuthPrimaryCtaButton({
           : { type: "spring", stiffness: 420, damping: 28 }
       }
       _hover={{
-        bg: disabled ? undefined : darkDefault ? "#0058E6" : "white",
+        bg: disabled ? undefined : solidPrimaryCta ? "#0058E6" : "white",
       }}
       _disabled={
         busy
           ? {
               opacity: 0.9,
               cursor: "not-allowed",
-              boxShadow: successTone ? SUCCESS_CTA_SHADOW : darkDefault ? "none" : authShadow.primaryCta,
+              boxShadow: successTone ? SUCCESS_CTA_SHADOW : solidPrimaryCta ? "none" : authShadow.primaryCta,
             }
           : {
               opacity: 0.72,
               cursor: "not-allowed",
-              boxShadow: successTone ? SUCCESS_CTA_SHADOW : darkDefault ? "none" : "none",
+              boxShadow: successTone ? SUCCESS_CTA_SHADOW : solidPrimaryCta ? "none" : "none",
             }
       }
       sx={{
-        ...(darkDefault
+        ...(solidPrimaryCta
           ? {
               boxSizing: "border-box",
               backdropFilter: "none",

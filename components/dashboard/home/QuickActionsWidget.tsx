@@ -8,7 +8,10 @@ import { ChevronRight, SlidersHorizontal } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { dashSpace, figmaHomeLayoutDark } from "@/components/dashboard/dashboardTokens";
 import { iosGlassQuickActionTile } from "@/lib/iosGlassHomeServiceCard";
+import { glassTokens } from "@/lib/glassTokens";
 import { useFabTokens } from "@/components/theme/FabTokensContext";
+
+const MotionBox = motion(Box);
 
 export type QuickActionItem = {
   id: string;
@@ -115,16 +118,7 @@ export function QuickActionsWidget({
           mb={figmaHomeLayoutDark.quickActionsTitleToTiles}
           w="full"
         >
-          <Text
-            fontFamily="var(--font-graphik)"
-            fontSize="14px"
-            fontWeight={300}
-            letterSpacing="0.1em"
-            textTransform="uppercase"
-            sx={{ color: "#ffffff !important" }}
-          >
-            Quick Actions
-          </Text>
+          <h2 className="fab-quick-actions-eyebrow fab-quick-actions-eyebrow--tile">Quick Actions</h2>
           {onCustomizeClick ? (
             <Tooltip label={customizeAriaLabel} placement="top" openDelay={400} fontSize="xs">
               <IconButton
@@ -137,7 +131,7 @@ export function QuickActionsWidget({
                 borderRadius="md"
                 color="rgba(255,255,255,0.88)"
                 _hover={{
-                  bg: "rgba(255, 255, 255, 0.08)",
+                  bg: "rgba(255, 255, 255, 0.05)",
                   color: "#ffffff",
                 }}
                 onClick={(e) => {
@@ -152,7 +146,7 @@ export function QuickActionsWidget({
         {tiles.length === 0 ? (
           <Text
             fontFamily="var(--font-graphik)"
-            fontSize="13px"
+            fontSize="12px"
             fontWeight={500}
             lineHeight={1.45}
             sx={{ color: "#ffffff !important" }}
@@ -181,7 +175,7 @@ export function QuickActionsWidget({
                 }}
               >
                 <VStack spacing={3} align="center" w="full">
-                  <Box
+                  <MotionBox
                     w={{ base: "80px", sm: "90px", md: iosGlassQuickActionTile.size }}
                     h={{ base: "80px", sm: "90px", md: iosGlassQuickActionTile.size }}
                     maxW={iosGlassQuickActionTile.size}
@@ -189,17 +183,17 @@ export function QuickActionsWidget({
                     borderRadius={iosGlassQuickActionTile.radius}
                     bg={iosGlassQuickActionTile.fill}
                     backdropFilter={iosGlassQuickActionTile.backdrop}
-                    borderWidth="0"
+                    borderWidth={0}
+                    borderColor="transparent"
                     boxShadow="none"
                     display="flex"
                     alignItems="center"
                     justifyContent="center"
                     overflow="hidden"
-                    transition="transform 0.28s ease"
                     sx={{ WebkitBackdropFilter: iosGlassQuickActionTile.backdrop }}
-                    _hover={{
-                      transform: "translateY(-2px)",
-                    }}
+                    whileHover={{ y: -1 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.22, ease: glassTokens.motion.ease }}
                   >
                     <Box
                       as="span"
@@ -208,12 +202,12 @@ export function QuickActionsWidget({
                       alignItems="center"
                       justifyContent="center"
                     >
-                      <Icon size={19} strokeWidth={2} aria-hidden />
+                      <Icon size={18} strokeWidth={2} aria-hidden />
                     </Box>
-                  </Box>
+                  </MotionBox>
                   <Text
                     fontFamily="var(--font-graphik)"
-                    fontSize="14px"
+                    fontSize="12px"
                     fontWeight={400}
                     lineHeight={1.35}
                     textAlign="center"
@@ -266,8 +260,8 @@ export function QuickActionsWidget({
           ? undefined
           : "linear-gradient(135deg, rgba(255,255,255,0.95), rgba(242,242,243,0.98))"
       }
-      borderWidth={rail ? "1px" : undefined}
-      borderColor={rail ? financialOverviewShell.border : undefined}
+      borderWidth={rail ? (isDark ? 0 : "1px") : undefined}
+      borderColor={rail ? (isDark ? "transparent" : financialOverviewShell.border) : undefined}
       backdropFilter={rail ? financialOverviewShell.backdropFilter : "blur(10px)"}
       sx={
         rail ? railGlassSx : { WebkitBackdropFilter: "blur(10px)" }
@@ -306,16 +300,20 @@ export function QuickActionsWidget({
         gap={2}
         mb={rail ? "6px" : dense ? "6px" : compact ? "8px" : dashSpace.sm}
       >
-        <Text
-          fontFamily="var(--font-graphik)"
-          fontSize="11px"
-          fontWeight={600}
-          letterSpacing="0.14em"
-          textTransform="uppercase"
-          color={rail ? dashColors.text.tertiary : "rgba(72, 82, 94, 0.55)"}
-        >
-          Quick Actions
-        </Text>
+        {rail ? (
+          <h2 className="fab-quick-actions-eyebrow fab-quick-actions-eyebrow--list">Quick Actions</h2>
+        ) : (
+          <Text
+            fontFamily="var(--font-graphik)"
+            fontSize="11px"
+            fontWeight={600}
+            letterSpacing="0.14em"
+            textTransform="uppercase"
+            color="rgba(72, 82, 94, 0.55)"
+          >
+            Quick Actions
+          </Text>
+        )}
         {onCustomizeClick ? (
           <Tooltip label={customizeAriaLabel} placement="top" openDelay={400} fontSize="xs">
             <IconButton
@@ -374,13 +372,15 @@ export function QuickActionsWidget({
                 px={rail ? "11px" : dense ? 1.5 : compact ? 2 : 3}
                 py={rail ? 0 : dense ? 1 : compact ? 1.25 : 2}
                 borderRadius={rail ? "10px" : "12px"}
-                bg={rail && isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(255, 255, 255, 0.85)"}
-                borderWidth="1px"
+                bg={rail && isDark ? "transparent" : "rgba(255, 255, 255, 0.85)"}
+                borderWidth={rail && isDark ? 0 : "1px"}
                 borderColor={
-                  rail && isDark ? "rgba(255, 255, 255, 0.12)" : "rgba(1, 5, 145, 0.08)"
+                  rail && isDark ? "transparent" : "rgba(1, 5, 145, 0.08)"
                 }
+                backdropFilter={rail && isDark ? glassTokens.blur.card : undefined}
                 cursor="pointer"
                 sx={{
+                  ...(rail && isDark ? { WebkitBackdropFilter: glassTokens.blur.card } : {}),
                   transition:
                     "background 0.2s ease, border-color 0.2s ease, box-shadow 0.22s ease, filter 0.2s ease",
                 }}
@@ -395,12 +395,9 @@ export function QuickActionsWidget({
                 }
                 whileTap={rm ? undefined : { scale: 0.985 }}
                 _hover={{
-                  bg: rail && isDark ? "rgba(255, 255, 255, 0.12)" : "#FFFFFF",
-                  borderColor: "rgba(0, 98, 255, 0.2)",
-                  boxShadow:
-                    rail && isDark
-                      ? "0 12px 28px rgba(0, 0, 0, 0.35), 0 0 20px rgba(0, 98, 255, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1)"
-                      : "0 12px 26px rgba(1, 5, 145, 0.08), 0 0 20px rgba(0, 98, 255, 0.08), 0 0 0 1px rgba(1, 5, 145, 0.05)",
+                  bg: rail && isDark ? "transparent" : "#FFFFFF",
+                  borderColor: rail && isDark ? "transparent" : "rgba(0, 98, 255, 0.2)",
+                  boxShadow: rail && isDark ? "none" : "0 12px 26px rgba(1, 5, 145, 0.08), 0 0 20px rgba(0, 98, 255, 0.08), 0 0 0 1px rgba(1, 5, 145, 0.05)",
                 }}
               >
                 <Box

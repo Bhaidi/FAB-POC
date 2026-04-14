@@ -1,11 +1,11 @@
 "use client";
 
-import { Box, IconButton, Text, Tooltip, VStack } from "@chakra-ui/react";
+import { Box, IconButton, Text, Tooltip, useColorMode, VStack } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import type { CapabilityMenuItem } from "@/data/dashboardTypes";
 import { getDomainNavLabel } from "@/data/domainNavLabels";
-import { dashRadius } from "@/components/dashboard/dashboardTokens";
 import { useFabTokens } from "@/components/theme/FabTokensContext";
+import { glassTokens } from "@/lib/glassTokens";
 import { DomainNavIcon } from "@/components/dashboard/sidebar/sidebarDomainIcons";
 import { SIDEBAR_NAV_TOOLTIP_LABEL_COLOR, SIDEBAR_NAV_TOOLTIP_PROPS } from "@/components/dashboard/sidebar/sidebarNavTokens";
 import { domainContainsActiveItem } from "@/lib/sidebarNavUtils";
@@ -34,6 +34,8 @@ function RailDomainButton({
   onActivateDomain: (domain: CapabilityMenuItem) => void;
   pathname?: string | null;
 }) {
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === "dark";
   const { dashColors } = useFabTokens();
   const trail = domainContainsActiveItem(domain, activeNavId, fullMenu, pathname);
   const navLabel = getDomainNavLabel(domain.id, domain.label);
@@ -63,7 +65,7 @@ function RailDomainButton({
       {...SIDEBAR_NAV_TOOLTIP_PROPS}
     >
       <Box position="relative" display="flex" justifyContent="center" w="full">
-        {trail ? (
+        {trail && isDark ? (
           <Box
             position="absolute"
             left="-4px"
@@ -83,43 +85,76 @@ function RailDomainButton({
           icon={
             <MotionSpan
               style={{ display: "inline-flex", transformOrigin: "center center" }}
-              whileHover={domain.access === "locked" ? undefined : { scale: 1.1 }}
+              whileHover={domain.access === "locked" ? undefined : { scale: 1.06 }}
               transition={{ type: "tween", duration: 0.22, ease: [0.42, 0, 0.58, 1] }}
             >
-              <DomainNavIcon domainId={domain.id} size={22} />
+              <DomainNavIcon domainId={domain.id} size={!isDark && trail ? 24 : 22} />
             </MotionSpan>
           }
           variant="ghost"
           size="sm"
-          w="40px"
-          h="40px"
-          minW="40px"
-          borderRadius={dashRadius.surface}
-          opacity={domain.access === "locked" ? 0.45 : 1}
-          color={trail ? dashColors.text.primary : dashColors.text.secondary}
-          bg={trail ? "rgba(0, 98, 255, 0.12)" : "transparent"}
-          borderWidth="1px"
-          borderColor={trail ? "rgba(0, 98, 255, 0.45)" : "transparent"}
-          boxShadow={
-            trail
-              ? "0 0 22px rgba(0, 98, 255, 0.35), inset 0 0 12px rgba(120, 180, 255, 0.12)"
-              : "none"
+          w={
+            isDark ? "48px" : trail ? "56px" : "40px"
           }
-          filter={trail ? "drop-shadow(0 0 8px rgba(0, 140, 255, 0.55))" : undefined}
+          h={
+            isDark ? "48px" : trail ? "56px" : "40px"
+          }
+          minW={
+            isDark ? "48px" : trail ? "56px" : "40px"
+          }
+          borderRadius={isDark ? "14px" : trail ? "16px" : glassTokens.radius.iconButton}
+          opacity={domain.access === "locked" ? 0.45 : 1}
+          color={
+            isDark
+              ? trail
+                ? "#ffffff"
+                : "rgba(255, 255, 255, 0.55)"
+              : trail
+                ? dashColors.homeWelcomeAccent
+                : "rgba(255, 255, 255, 0.88)"
+          }
+          bg={
+            isDark
+              ? trail
+                ? glassTokens.sidebarRail.activeBg
+                : "transparent"
+              : trail
+                ? "#FFFFFF"
+                : "transparent"
+          }
+          borderWidth={0}
+          borderColor="transparent"
+          boxShadow={trail && isDark ? glassTokens.sidebarRail.activeShadow : "none"}
+          filter={trail ? "none" : undefined}
+          backdropFilter={isDark && trail ? glassTokens.sidebarRail.tileBlur : undefined}
           aria-disabled={domain.access === "locked"}
           cursor={domain.access === "locked" ? "not-allowed" : "pointer"}
-          transition="background 0.25s ease-in-out, border-color 0.25s ease-in-out, box-shadow 0.25s ease-in-out, filter 0.25s ease-in-out"
+          transition="background 0.25s ease-in-out, border-color 0.25s ease-in-out, box-shadow 0.25s ease-in-out, filter 0.25s ease-in-out, backdrop-filter 0.25s ease-in-out"
           onClick={() => {
             if (domain.access !== "locked") onActivateDomain(domain);
+          }}
+          sx={{
+            ...(isDark && trail ? { WebkitBackdropFilter: glassTokens.sidebarRail.tileBlur } : {}),
           }}
           _hover={
             domain.access === "locked"
               ? {}
-              : {
-                  bg: trail ? "rgba(0, 98, 255, 0.16)" : "rgba(1, 5, 145, 0.06)",
-                  color: dashColors.text.primary,
-                  borderColor: trail ? "rgba(0, 98, 255, 0.35)" : "rgba(1, 5, 145, 0.1)",
-                }
+              : isDark
+                ? {
+                    bg: trail ? glassTokens.sidebarRail.activeBg : glassTokens.sidebarRail.hoverBg,
+                    color: trail ? "#ffffff" : "rgba(255, 255, 255, 0.85)",
+                    borderColor: trail
+                      ? glassTokens.sidebarRail.activeBorder
+                      : glassTokens.sidebarRail.hoverBorder,
+                    backdropFilter: glassTokens.sidebarRail.tileBlur,
+                    WebkitBackdropFilter: glassTokens.sidebarRail.tileBlur,
+                    boxShadow: trail ? glassTokens.sidebarRail.activeShadow : "none",
+                  }
+                : {
+                    bg: trail ? "#F2F6FF" : "rgba(255, 255, 255, 0.12)",
+                    color: trail ? dashColors.homeWelcomeAccent : "rgba(255, 255, 255, 0.96)",
+                    borderColor: "transparent",
+                  }
           }
         />
       </Box>
@@ -135,8 +170,12 @@ export function SidebarCollapsedRail({
   onActivateDomain,
   pathname,
 }: SidebarCollapsedRailProps) {
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === "dark";
+  const itemGap = isDark ? `${glassTokens.sidebarRail.collapsedItemGapPx}px` : 2;
+
   return (
-    <VStack align="stretch" spacing={2} w="full" py={1}>
+    <VStack align="stretch" spacing={itemGap} w="full" py={isDark ? 0 : 1}>
       {entitledDomains.map((domain) => (
         <RailDomainButton
           key={domain.id}
@@ -148,8 +187,13 @@ export function SidebarCollapsedRail({
         />
       ))}
       {availableDomains.length > 0 ? (
-        <Box w="full" py={2} aria-hidden>
-          <Box h="1px" w="full" bg="rgba(1, 5, 145, 0.1)" borderRadius="full" />
+        <Box w="full" py={isDark ? 1 : 2} aria-hidden>
+          <Box
+            h="1px"
+            w="full"
+            bg={isDark ? "rgba(1, 5, 145, 0.1)" : "rgba(255, 255, 255, 0.22)"}
+            borderRadius="full"
+          />
         </Box>
       ) : null}
       {availableDomains.map((domain) => (

@@ -1,5 +1,6 @@
 import { LIGHT_INK_PRIMARY, LIGHT_SURFACE } from "@/lib/fabTheme/lightModePrimitives";
 import { getDsTextFieldStyles } from "@/lib/fabTheme/dsTextField";
+import { glassTokens } from "@/lib/glassTokens";
 
 /** Dashboard-only keys (merged with auth palette for `dashColors`). */
 
@@ -9,23 +10,24 @@ export const dashGradientsDark = {
 } as const;
 
 export const dashGradientsLight = {
-  /** Layered base → subtle band + cool ambient (lavender/blue), not flat grey */
+  /** Figma launch `558:17874` — cool canvas + soft blue wash (see also `lightbackground.png` layer) */
   canvas: [
-    `linear-gradient(180deg, ${LIGHT_SURFACE.base} 0%, ${LIGHT_SURFACE.subtle} 52%, ${LIGHT_SURFACE.base} 100%)`,
-    "radial-gradient(ellipse 120% 80% at 50% -15%, rgba(0, 98, 255, 0.045), transparent 55%)",
-    "radial-gradient(ellipse 70% 50% at 100% 0%, rgba(130, 110, 220, 0.035), transparent 50%)",
+    "linear-gradient(125deg, rgba(95, 145, 224, 0.08) 0%, transparent 42%)",
+    `linear-gradient(180deg, #eef2fb 0%, ${LIGHT_SURFACE.base} 52%, #fafbff 100%)`,
   ].join(", "),
 } as const;
 
 export const dashEffectsDark = {
-  surfaceBlur: "blur(14.5px)",
-  primaryNavBlur: "blur(16px) saturate(1.15)",
+  /** Sidebar / wide shells — aligned with {@link glassTokens.blur.shell} */
+  surfaceBlur: glassTokens.blur.shell,
+  /** Header chrome — slightly tighter read than shell */
+  primaryNavBlur: glassTokens.blur.card,
 } as const;
 
 export const dashEffectsLight = {
   surfaceBlur: "blur(14px) saturate(1.12)",
-  /** Match glass-forward primary nav (Figma Dev Portal ~12px blur; slightly stronger on web) */
-  primaryNavBlur: "blur(18px) saturate(1.2)",
+  /** Launch `558:17874` — flat white top bar (no frosted nav) */
+  primaryNavBlur: "none",
 } as const;
 
 export const dashSurfaceDark = {
@@ -38,12 +40,12 @@ export const dashSurfaceDark = {
   beam: "rgba(0, 98, 255, 0.22)",
   beamSoft: "rgba(0, 98, 255, 0.08)",
   sidebarBg: "rgba(0, 2, 39, 0.55)",
-  sidebarGlass:
-    "linear-gradient(165deg, rgba(8, 14, 42, 0.72) 0%, rgba(2, 6, 28, 0.78) 45%, rgba(0, 4, 24, 0.82) 100%)",
+  sidebarRailSolid: "rgba(0, 2, 39, 0.55)",
+  sidebarGlass: glassTokens.fill.shell,
   sidebarInnerEdge: "inset 1px 0 0 rgba(255, 255, 255, 0.08)",
   sidebarBeam: "rgba(0, 120, 255, 0.92)",
   sidebarBeamSoft: "0 0 18px rgba(0, 98, 255, 0.35)",
-  sidebarBorder: "rgba(255, 255, 255, 0.12)",
+  sidebarBorder: glassTokens.border.default,
   homeRailDivider: "rgba(255, 255, 255, 0.13)",
   cardBg: "rgba(255, 255, 255, 0.05)",
   cardBgHover: "rgba(255, 255, 255, 0.08)",
@@ -51,9 +53,9 @@ export const dashSurfaceDark = {
   navActiveBorder: "rgba(255, 255, 255, 0.2)",
   navItemHoverBg: "rgba(255, 255, 255, 0.06)",
   navItemHoverBorder: "rgba(255, 255, 255, 0.08)",
-  topbarBg: "rgba(0, 2, 39, 0.72)",
-  primaryNavBg: "rgba(255, 255, 255, 0.12)",
-  primaryNavBorder: "rgba(116, 116, 116, 0.2)",
+  topbarBg: glassTokens.fill.shell,
+  primaryNavBg: glassTokens.fill.shell,
+  primaryNavBorder: glassTokens.border.default,
   primaryNavInactive: "rgba(255, 255, 255, 0.4)",
   statusAvailable: "rgba(52, 211, 153, 0.95)",
   statusAttention: "rgba(251, 191, 36, 0.95)",
@@ -61,6 +63,8 @@ export const dashSurfaceDark = {
   pageTitle: "#ffffff",
   pageEyebrow: "rgba(255, 255, 255, 0.48)",
   pageSubtitle: "rgba(255, 255, 255, 0.55)",
+  homeWelcomeAccent: "#ffffff",
+  homeWelcomeMuted: "rgba(255, 255, 255, 0.55)",
   metaChipBorder: "rgba(255, 255, 255, 0.1)",
   metaChipBg: "rgba(255, 255, 255, 0.06)",
   metaChipText: "rgba(255, 255, 255, 0.78)",
@@ -83,7 +87,10 @@ export const dashSurfaceLight = {
   beam: "rgba(0, 98, 255, 0.1)",
   beamSoft: "rgba(0, 98, 255, 0.05)",
   sidebarBg: "rgba(255, 255, 255, 0.78)",
+  /** Expanded sidebar panel — readable tree on white */
   sidebarGlass: `linear-gradient(165deg, rgba(255, 255, 255, 0.94) 0%, rgba(252, 253, 255, 0.88) 42%, rgba(245, 248, 252, 0.82) 100%)`,
+  /** Figma `558:17874` — primary-blue/400 collapsed rail */
+  sidebarRailSolid: "#40639E",
   sidebarInnerEdge: "inset 1px 0 0 rgba(1, 5, 145, 0.08)",
   sidebarBeam: "rgba(0, 98, 255, 0.88)",
   sidebarBeamSoft: "0 0 20px rgba(0, 98, 255, 0.14)",
@@ -99,15 +106,20 @@ export const dashSurfaceLight = {
   navItemHoverBg: LIGHT_SURFACE.hover,
   navItemHoverBorder: "rgba(1, 5, 145, 0.12)",
   topbarBg: "rgba(255, 255, 255, 0.88)",
-  primaryNavBg: "rgba(255, 255, 255, 0.72)",
-  primaryNavBorder: "rgba(1, 5, 145, 0.1)",
+  /** Solid page surface / white header */
+  primaryNavBg: "#FFFFFF",
+  primaryNavBorder: "rgba(155, 156, 159, 0.35)",
   primaryNavInactive: "rgba(58, 69, 86, 0.52)",
   statusAvailable: "rgba(52, 211, 153, 0.95)",
   statusAttention: "rgba(251, 191, 36, 0.95)",
   statusRestricted: "rgba(248, 113, 113, 0.9)",
   pageTitle: LIGHT_INK_PRIMARY,
   pageEyebrow: "rgba(58, 69, 86, 0.58)",
-  pageSubtitle: "#3A4556",
+  /** DS body secondary */
+  pageSubtitle: "#6A6C6F",
+  /** Home hero — Figma `558:17874` */
+  homeWelcomeAccent: "#0062FF",
+  homeWelcomeMuted: "#6A6C6F",
   metaChipBorder: "rgba(1, 5, 145, 0.12)",
   metaChipBg: LIGHT_SURFACE.elevated,
   metaChipText: "#3A4556",
@@ -120,14 +132,11 @@ export const dashSurfaceLight = {
 } as const;
 
 export const dashShadowExtensionDark = {
-  cardGlow:
-    "0 0 0 1px rgba(255,255,255,0.06), 0 12px 40px rgba(0, 0, 0, 0.45), 0 0 48px rgba(0, 98, 255, 0.06)",
-  cardGlowHover:
-    "0 0 0 1px rgba(0, 98, 255, 0.2), 0 16px 48px rgba(0, 0, 0, 0.5), 0 0 56px rgba(0, 98, 255, 0.12)",
+  cardGlow: glassTokens.shadowStack.card,
+  cardGlowHover: glassTokens.shadowStack.cardHover,
   sidebar: "4px 0 32px rgba(0, 0, 0, 0.35)",
-  sidebarCapability:
-    "4px 0 40px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(255,255,255,0.05), inset 0 1px 0 rgba(255,255,255,0.06)",
-  primaryNavFloat: "0 8px 32px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255,255,255,0.06)",
+  sidebarCapability: `${glassTokens.shadow.medium}, 0 0 0 1px ${glassTokens.border.default}, ${glassTokens.shadow.insetTopSheen}, inset 1px 0 0 rgba(255,255,255,0.05)`,
+  primaryNavFloat: `${glassTokens.shadow.soft}, 0 0 0 1px ${glassTokens.border.default}, ${glassTokens.shadow.insetTopSheen}`,
 } as const;
 
 export const dashShadowExtensionLight = {
@@ -143,27 +152,34 @@ export const dashShadowExtensionLight = {
     "0 8px 28px rgba(1, 5, 145, 0.08), 0 0 0 1px rgba(1, 5, 145, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.88)",
 } as const;
 
+/** Primary nav search (light) — DS text field. Dark nav uses layered {@link GlassCredentialFieldFrame} in `DashboardPrimaryNav`. */
 const dashNavSearchDark = {
   ...getDsTextFieldStyles({ colorMode: "dark", height: "40px", paddingX: false }),
   pl: 10,
   pr: { base: 4, md: "7.5rem" },
 } as const;
 
+/** Figma `558:17874` — 496×46 pill, neutral/300 border, DS placeholder */
 const dashNavSearchLight = {
-  ...getDsTextFieldStyles({ colorMode: "light", height: "40px", paddingX: false }),
-  pl: 10,
-  pr: { base: 4, md: "7.5rem" },
+  ...getDsTextFieldStyles({
+    colorMode: "light",
+    height: "46px",
+    paddingX: "24px",
+    surface: "authLoginLight",
+  }),
+  pl: "48px",
+  pr: { base: "16px", md: "7.5rem" },
 } as const;
 
 export const dashPrimaryNavChromeDark = {
-  brandWordmark: "#ffffff",
+  brandWordmark: glassTokens.text.primary,
   search: dashNavSearchDark,
-  searchIcon: "rgba(255,255,255,0.45)",
+  searchIcon: glassTokens.search.icon,
   kbd: {
-    bg: "rgba(0, 0, 0, 0.22)",
-    borderColor: "rgba(255, 255, 255, 0.14)",
-    color: "rgba(255, 255, 255, 0.48)",
-    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)",
+    bg: "rgba(12, 16, 40, 0.55)",
+    borderColor: glassTokens.border.default,
+    color: glassTokens.text.muted,
+    boxShadow: `${glassTokens.shadow.insetTopSheen}`,
   },
   iconButton: {
     variant: "ghost" as const,
@@ -179,10 +195,13 @@ export const dashPrimaryNavChromeDark = {
   },
   divider: "rgba(255,255,255,0.14)",
   notifDotBorder: "rgba(12, 16, 28, 0.95)",
+  commandCenterBorder: "rgba(255,255,255,0.22)",
 } as const;
 
 export const dashPrimaryNavChromeLight = {
-  brandWordmark: LIGHT_INK_PRIMARY,
+  /** Figma text/heading */
+  brandWordmark: "#383A3F",
+  commandCenterBorder: "#9B9C9F",
   search: dashNavSearchLight,
   searchIcon: "rgba(58, 69, 86, 0.48)",
   kbd: {

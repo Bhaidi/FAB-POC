@@ -19,32 +19,45 @@ export const dashSpace = {
 
 export const dashLayout = {
   sidebarWidthExpanded: "288px",
+  /** Inner rail width (icons column) */
   sidebarWidthCollapsed: "72px",
+  /**
+   * Figma `558:17725` — collapsed nav floats with `sidebarCollapsedFloatInset` on left/right
+   * and the same inset top/bottom (`72 + 24 + 24` horizontal).
+   */
+  sidebarCollapsedFloatInset: "24px",
+  /** Vertical capsule / pill rail — full rounded ends (ref command centre) */
+  sidebarCollapsedOuterRadius: "24px",
   primaryNavMinH: "72px",
+  /** Figma `558:17874` — light top bar content row */
+  primaryNavMinHLight: "82px",
   primaryNavFloatInset: "8px",
   primaryNavFloatBottom: "8px",
+  /** Dark: float + {@link primaryNavMinH} + float */
   primaryNavLayoutReserve: "88px",
-  contentMaxW: "1536px",
-  dashboardHomeMaxW: "1536px",
+  /** Light Figma `558:17874` — taller bar ({@link primaryNavMinHLight}) */
+  primaryNavLayoutReserveLight: "100px",
+  /** Figma frames (e.g. `558:17644`) are 1920px — cap was 1536px and read as “zoomed” vs design */
+  contentMaxW: "1920px",
+  dashboardHomeMaxW: "1920px",
 } as const;
 
 /**
- * Figma DS `570:41510` / `558:17644` — home launchpad service tiles (dark).
- * Grid: 24px gap between cards; tile padding 24px; 40px icon→copy; inner title→body 12px (`VStack` 3).
+ * Home launchpad service tiles (dark) — compact vs original Figma 264×200.
+ * Grid gap / padding scale with the smaller footprint.
  */
 export const figmaHomeServiceCard = {
   width: "232px",
-  /** Taller than legacy 176px so 24px pad + 40px gap + 24/12 type fits like Figma */
-  height: "200px",
-  padding: "24px",
-  radius: "24px",
+  height: "176px",
+  padding: "20px",
+  radius: "20px",
   fill: "rgba(255, 255, 255, 0.05)",
-  /** Chakra `10` → 40px — icon block → title stack (Figma `gap-[40px]`) */
-  gapIconToText: 10,
-  /** Chakra `3` → 12px — title → description inside stack */
+  /** Chakra `8` → 32px — icon row → title stack */
+  gapIconToText: 8,
+  /** Chakra `3` → 12px — title → description */
   gapTitleToBody: 3,
-  /** Chakra `6` → 24px — column + row gap between service cards */
-  gridGap: 6,
+  /** Chakra `5` → 20px — gap between cards */
+  gridGap: 5,
 } as const;
 
 /**
@@ -53,8 +66,6 @@ export const figmaHomeServiceCard = {
 export const figmaHomeLayoutDark = {
   /** Welcome / subtitle block → first row of cards (lg ≈48px in Figma) */
   headerMarginBottom: { base: "32px", md: "38px", lg: "48px" } as const,
-  /** Main content horizontal padding (lg) — aligns grid to sidebar */
-  contentPaddingXLg: "48px",
   /** “QUICK ACTIONS” header → icon row */
   quickActionsTitleToTiles: 8,
   /** Between quick-action icon tiles */

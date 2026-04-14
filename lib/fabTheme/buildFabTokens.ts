@@ -13,6 +13,7 @@ import {
 } from "@/lib/fabTheme/authPalettes";
 import {
   authSegmentedControlCanvasDark,
+  authSegmentedControlLoginPageLight,
   authSegmentedControlThemeDark,
   authSegmentedControlThemeLight,
 } from "@/lib/fabTheme/authSegmentedPalettes";
@@ -39,6 +40,7 @@ import {
   portfolioSectionHeadingSxDark,
   portfolioSectionHeadingSxLight,
 } from "@/lib/fabTheme/portfolioPalettes";
+import { glassTokens } from "@/lib/glassTokens";
 
 export type FabTokens = ReturnType<typeof buildFabTokens>;
 
@@ -56,6 +58,8 @@ export function buildFabTokens(colorMode: ColorMode) {
     authHeroTypography: dark ? authHeroTypographyDark : authHeroTypographyLight,
     authColumnTypography: dark ? authColumnTypographyDark : authColumnTypographyLight,
     authSegmentedControlTheme: dark ? authSegmentedControlThemeDark : authSegmentedControlThemeLight,
+    /** Login/register route — Figma `558:17096` light segmented track (distinct from in-app toolbar). */
+    authSegmentedControlLoginLight: authSegmentedControlLoginPageLight,
     /** In-page capsule (e.g. portfolio module) — light mode matches standard light chrome. */
     authSegmentedControlCanvas: dark ? authSegmentedControlCanvasDark : authSegmentedControlThemeLight,
     dashGradients: dark ? dashGradientsDark : dashGradientsLight,
@@ -69,5 +73,7 @@ export function buildFabTokens(colorMode: ColorMode) {
     financialOverviewShell: dark ? financialOverviewShellDark : financialOverviewShellLight,
     sidebarNavTooltip: dark ? sidebarNavTooltipDark : sidebarNavTooltipLight,
     documentCanvasBg: dark ? documentCanvasBg.dark : documentCanvasBg.light,
+    /** Dark iOS-glass system — static reference; use with `colorMode === 'dark'` surfaces */
+    glassTokens,
   };
 }

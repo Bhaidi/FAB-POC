@@ -1,14 +1,9 @@
-import {
-  authColorsDark,
-  authColorsLight,
-  authShadowDark,
-  authShadowLight,
-} from "@/lib/fabTheme/authPalettes";
+import { authColorsDark, authColorsLight, authShadowLight } from "@/lib/fabTheme/authPalettes";
 
 /**
  * Text field — Figma **Glass** (Inspector):
  * - Frame: **434×48**, `border-radius: 24px`, `gap: 12px`, align center
- * - Fill: `#FFFFFF` @ **5%**
+ * - Fill: **transparent** (tint from canvas via backdrop blur)
  * - Effects → **Glass** (background blur)
  * - Corners: `overflow: hidden` + same radius clips blur; inset stack defines the curved rim
  */
@@ -21,41 +16,20 @@ export const DS_TEXT_FIELD = {
   fontWeight: 400,
 } as const;
 
-const GLASS_FILL = "rgba(255, 255, 255, 0.05)";
-const GLASS_FILL_HOVER = "rgba(255, 255, 255, 0.08)";
-const GLASS_FILL_FOCUS = "rgba(255, 255, 255, 0.09)";
+const GLASS_FILL = "transparent";
+const GLASS_FILL_HOVER = "transparent";
+const GLASS_FILL_FOCUS = "transparent";
 
-const GLASS_BACKDROP_DARK = "blur(15px) saturate(180%)";
+const GLASS_BACKDROP_DARK = "blur(22px) saturate(195%)";
 const GLASS_BACKDROP_LIGHT = "blur(15px) saturate(170%)";
 
-const GLASS_BORDER = "rgba(255, 255, 255, 0.14)";
-const GLASS_BORDER_HOVER = "rgba(255, 255, 255, 0.2)";
-const GLASS_BORDER_FOCUS = "rgba(255, 255, 255, 0.32)";
+const GLASS_BORDER = "transparent";
+const GLASS_BORDER_HOVER = "transparent";
+const GLASS_BORDER_FOCUS = "transparent";
 
-/**
- * Inset rim on all four edges so the **pill corners** read continuous (light top / sides, soft shadow bottom).
- * Single-edge inset leaves corners looking flat vs Figma/iOS glass.
- */
-const glassInsetDark = [
-  "inset 0 1px 0 rgba(255, 255, 255, 0.26)",
-  "inset 0 -1px 0 rgba(0, 0, 0, 0.2)",
-  "inset 1px 0 0 rgba(255, 255, 255, 0.1)",
-  "inset -1px 0 0 rgba(0, 0, 0, 0.14)",
-].join(", ");
-
-const glassInsetDarkHover = [
-  "inset 0 1px 0 rgba(255, 255, 255, 0.32)",
-  "inset 0 -1px 0 rgba(0, 0, 0, 0.16)",
-  "inset 1px 0 0 rgba(255, 255, 255, 0.12)",
-  "inset -1px 0 0 rgba(0, 0, 0, 0.12)",
-].join(", ");
-
-const glassInsetDarkFocus = [
-  "inset 0 1px 0 rgba(255, 255, 255, 0.34)",
-  "inset 0 -1px 0 rgba(0, 0, 0, 0.14)",
-  "inset 1px 0 0 rgba(255, 255, 255, 0.14)",
-  "inset -1px 0 0 rgba(0, 0, 0, 0.1)",
-].join(", ");
+const glassInsetDark = "none";
+const glassInsetDarkHover = "none";
+const glassInsetDarkFocus = "none";
 
 /**
  * Figma **Text field / Glass** (node `558:17083`) — same values as {@link getDsTextFieldStyles} dark mode.
@@ -93,16 +67,60 @@ const glassCornerAssist = {
   backfaceVisibility: "hidden" as const,
 };
 
+export type DsGlassTextFieldInnerOptions = {
+  /** Default `24px`. Use `false` when horizontal padding comes from a parent flex row. */
+  paddingX?: string | false;
+};
+
+/**
+ * Styles for the **inner** `<Input>` inside {@link GlassCredentialFieldFrame} (dark mode).
+ * Same typography as {@link getDsTextFieldStyles}; background stays transparent — glass is drawn by the frame.
+ */
+export function getDsGlassTextFieldInnerStyles(options?: DsGlassTextFieldInnerOptions) {
+  const paddingX = options?.paddingX === undefined ? "24px" : options.paddingX;
+  return {
+    flex: 1,
+    minW: 0,
+    h: "full",
+    w: "full",
+    ...(paddingX !== false ? { px: paddingX } : {}),
+    py: 0,
+    border: "none",
+    outline: "none",
+    boxShadow: "none",
+    bg: "transparent",
+    color: "rgba(255, 255, 255, 0.96)",
+    fontFamily: DS_TEXT_FIELD.fontFamily,
+    fontSize: DS_TEXT_FIELD.fontSize,
+    lineHeight: DS_TEXT_FIELD.lineHeight,
+    fontWeight: DS_TEXT_FIELD.fontWeight,
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    _placeholder: { color: DS_TEXT_FIELD.placeholder, opacity: 1 },
+    _focusVisible: { outline: "none", boxShadow: "none" },
+  } as const;
+}
+
 export type DsTextFieldOptions = {
   colorMode: "light" | "dark";
   height?: string;
   paddingX?: string | false;
+  /**
+   * Figma DS login light (`558:17096`) — white pill, `#9B9C9F` border, no backdrop blur.
+   * Only applies when `colorMode` is `light`.
+   */
+  surface?: "glass" | "authLoginLight";
 };
+
+const AUTH_LOGIN_LIGHT_INK = "#383A3F";
+const AUTH_LOGIN_LIGHT_BORDER = "#9B9C9F";
 
 export function getDsTextFieldStyles(options: DsTextFieldOptions) {
   const h = options.height ?? "48px";
   const paddingX = options.paddingX === undefined ? "24px" : options.paddingX;
   const isDark = options.colorMode === "dark";
+  const loginLight = !isDark && options.surface === "authLoginLight";
 
   const transition = [
     `transform 0.22s ${EASE_ZOOM}`,
@@ -138,7 +156,7 @@ export function getDsTextFieldStyles(options: DsTextFieldOptions) {
       bg: GLASS_FILL,
       backdropFilter: GLASS_BACKDROP_DARK,
       WebkitBackdropFilter: GLASS_BACKDROP_DARK,
-      border: "1px solid",
+      border: "none",
       borderColor: GLASS_BORDER,
       color: c.text.primary,
       boxShadow: glassInsetDark,
@@ -153,7 +171,7 @@ export function getDsTextFieldStyles(options: DsTextFieldOptions) {
       _focusVisible: {
         bg: GLASS_FILL_FOCUS,
         borderColor: GLASS_BORDER_FOCUS,
-        boxShadow: `${glassInsetDarkFocus}, ${authShadowDark.inputFocus}`,
+        boxShadow: glassInsetDarkFocus,
         transform: ZOOM.focus,
         ...focusRing,
       },
@@ -164,6 +182,41 @@ export function getDsTextFieldStyles(options: DsTextFieldOptions) {
   }
 
   const c = authColorsLight;
+
+  if (loginLight) {
+    return {
+      ...base,
+      borderRadius: "9999px",
+      bg: "#FFFFFF",
+      backdropFilter: "none",
+      WebkitBackdropFilter: "none",
+      border: "1px solid",
+      borderColor: AUTH_LOGIN_LIGHT_BORDER,
+      color: AUTH_LOGIN_LIGHT_INK,
+      boxShadow: "none",
+      _placeholder: { color: DS_TEXT_FIELD.placeholder, opacity: 1 },
+      _hover: {
+        bg: "#FFFFFF",
+        borderColor: "#8B8D91",
+      },
+      _focus: {
+        transform: ZOOM.focus,
+      },
+      _focusVisible: {
+        bg: "#FFFFFF",
+        borderColor: "rgba(0, 98, 255, 0.55)",
+        boxShadow: "none",
+        outline: "2px solid rgba(0, 98, 255, 0.35)",
+        outlineOffset: "2px",
+        transform: ZOOM.focus,
+      },
+      _disabled: {
+        transform: ZOOM.rest,
+        opacity: 0.65,
+      },
+    } as const;
+  }
+
   return {
     ...base,
     ...glassCornerAssist,

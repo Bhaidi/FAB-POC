@@ -47,6 +47,41 @@ export const authSegmentedControlThemeDark = {
   },
 } as const;
 
+/**
+ * Login / Register page — Figma `558:17096`: 406×64 track, 1.5px `#7FB0FF` rim, 6px pad,
+ * solid `#0062FF` thumb, white active label / `#383A3F` inactive.
+ */
+export const authSegmentedControlLoginPageLight = {
+  track: {
+    background: "rgba(255, 255, 255, 0.98)",
+    backdropFilter: "none",
+    WebkitBackdropFilter: "none",
+    border: "1.5px solid #7FB0FF",
+    boxShadow: "none",
+  },
+  trackSheen: "",
+  trackRimGradient: "",
+  trackFloorGradient: "",
+  trackInnerWellShadow: "none",
+  thumbAura: "",
+  thumb: {
+    background: "#0062FF",
+    border: "none",
+    boxShadow: "none",
+  },
+  thumbDragging: {
+    background: "#0058E6",
+    border: "none",
+    boxShadow: "none",
+  },
+  thumbDraggingAura: "",
+  label: {
+    active: "#FFFFFF",
+    inactive: "#383A3F",
+    inactiveHover: "#2a2c31",
+  },
+} as const;
+
 export const authSegmentedControlThemeLight = {
   track: {
     background:
