@@ -34,7 +34,7 @@ html[data-fab-theme="dark"] {
 }
 
 html[data-fab-theme="light"] body {
-  background-color: #f5f7fb;
+  /* background removed */
 }
 
 /* Chakra preflight — force Graphik on semantic monospace tags */
@@ -47,6 +47,11 @@ html[data-fab-theme="light"] body {
 .chakra-portal-zIndex,
 [id^="chakra-toast-manager"] {
   font-family: var(--font-graphik) !important;
+}
+
+/* Prevent Chakra accordion collapse from clipping dropdowns */
+.chakra-collapse {
+  overflow: visible !important;
 }
 
 /**
@@ -434,6 +439,83 @@ optgroup {
   .fin-overview-currency-shimmer::after {
     animation: none !important;
     opacity: 0.08 !important;
+    transform: none !important;
+  }
+}
+
+/* ═══ IFT Success Confirmation Micro-Interactions ═══ */
+
+/* Circle scales in with bounce */
+@keyframes ift-success-circle-pop {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  70% { transform: scale(0.9); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Checkmark draws itself (stroke-dashoffset) */
+@keyframes ift-success-check-draw {
+  0% { stroke-dashoffset: 48; opacity: 0; }
+  40% { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 1; }
+}
+
+/* Soft pulse ring radiating out */
+@keyframes ift-success-ring-pulse {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* Confetti-like particles burst */
+@keyframes ift-success-particle {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Fade-slide up for text */
+@keyframes ift-success-fade-up {
+  0% { transform: translateY(12px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Gentle floating glow */
+@keyframes ift-success-glow-breathe {
+  0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(34, 197, 94, 0.4); }
+}
+
+.ift-success-circle {
+  animation: ift-success-circle-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.ift-success-ring {
+  animation: ift-success-ring-pulse 1s ease-out 0.3s forwards;
+}
+
+.ift-success-text {
+  animation: ift-success-fade-up 0.5s ease-out 0.5s both;
+}
+
+.ift-success-ref {
+  animation: ift-success-fade-up 0.5s ease-out 0.7s both;
+}
+
+.ift-success-content {
+  animation: ift-success-fade-up 0.4s ease-out 0.9s both;
+}
+
+.ift-success-glow {
+  animation: ift-success-glow-breathe 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ift-success-circle,
+  .ift-success-ring,
+  .ift-success-text,
+  .ift-success-ref,
+  .ift-success-content {
+    animation: none !important;
+    opacity: 1 !important;
     transform: none !important;
   }
 }

@@ -225,7 +225,6 @@ const styles = {
       fontSynthesis: "none",
     },
     body: {
-      bg: "neutral.pageBg",
       color: "neutral.mainText",
       fontFamily: GRAPHIK_STACK,
       fontSynthesis: "none",
