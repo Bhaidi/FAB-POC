@@ -225,7 +225,7 @@ function ApprovalTracker({ steps }: { steps: ApprovalStep[] }) {
             {!isLast && (
               <Box position="absolute" top="12px" left="50%" w="100%" h="3px" bg={done && steps[i + 1]?.status === "completed" ? lineCompleted : linePending} zIndex={0} />
             )}
-            <Box zIndex={1} bg={useColorModeValue("white", dashColors.surfaceBase)} borderRadius="full">
+            <Box zIndex={1} bg={useColorModeValue("white", dashColors.cardBg)} borderRadius="full">
               {done ? <IconCircleCheck size={26} color={completedColor} fill={completedColor} stroke="white" /> : <IconCircleDashed size={26} color={pendingColor} />}
             </Box>
             <Text fontSize="2xs" fontWeight="semibold" color={done ? vl : lb} textAlign="center" mt={1.5} lineHeight="1.2" maxW="90px">{step.label}</Text>
@@ -411,7 +411,7 @@ function VariantC({ form, debitAccount: da, beneficiary: b }: VP) {
           return (
             <Flex key={i} gap={3} position="relative">
               <Flex direction="column" align="center" w="20px" flexShrink={0}>
-                <Box zIndex={1} bg={useColorModeValue("white", dashColors.surfaceBase)} borderRadius="full">
+                <Box zIndex={1} bg={useColorModeValue("white", dashColors.cardBg)} borderRadius="full">
                   {done ? <IconCircleCheck size={20} color={completedColor} fill={completedColor} stroke="white" /> : <IconCircleDashed size={20} color={pendingColor} />}
                 </Box>
                 {!isLast && <Box w="2px" flex={1} minH="20px" bg={done && steps[i + 1]?.status === "completed" ? completedColor : pendingColor} />}
@@ -519,14 +519,14 @@ function VariantC({ form, debitAccount: da, beneficiary: b }: VP) {
  * ══════════════════════════════════════════════════════ */
 export function IftTransactionConfirmationPage(props: IftTransactionConfirmationPageProps) {
   const { form, debitAccount, beneficiary, onMakeAnother, onBackToDashboard } = props;
-  const [variant, setVariant] = useState<"A" | "B" | "C">("B");
+  const [variant, setVariant] = useState<"A" | "B" | "C">("C");
 
   const { dashColors, dashGradients } = useFabTokens();
   const labelColor = useColorModeValue("neutral.mainText", dashColors.pageTitle);
   const headerBorderColor = useColorModeValue("#d7d7d7", dashColors.sectionDivider);
   const breadcrumbLink = useColorModeValue("accent.linkCta", "#60A5FA");
   const breadcrumbText = useColorModeValue("neutral.mainText", dashColors.pageTitle);
-  const footerBg = useColorModeValue("white", dashColors.surfaceBase);
+  const footerBg = useColorModeValue("white", "#060d24");
   const footerBorder = useColorModeValue("rgba(168,172,178,0.4)", dashColors.sectionDivider);
   const activeBg = useColorModeValue("blue.500", "#60A5FA");
   const inactiveBg = useColorModeValue("gray.100", dashColors.surfaceElevated);

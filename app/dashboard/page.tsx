@@ -1,17 +1,31 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Box, Text } from "@chakra-ui/react";
 import { DashboardShell } from "@/components/dashboard";
 import { DashboardEntryBridge } from "@/components/dashboard/DashboardEntryBridge";
 import { SimpleDashboardHome } from "@/components/dashboard/SimpleDashboardHome";
 import { DASHBOARD_MOCK_USER } from "@/data/dashboardMock";
+import { navRoute } from "@/data/dashboardNav";
 import { clearStubAuthSession, readStubAuthSession, type StubAuthSession } from "@/lib/authStubSession";
 
 export default function DashboardPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [session, setSession] = useState<StubAuthSession | null | undefined>(undefined);
+
+  /* Redirect nav IDs that have dedicated pages */
+  useEffect(() => {
+    const navId = searchParams.get("nav");
+    if (navId) {
+      const route = navRoute(navId);
+      if (route) {
+        router.replace(`${route}?nav=${encodeURIComponent(navId)}`);
+        return;
+      }
+    }
+  }, [searchParams, router]);
 
   useEffect(() => {
     const s = readStubAuthSession();

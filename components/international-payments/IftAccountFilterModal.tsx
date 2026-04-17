@@ -66,7 +66,7 @@ export function IftAccountFilterModal({
   onToggleFavorite,
 }: IftAccountFilterModalProps) {
   const { dashColors } = useFabTokens();
-  const modalBg = useColorModeValue("white", dashColors.surfaceBase);
+  const modalBg = useColorModeValue("white", "#060d24");
   const borderColor = useColorModeValue("neutral.border", dashColors.cardBorder);
   const labelColor = useColorModeValue("neutral.mainText", dashColors.pageTitle);
   const hintColor = useColorModeValue("neutral.secondaryText", dashColors.pageSubtitle);

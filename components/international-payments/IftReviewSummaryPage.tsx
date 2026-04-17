@@ -270,7 +270,7 @@ function VariantC({ form, debitAccount: da, beneficiary: b }: VP) {
       </Box>
 
       {/* ─── Data Sections ─── */}
-      <Box bg={useColorModeValue("gray.50", dashColors.surfaceBase)} px={4} py={4} borderBottomRadius="20px" borderWidth="1px" borderTopWidth={0} borderColor={bd}>
+      <Box bg={useColorModeValue("gray.50", dashColors.surfaceElevated)} px={4} py={4} borderBottomRadius="20px" borderWidth="1px" borderTopWidth={0} borderColor={bd}>
         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
           {/* Left column */}
           <Flex direction="column" gap={4}>
@@ -522,14 +522,14 @@ function VariantE({ form, debitAccount: da, beneficiary: b }: VP) {
  * ══════════════════════════════════════════════════ */
 export function IftReviewSummaryPage(props: IftReviewSummaryPageProps) {
   const { form, debitAccount, beneficiary, summaryRows, onBack, onConfirm } = props;
-  const [variant, setVariant] = useState<"A"|"B"|"C"|"D"|"E">("D");
+  const [variant, setVariant] = useState<"A"|"B"|"C"|"D"|"E">("C");
 
   const { dashColors, dashGradients } = useFabTokens();
   const labelColor = useColorModeValue("neutral.mainText", dashColors.pageTitle);
   const headerBorderColor = useColorModeValue("#d7d7d7", dashColors.sectionDivider);
   const breadcrumbLink = useColorModeValue("accent.linkCta", "#60A5FA");
   const breadcrumbText = useColorModeValue("neutral.mainText", dashColors.pageTitle);
-  const footerBg = useColorModeValue("white", dashColors.surfaceBase);
+  const footerBg = useColorModeValue("white", "#060d24");
   const footerBorder = useColorModeValue("rgba(168,172,178,0.4)", dashColors.sectionDivider);
   const activeBg = useColorModeValue("blue.500", "#60A5FA");
   const inactiveBg = useColorModeValue("gray.100", dashColors.surfaceElevated);

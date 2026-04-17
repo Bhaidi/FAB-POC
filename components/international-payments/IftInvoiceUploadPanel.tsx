@@ -144,7 +144,7 @@ export function IftInvoiceUploadPanel({ form, onChange }: IftInvoiceUploadPanelP
                 </Box>
               </Flex>
             </Box>
-            <Box mt={4}>
+            <Flex mt={4} justify="flex-end">
               <Button
                 variant="outline"
                 size="sm"
@@ -156,7 +156,7 @@ export function IftInvoiceUploadPanel({ form, onChange }: IftInvoiceUploadPanelP
               >
                 Switch to manual
               </Button>
-            </Box>
+            </Flex>
           </>
         )}
       </Box>

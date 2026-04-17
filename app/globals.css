@@ -33,6 +33,12 @@ html[data-fab-theme="dark"] {
   --color-secondary-blue-600: #004abf;
 }
 
+/* Native <select> <option> dark-mode fix — prevent pure-black OS chrome */
+html[data-fab-theme="dark"] option {
+  background-color: #0a0e2a;
+  color: rgba(255, 255, 255, 0.92);
+}
+
 html[data-fab-theme="light"] body {
   /* background removed */
 }

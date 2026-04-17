@@ -51,7 +51,7 @@ export function IftAccountDropdown({
   const borderColor = useColorModeValue("neutral.border", dashColors.cardBorder);
   const labelColor = useColorModeValue("neutral.mainText", dashColors.pageTitle);
   const hintColor = useColorModeValue("neutral.secondaryText", dashColors.pageSubtitle);
-  const panelBg = useColorModeValue("white", dashColors.surfaceBase);
+  const panelBg = useColorModeValue("white", "#060d24");
   const hoverBg = useColorModeValue("blue.50", dashColors.surfaceHover);
   const selectedRowBg = useColorModeValue("blue.50", "rgba(0, 98, 255, 0.12)");
   const selectedBorderColor = useColorModeValue("accent.linkCta", "#60A5FA");

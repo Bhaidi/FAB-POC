@@ -94,7 +94,7 @@ export function IftPaymentDetailsSection4({
 
   // Context strip
   const stripBg = useColorModeValue("gray.50", dashColors.surfaceElevated);
-  const segBg = useColorModeValue("gray.200", dashColors.surfaceBase);
+  const segBg = useColorModeValue("gray.200", dashColors.surfaceElevated);
   const segActiveBg = useColorModeValue("white", dashColors.cardBg);
 
   // Badges

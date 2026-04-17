@@ -115,13 +115,15 @@ export function IftCreatePayment() {
   const cardBg = useColorModeValue("white", dashColors.cardBg);
   const cardBorder = useColorModeValue("transparent", dashColors.cardBorder);
   const borderColor = useColorModeValue("neutral.border", dashColors.sectionDivider);
-  const headerBg = useColorModeValue("neutral.pageBg", dashColors.surfaceBase);
+  const headerBg = useColorModeValue("neutral.pageBg", "#060d24");
   const headerBorderColor = useColorModeValue("#d7d7d7", dashColors.sectionDivider);
   const breadcrumbLink = useColorModeValue("accent.linkCta", "#60A5FA");
   const breadcrumbText = useColorModeValue("neutral.mainText", dashColors.pageTitle);
   const labelColor = useColorModeValue("neutral.mainText", dashColors.pageTitle);
   const hintColor = useColorModeValue("neutral.secondaryText", dashColors.pageSubtitle);
-  const footerBg = useColorModeValue("white", dashColors.surfaceBase);
+  const footerBg = useColorModeValue("white", "#060d24");
+  const menuBg = useColorModeValue("white", "#060d24");
+  const menuHoverBg = useColorModeValue("gray.100", "#0a1433");
   const footerBorder = useColorModeValue("rgba(168,172,178,0.4)", dashColors.sectionDivider);
   const iconColor = useColorModeValue("neutral.mainText", dashColors.pageTitle);
   const accordionIconColor = useColorModeValue(undefined, dashColors.pageTitle);
@@ -203,6 +205,7 @@ export function IftCreatePayment() {
     <Flex direction="column" minH="100vh" bg={useColorModeValue("transparent", dashColors.surfaceBase)} bgImage={useColorModeValue("none", dashGradients.canvas)}>
       {/* ── Top Header / Breadcrumb ────────────── */}
       <Box
+        bg={headerBg}
         borderBottomWidth="1px"
         borderColor={headerBorderColor}
         px={{ base: 4, md: 8 }}
@@ -331,18 +334,29 @@ export function IftCreatePayment() {
                     Upload your invoice or bill to automatically populate the transfer details.
                   </Text>
                 </Box>
-                <Switch
-                  isChecked={form.autoFillEnabled}
-                  onChange={(e) => {
-                    const checked = e.target.checked;
-                    patch({
-                      autoFillEnabled: checked,
-                      ...(!checked ? { uploadedFileName: undefined, invoiceExtractedData: undefined } : {}),
-                    });
-                  }}
-                  colorScheme="blue"
-                  size="md"
-                />
+                <Flex align="center" gap={2} flexShrink={0}>
+                  <Switch
+                    isChecked={form.autoFillEnabled}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      patch({
+                        autoFillEnabled: checked,
+                        ...(!checked ? { uploadedFileName: undefined, invoiceExtractedData: undefined } : {}),
+                      });
+                    }}
+                    colorScheme="blue"
+                    size="md"
+                  />
+                  <Text
+                    fontSize="xs"
+                    fontWeight="semibold"
+                    color={form.autoFillEnabled ? hintColor : "accent.linkCta"}
+                    minW="42px"
+                    textAlign="center"
+                  >
+                    {form.autoFillEnabled ? "Auto" : "Manual"}
+                  </Text>
+                </Flex>
               </Flex>
             </Box>
           </Flex>
@@ -508,9 +522,9 @@ export function IftCreatePayment() {
             >
               Save As
             </MenuButton>
-            <MenuList>
-              <MenuItem fontSize="sm">Save as Draft</MenuItem>
-              <MenuItem fontSize="sm">Save as Template</MenuItem>
+            <MenuList bg={menuBg} borderColor={cardBorder}>
+              <MenuItem fontSize="sm" bg={menuBg} _hover={{ bg: menuHoverBg }}>Save as Draft</MenuItem>
+              <MenuItem fontSize="sm" bg={menuBg} _hover={{ bg: menuHoverBg }}>Save as Template</MenuItem>
             </MenuList>
           </Menu>
 

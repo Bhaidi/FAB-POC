@@ -146,7 +146,7 @@ export function IftPaymentDetailsSection5({
   const readOnlyBg = useColorModeValue("gray.100", dashColors.surfaceElevated);
 
   const stripBg = useColorModeValue("gray.50", dashColors.surfaceElevated);
-  const segBg = useColorModeValue("gray.200", dashColors.surfaceBase);
+  const segBg = useColorModeValue("gray.200", dashColors.surfaceElevated);
   const segActiveBg = useColorModeValue("white", dashColors.cardBg);
 
   const iftBg = useColorModeValue("orange.50", "rgba(251,146,60,0.14)");
