@@ -1,0 +1,1 @@
+export { AddBeneficiaryPage } from "./AddBeneficiaryPage";
